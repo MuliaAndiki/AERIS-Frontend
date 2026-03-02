@@ -1,0 +1,18 @@
+**AERIS Frontend**
+
+AERIS is a location-aware environmental insight application that helps users understand the real-time environmental conditions around them.
+The frontend focuses on presenting clear, actionable daily insights such as air quality status, heat risk, potential flooding conditions, surrounding noise estimation, and nearby green areas.
+
+This repository contains the user-facing interface of AERIS, built to deliver a fast, responsive, and accessible experience across devices. It integrates location-based data, visual dashboards, and recommendation components designed to translate complex environmental data into simple, human-friendly guidance.
+
+The frontend is structured with scalability in mind, separating UI components, data services, and environmental visualization modules so the application can evolve alongside the backend aggregation and scoring engine.
+
+Current scope of this repository:
+
+- Location-based environmental dashboard
+- Environmental score visualization
+- Daily recommendations panel
+- Green area proximity display
+- Modular service layer ready for backend integration
+
+This project represents the first phase of AERIS, focusing on user experience and environmental data presentation. Backend services, aggregation logic, and scoring engines will be developed in a separate repository and integrated in later stages.
