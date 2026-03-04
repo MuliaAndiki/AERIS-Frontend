@@ -330,3 +330,77 @@ input[type='number'] {
 .dark .hover-lift:hover {
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
 }
+
+/* Floating blob animation for background effects */
+@keyframes blob-float-1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  75% {
+    transform: translate(50px, 30px) scale(1.05);
+  }
+}
+
+@keyframes blob-float-2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-40px, 30px) scale(1.05);
+  }
+  50% {
+    transform: translate(30px, -40px) scale(1.1);
+  }
+  75% {
+    transform: translate(-20px, -20px) scale(0.95);
+  }
+}
+
+@keyframes blob-float-3 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(20px, 40px) scale(0.95);
+  }
+  50% {
+    transform: translate(-40px, -30px) scale(1.05);
+  }
+  75% {
+    transform: translate(30px, -10px) scale(1.1);
+  }
+}
+
+.animate-blob-1 {
+  animation: blob-float-1 8s ease-in-out infinite;
+}
+
+.animate-blob-2 {
+  animation: blob-float-2 10s ease-in-out infinite;
+}
+
+.animate-blob-3 {
+  animation: blob-float-3 12s ease-in-out infinite;
+}
+
+/* Coming Soon gradient overlay */
+.coming-soon-gradient {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(145, 29, 236, 0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(4, 180, 252, 0.08) 0%, transparent 50%);
+}
+
+.dark .coming-soon-gradient {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(145, 29, 236, 0.2) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(4, 180, 252, 0.12) 0%, transparent 50%);
+}

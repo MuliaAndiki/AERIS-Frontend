@@ -1,21 +1,38 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "AERIS - Environmental Insight",
+  "short_name": "AERIS",
+  "description": "A location-aware environmental insight application delivering real-time air quality, heat risk, flood potential, noise estimation, and green proximity intelligence.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0EA5A4",
+  "background_color": "#0F172A",
+  "categories": ["weather", "utilities", "environment"],
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/favicon/web-app-manifest-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     },
     {
-      "src": "/web-app-manifest-512x512.png",
+      "src": "/favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "shortcuts": [
+    {
+      "name": "Open Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your real-time environmental insights",
+      "url": "/?source=pwa-shortcut"
+    }
+  ]
 }

@@ -1,79 +1,111 @@
 import type { Metadata } from 'next';
 
 export const siteConfig = {
-  name: 'Next.js Shadcn Base',
-  description: 'Aplikasi berbasis Next.js dengan UI yang modern',
-  url: 'https://your-domain.com',
-  locale: 'id-ID',
-  keywords: ['next.js', 'react', 'aplikasi web', 'indonesia', 'modern ui', 'shadcn'],
+  name: 'AERIS',
+  shortName: 'AERIS',
+  description:
+    'A location-aware environmental insight application delivering real-time air quality, heat risk, flood potential, noise estimation, and green proximity intelligence.',
+  url: 'https://aeris-app.com',
+  locale: 'en_US',
+  themeColor: '#0EA5A4',
+  backgroundColor: '#0F172A',
+  keywords: [
+    'AERIS',
+    'environmental dashboard',
+    'air quality monitoring',
+    'heat risk analysis',
+    'urban climate intelligence',
+    'flood risk detection',
+    'green space proximity',
+    'location based environmental app',
+  ],
 };
-
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    default: 'AERIS - Environmental Intelligence Platform',
+    template: '%s | AERIS',
   },
+
   description: siteConfig.description,
   keywords: siteConfig.keywords,
-  icons: {
-    icon: [{ url: '/images/logo.png', type: 'image/png' }, { url: '/favicon/favicon.ico' }],
-    shortcut: '/images/logo.png',
-    apple: [
-      { url: '/images/logo.png', type: 'image/png' },
-      { url: '/images/logo.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      {
-        rel: 'mask-icon',
-        url: '/images/logo.png',
-        color: '#000000',
-      },
-    ],
-  },
-  manifest: '/favicon/site.webmanifest',
   metadataBase: new URL(siteConfig.url),
+
+  applicationName: 'AERIS',
+  authors: [{ name: 'AERIS Team' }],
+  creator: 'AERIS',
+  publisher: 'AERIS',
+
+  manifest: '/favicon/site.webmanifest',
+  themeColor: siteConfig.themeColor,
+
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+
+  icons: {
+    icon: [
+      { url: '/favicon/favicon.ico' },
+      { url: '/favicon/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+    ],
+    apple: [{ url: '/favicon/apple-touch-icon.png', sizes: '180x180' }],
+    shortcut: '/favicon/favicon.ico',
+  },
+
   openGraph: {
     type: 'website',
     locale: siteConfig.locale,
-    alternateLocale: 'en_US',
     url: siteConfig.url,
-    title: siteConfig.name,
+    title: 'AERIS - Environmental Intelligence Platform',
     description: siteConfig.description,
-    siteName: siteConfig.name,
+    siteName: 'AERIS',
     images: [
       {
-        url: '/images/logo.png',
+        url: '/images/og-image.png',
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: 'AERIS Environmental Dashboard',
       },
     ],
   },
+
   twitter: {
     card: 'summary_large_image',
-    title: siteConfig.name,
+    title: 'AERIS - Environmental Intelligence Platform',
     description: siteConfig.description,
-    images: ['/images/logo.png'],
+    creator: '@aerisapp',
+    images: ['/images/og-image.png'],
   },
-  other: {
-    'google-site-verification': 'your-verification-code',
-    'msvalidate.01': 'your-verification-code',
-    'msapplication-TileColor': '#000000',
-    'apple-mobile-web-app-capable': 'yes',
-    'apple-mobile-web-app-status-bar-style': 'black',
+
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'AERIS',
   },
+
+  formatDetection: {
+    telephone: false,
+  },
+
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
+      'max-video-preview': -1,
       'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
-  appleWebApp: {
-    title: siteConfig.name,
-    statusBarStyle: 'black',
-    capable: true,
+
+  other: {
+    'msapplication-TileColor': siteConfig.themeColor,
+    'msapplication-config': '/favicon/browserconfig.xml',
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
   },
 };
