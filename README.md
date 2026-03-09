@@ -113,6 +113,12 @@ System requirement diagrams are available in:
 
 ### 📈 Data Flow Diagram
 
+## Notion Link - All Documentasi
+
+- Project View: https://www.notion.so/Project-AERIS-Environmental-Insight-Application-Overview-36f507f991a948afb5ac3655e533def1?source=copy_link
+
+- Ganchart: https://www.notion.so/3171c6bbb420807e96f6f3f56a9d88a5?v=3171c6bbb420806d94c0000cd78dc57d&source=copy_link
+
 #### Level 0 — System Context
 
 Shows interaction between:
@@ -204,7 +210,7 @@ These services will be developed in a separate backend repository and integrated
 ### Setup
 
 ```bash
-git clone https://github.com/yourusername/AERIS-FE.git
+git clone https://github.com/MuliaAndiki/AERIS-Frontend.git
 cd AERIS-FE
 bun install
 ```
