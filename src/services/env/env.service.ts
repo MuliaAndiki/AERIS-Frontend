@@ -3,6 +3,8 @@ import {
   EnvironmentAirQualityResponse,
   EnvironmentDisasterRiskResponse,
   EnvironmentGreenSpaceResponse,
+  EnvironmentHeatRiskResponse,
+  EnvironmentNoiseResponse,
   EnvironmentProviderResponse,
   EnvironmentProviderStatusResponse,
   EnvironmentRawResponse,
@@ -16,6 +18,14 @@ class EnvironmentApi {
   }
   async Weather(): Promise<EnvironmentWeatherResponse> {
     const res = await AxiosClient.get('/api/environment/weather');
+    return res.data;
+  }
+  async HeatRisk(): Promise<EnvironmentHeatRiskResponse> {
+    const res = await AxiosClient.get('/api/environment/heat-risk');
+    return res.data;
+  }
+  async Noise(): Promise<EnvironmentNoiseResponse> {
+    const res = await AxiosClient.get('/api/environment/noise');
     return res.data;
   }
   async DisasterRisk(): Promise<EnvironmentDisasterRiskResponse> {

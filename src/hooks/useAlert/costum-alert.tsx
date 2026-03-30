@@ -1,12 +1,19 @@
 'use client';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 import { createContext, useContext, useState } from 'react';
 import { AlertContexType } from '@/types/ui';
 import { ModalProps } from '@/types/ui';
 import { ToastProps } from '@/types/ui';
 import { AlertModal } from '@/core/components/alert-modal';
-import { ToastEffect } from '@/core/components/alert-toast';
 const AlertContex = createContext<AlertContexType | undefined>(undefined);
+
+const iconMap: Record<string, string> = {
+  success: '✅',
+  error: '❌',
+  warning: '⚠️',
+  info: 'ℹ️',
+  question: '❓',
+};
 
 export const useAlert = (): AlertContexType => {
   const contex = useContext(AlertContex);
@@ -18,9 +25,17 @@ export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
   const [resolver, setResolver] = useState<(res: boolean) => void>();
 
   const toastAlert = ({ message, title, icon, onVoid }: ToastProps) => {
-    toast.custom((t) => (
-      <ToastEffect t={t} title={title} message={message} icon={icon} onVoid={onVoid} />
-    ));
+    toast(title, {
+      description: message,
+      icon: iconMap[icon || 'info'],
+      duration: 2000,
+    });
+
+    if (onVoid) {
+      window.setTimeout(() => {
+        onVoid();
+      }, 2000);
+    }
   };
 
   const showModal = (p: ModalProps) => {

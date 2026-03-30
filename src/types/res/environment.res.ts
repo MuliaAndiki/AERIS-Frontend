@@ -25,6 +25,27 @@ export interface EnvironmentDisasterRiskData {
   heatScore: number;
 }
 
+export interface EnvironmentHeatRiskData {
+  state: string;
+  city: string;
+  country: string;
+  feelsLike: number;
+  heatScore: number;
+  level: string;
+  snapshotId: string;
+}
+
+export interface EnvironmentNoiseData {
+  state: string;
+  city: string;
+  country: string;
+  roadDensityIndex: number;
+  estimatedNoiseLevel: number;
+  majorRoadCount: number;
+  noiseScore: number;
+  snapshotId: string;
+}
+
 export interface EnvironmentGreenPark {
   name: string;
   latitude: number;
@@ -45,6 +66,8 @@ export interface EnvironmentAirQualityData {
 export type EnvironmentAirQualityResponse = ApiResponse<EnvironmentAirQualityData>;
 export type EnvironmentWeatherResponse = ApiResponse<EnvironmentWeatherData>;
 export type EnvironmentDisasterRiskResponse = ApiResponse<EnvironmentDisasterRiskData>;
+export type EnvironmentHeatRiskResponse = ApiResponse<EnvironmentHeatRiskData>;
+export type EnvironmentNoiseResponse = ApiResponse<EnvironmentNoiseData>;
 export type EnvironmentGreenSpaceResponse = ApiResponse<EnvironmentGreenSpaceData>;
 export type EnvironmentRawResponse = ApiResponse<EnvironmentalSnapshot>;
 export type EnvironmentProviderResponse = ApiResponse<EnvironmentProvider[]>;
