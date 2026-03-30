@@ -1,6 +1,77 @@
 {
-    "welcome": "Welcome",
-    "language": "Language",
-    "change_language": "Change Language",
-    "select_language": "Select Language"
+  "welcome": "Welcome",
+  "language": "Language",
+  "change_language": "Change Language",
+  "select_language": "Select Language",
+  "alerts": {
+    "title": {
+      "success": "Success",
+      "failed": "Failed"
+    },
+    "auth": {
+      "login": {
+        "success": "Login successful",
+        "failed": "Login failed"
+      },
+      "register": {
+        "success": "Register successful",
+        "failed": "Register failed"
+      },
+      "logout": {
+        "failed": "Logout failed"
+      },
+      "forgot": {
+        "success": "OTP sent",
+        "failed": "Forgot password failed"
+      },
+      "verify": {
+        "success": "Verification successful",
+        "failed": "Verification failed"
+      },
+      "resend": {
+        "success": "OTP resent",
+        "failed": "Resend OTP failed"
+      },
+      "reset": {
+        "success": "Password updated",
+        "failed": "Reset password failed"
+      }
+    },
+    "location": {
+      "resolve": {
+        "rollback": "Location data restored"
+      }
+    },
+    "scoring": {
+      "preview": {
+        "rollback": "Score preview restored"
+      },
+      "refresh": {
+        "failed": "Score cache refresh failed"
+      }
+    },
+    "snapshot": {
+      "generate": {
+        "rollback": "Snapshot data restored"
+      },
+      "refresh": {
+        "failed": "Snapshot cache refresh failed"
+      }
+    },
+    "cache": {
+      "refresh": {
+        "failed": "Cache refresh failed"
+      }
+    },
+    "insight": {
+      "refresh": {
+        "failed": "Insight cache refresh failed"
+      }
+    },
+    "recommendation": {
+      "refresh": {
+        "failed": "Recommendation cache refresh failed"
+      }
+    }
+  }
 }
