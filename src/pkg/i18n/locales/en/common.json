@@ -72,6 +72,21 @@
       "refresh": {
         "failed": "Recommendation cache refresh failed"
       }
+    },
+    "environment": {
+      "greenSpace": {
+        "review": {
+          "create": {
+            "failed": "Failed to create review"
+          },
+          "update": {
+            "failed": "Failed to update review"
+          },
+          "delete": {
+            "failed": "Failed to delete review"
+          }
+        }
+      }
     }
   }
 }

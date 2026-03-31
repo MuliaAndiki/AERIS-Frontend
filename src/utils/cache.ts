@@ -13,6 +13,15 @@ export const cacheKey = {
     noise: () => ['environment', 'noise'] as const,
     disasterRisk: () => ['environment', 'disaster-risk'] as const,
     greenSpace: () => ['environment', 'green-space'] as const,
+    greenSpaceDetail: (greenAreaId: string) =>
+      ['environment', 'green-space', 'detail', greenAreaId] as const,
+    greenSpaceReviews: (
+      greenAreaId: string,
+      page = 1,
+      limit = 10,
+      sort = 'latest',
+      filter = 'visible'
+    ) => ['environment', 'green-space', 'reviews', greenAreaId, page, limit, sort, filter] as const,
     raw: () => ['environment', 'raw'] as const,
     providers: () => ['environment', 'providers'] as const,
     providerStatus: () => ['environment', 'providers', 'status'] as const,

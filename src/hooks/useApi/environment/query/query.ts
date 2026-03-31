@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
 import Api from '@/services/props.service';
+import {
+  EnvironmentGreenReviewFilter,
+  EnvironmentGreenReviewSort,
+} from '@/types/res/environment.res';
 import { cacheKey } from '@/utils/cache';
 
 export function useAirQuality() {
@@ -48,6 +52,30 @@ export function useGreenSpace() {
     queryKey: cacheKey.environment.greenSpace(),
     queryFn: () => Api.Environment.GreenSpace(),
     staleTime: 1000 * 60 * 5,
+  });
+}
+
+export function useGreenSpaceDetail(greenAreaId: string) {
+  return useQuery({
+    queryKey: cacheKey.environment.greenSpaceDetail(greenAreaId),
+    queryFn: () => Api.Environment.GreenSpaceDetail(greenAreaId),
+    staleTime: 1000 * 60 * 5,
+    enabled: Boolean(greenAreaId),
+  });
+}
+
+export function useGreenSpaceReviews(
+  greenAreaId: string,
+  page = 1,
+  limit = 10,
+  sort: EnvironmentGreenReviewSort = 'latest',
+  filter: EnvironmentGreenReviewFilter = 'visible'
+) {
+  return useQuery({
+    queryKey: cacheKey.environment.greenSpaceReviews(greenAreaId, page, limit, sort, filter),
+    queryFn: () => Api.Environment.GreenSpaceReviews(greenAreaId, page, limit, sort, filter),
+    staleTime: 1000 * 60 * 5,
+    enabled: Boolean(greenAreaId),
   });
 }
 

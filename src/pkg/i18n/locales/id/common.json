@@ -72,6 +72,21 @@
       "refresh": {
         "failed": "Refresh cache recommendation gagal"
       }
+    },
+    "environment": {
+      "greenSpace": {
+        "review": {
+          "create": {
+            "failed": "Gagal membuat review"
+          },
+          "update": {
+            "failed": "Gagal memperbarui review"
+          },
+          "delete": {
+            "failed": "Gagal menghapus review"
+          }
+        }
+      }
     }
   }
 }
