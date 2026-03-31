@@ -1,7 +1,14 @@
 import {
+  useCreateGreenSpaceReview,
+  useDeleteGreenSpaceReview,
+  useUpdateGreenSpaceReview,
+} from './mutate/mutation';
+import {
   useAirQuality,
   useDisasterRisk,
+  useGreenSpaceDetail,
   useGreenSpace,
+  useGreenSpaceReviews,
   useHeatRisk,
   useNoise,
   useProviders,
@@ -12,7 +19,11 @@ import {
 
 export function useEnvironmentApi() {
   return {
-    mutation: {},
+    mutation: {
+      createReview: useCreateGreenSpaceReview,
+      updateReview: useUpdateGreenSpaceReview,
+      deleteReview: useDeleteGreenSpaceReview,
+    },
     query: {
       airQuality: useAirQuality,
       weather: useWeather,
@@ -20,6 +31,8 @@ export function useEnvironmentApi() {
       noise: useNoise,
       disasterRisk: useDisasterRisk,
       greenSpace: useGreenSpace,
+      greenSpaceDetail: useGreenSpaceDetail,
+      greenSpaceReviews: useGreenSpaceReviews,
       rawEnvironment: useRawEnvironment,
       providers: useProviders,
       providersStatus: useProviderStatus,

@@ -47,16 +47,82 @@ export interface EnvironmentNoiseData {
 }
 
 export interface EnvironmentGreenPark {
+  id?: string;
   name: string;
   latitude: number;
   longitude: number;
   areaSize: number;
+  averageRating?: number;
+  totalReviews?: number;
 }
 
 export interface EnvironmentGreenSpaceData {
+  greenAreas?: EnvironmentGreenPark[];
   greenSpace: {
     parkData: EnvironmentGreenPark[];
   };
+}
+
+export interface EnvironmentGreenReviewUser {
+  id: string;
+  fullName: string;
+  avaUrl: string | null;
+}
+
+export interface EnvironmentGreenReview {
+  id: string;
+  rating: number;
+  greenAreaId: string;
+  userId: string;
+  comment: string;
+  isFlagged?: boolean;
+  isHidden?: boolean;
+  flagReason?: string | null;
+  createdAt: string;
+  updatedAt?: string;
+  user?: EnvironmentGreenReviewUser;
+}
+
+export type EnvironmentGreenReviewSort = 'latest' | 'top-rated';
+export type EnvironmentGreenReviewFilter = 'visible' | 'all' | 'flagged';
+
+export interface EnvironmentGreenReviewPagination {
+  items: EnvironmentGreenReview[];
+  page: number;
+  limit: number;
+  sort: EnvironmentGreenReviewSort;
+  filter: EnvironmentGreenReviewFilter;
+  totalData: number;
+  totalPages: number;
+}
+
+export interface EnvironmentGreenAreaDetail {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  areaSize: number;
+  averageRating: number;
+  totalReviews: number;
+}
+
+export interface EnvironmentCreateReviewPayload {
+  greenAreaId: string;
+  rating: number;
+  comment: string;
+}
+
+export interface EnvironmentUpdateReviewPayload {
+  rating?: number;
+  comment?: string;
+  isFlagged?: boolean;
+  flagReason?: string;
+}
+
+export interface EnvironmentModerateReviewPayload {
+  isHidden?: boolean;
+  isFlagged?: boolean;
+  flagReason?: string;
 }
 
 export interface EnvironmentAirQualityData {
@@ -69,6 +135,12 @@ export type EnvironmentDisasterRiskResponse = ApiResponse<EnvironmentDisasterRis
 export type EnvironmentHeatRiskResponse = ApiResponse<EnvironmentHeatRiskData>;
 export type EnvironmentNoiseResponse = ApiResponse<EnvironmentNoiseData>;
 export type EnvironmentGreenSpaceResponse = ApiResponse<EnvironmentGreenSpaceData>;
+export type EnvironmentGreenAreaDetailResponse = ApiResponse<EnvironmentGreenAreaDetail>;
+export type EnvironmentGreenReviewListResponse = ApiResponse<EnvironmentGreenReviewPagination>;
+export type EnvironmentGreenReviewCreateResponse = ApiResponse<EnvironmentGreenReview>;
+export type EnvironmentGreenReviewUpdateResponse = ApiResponse<EnvironmentGreenReview>;
+export type EnvironmentGreenReviewModerateResponse = ApiResponse<EnvironmentGreenReview>;
+export type EnvironmentGreenReviewDeleteResponse = ApiResponse<null>;
 export type EnvironmentRawResponse = ApiResponse<EnvironmentalSnapshot>;
 export type EnvironmentProviderResponse = ApiResponse<EnvironmentProvider[]>;
 export type EnvironmentProviderStatusResponse = ApiResponse<EnvironmentProviderStatus[]>;
