@@ -186,7 +186,7 @@ Detailed documentation and design notes are maintained in the project workspace.
 
 Notion Documentation:
 
-`<insert notion link here>`
+`<https://www.notion.so/3171c6bbb420807e96f6f3f56a9d88a5?v=3171c6bbb420806d94c0000cd78dc57d&source=copy_link>`
 
 ## 🔗 Future Integration
 
