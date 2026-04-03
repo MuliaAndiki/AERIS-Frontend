@@ -90,7 +90,16 @@ export function useRegister() {
       const previousSession = ns.queryClient.getQueryData(cacheKey.auth.session());
       return { previousSession };
     },
-    onSuccess: () => {
+    onSuccess: (res: any) => {
+      const { email, phone } = res.data;
+
+      if (email) {
+        ns.router.push(`/otp?identifier=${email}&target=/login`);
+        return;
+      } else if (phone) {
+        ns.router.push('/login');
+      }
+
       ns.alert.toast({
         title: ns.t('alerts.title.success'),
         message: ns.t('alerts.auth.register.success'),
@@ -157,7 +166,17 @@ export function useForgotPassword() {
       const previousSession = ns.queryClient.getQueryData(cacheKey.auth.session());
       return { previousSession };
     },
-    onSuccess: () => {
+    onSuccess: (res: any) => {
+      const { email, phone } = res.data;
+
+      if (email) {
+        ns.router.push(`/verify-otp?identifier=${email}&target=/reset-password`);
+        return;
+      }
+      if (phone) {
+        ns.router.push(`/reset-password?identifier=${phone}`);
+        return;
+      }
       ns.alert.toast({
         title: ns.t('alerts.title.success'),
         message: ns.t('alerts.auth.forgot.success'),
