@@ -24,7 +24,7 @@ interface LoginSectionProps {
 const LoginSection: React.FC<LoginSectionProps> = ({ state, service }) => {
   return (
     <section className="w-full h-screen flex justify-center items-center relative ">
-      <div className="absolute left-5 top-0 z-1 cursor-none border">
+      <div className="absolute left-5 top-0 z-1 ">
         <Image alt="helay" src={'/req/helay.png'} width={1050} height={1050} />
       </div>
       <div className="absolute left-40 bottom-[-40] translate-y-10 z-1 ">
