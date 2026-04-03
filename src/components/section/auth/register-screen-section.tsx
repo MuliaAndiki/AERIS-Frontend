@@ -49,7 +49,7 @@ const RegisterSection: React.FC<RegisterSectionProps> = ({ state, service }) => 
             <Image alt="icon" src={'/images/logo.png'} width={40} height={40} />
           </div>
           <form
-            className="w-full flex justify-center flex-col  space-y-3"
+            className="w-full flex justify-center flex-col  space-y-3 z-2"
             onSubmit={service.mutate.onRegister}
           >
             <label htmlFor="fullname" className="text-lg text-primary font-light">

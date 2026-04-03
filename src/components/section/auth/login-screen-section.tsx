@@ -24,10 +24,10 @@ interface LoginSectionProps {
 const LoginSection: React.FC<LoginSectionProps> = ({ state, service }) => {
   return (
     <section className="w-full h-screen flex justify-center items-center relative ">
-      <div className="absolute left-5 top-0 z-1">
+      <div className="absolute left-5 top-0 z-1 cursor-none border">
         <Image alt="helay" src={'/req/helay.png'} width={1050} height={1050} />
       </div>
-      <div className="absolute left-40 bottom-[-40] translate-y-10 z-1">
+      <div className="absolute left-40 bottom-[-40] translate-y-10 z-1 ">
         <Image alt="helay" src={'/req/helay1.png'} width={850} height={850} />
       </div>
       <div className="w-full h-full grid lg:grid-cols-[1fr_2fr]">
@@ -49,7 +49,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ state, service }) => {
             <Image alt="icon" src={'/images/logo.png'} width={40} height={40} />
           </div>
           <form
-            className="w-full flex justify-center flex-col  space-y-3"
+            className="w-full flex justify-center flex-col  space-y-3 z-2 "
             onSubmit={service.mutate.onLogin}
           >
             <label htmlFor="email" className="text-lg text-primary font-light">
