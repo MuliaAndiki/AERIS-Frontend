@@ -1,5 +1,6 @@
 'use client';
 import ComingSoon from '@/components/coming-soon/commingSoon';
+import ThemeToggle from '@/core/components/theme-toggle';
 
 export default function ContainerHome() {
   return (
