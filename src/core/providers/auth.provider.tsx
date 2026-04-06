@@ -28,7 +28,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const isAuthPage =
       pathname?.startsWith('/login') ||
       pathname?.startsWith('/register') ||
-      pathname?.startsWith('/home');
+      pathname?.startsWith('/home') ||
+      pathname?.startsWith('/forgotPassword') ||
+      pathname?.startsWith('/reset') || pathname?.startsWith('/otp');
+
 
     const isAuthenticated = Boolean(currentUser?.user?.token);
 
