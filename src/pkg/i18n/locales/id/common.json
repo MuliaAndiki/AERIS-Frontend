@@ -1,6 +1,92 @@
 {
-    "welcome": "Selamat Datang",
-    "language": "Bahasa",
-    "change_language": "Ganti Bahasa",
-    "select_language": "Pilih Bahasa"
+  "welcome": "Selamat Datang",
+  "language": "Bahasa",
+  "change_language": "Ganti Bahasa",
+  "select_language": "Pilih Bahasa",
+  "alerts": {
+    "title": {
+      "success": "Berhasil",
+      "failed": "Gagal"
+    },
+    "auth": {
+      "login": {
+        "success": "Login berhasil",
+        "failed": "Login gagal"
+      },
+      "register": {
+        "success": "Registrasi berhasil",
+        "failed": "Registrasi gagal"
+      },
+      "logout": {
+        "failed": "Logout gagal"
+      },
+      "forgot": {
+        "success": "OTP berhasil dikirim",
+        "failed": "Lupa kata sandi gagal"
+      },
+      "verify": {
+        "success": "Verifikasi berhasil",
+        "failed": "Verifikasi gagal"
+      },
+      "resend": {
+        "success": "OTP berhasil dikirim ulang",
+        "failed": "Kirim ulang OTP gagal"
+      },
+      "reset": {
+        "success": "Kata sandi berhasil diperbarui",
+        "failed": "Reset kata sandi gagal"
+      }
+    },
+    "location": {
+      "resolve": {
+        "rollback": "Data lokasi dikembalikan"
+      }
+    },
+    "scoring": {
+      "preview": {
+        "rollback": "Preview skor dikembalikan"
+      },
+      "refresh": {
+        "failed": "Refresh cache skor gagal"
+      }
+    },
+    "snapshot": {
+      "generate": {
+        "rollback": "Data snapshot dikembalikan"
+      },
+      "refresh": {
+        "failed": "Refresh cache snapshot gagal"
+      }
+    },
+    "cache": {
+      "refresh": {
+        "failed": "Refresh cache gagal"
+      }
+    },
+    "insight": {
+      "refresh": {
+        "failed": "Refresh cache insight gagal"
+      }
+    },
+    "recommendation": {
+      "refresh": {
+        "failed": "Refresh cache recommendation gagal"
+      }
+    },
+    "environment": {
+      "greenSpace": {
+        "review": {
+          "create": {
+            "failed": "Gagal membuat review"
+          },
+          "update": {
+            "failed": "Gagal memperbarui review"
+          },
+          "delete": {
+            "failed": "Gagal menghapus review"
+          }
+        }
+      }
+    }
+  }
 }

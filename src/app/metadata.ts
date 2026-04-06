@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const siteConfig = {
   name: 'AERIS',
@@ -36,13 +36,6 @@ export const metadata: Metadata = {
   publisher: 'AERIS',
 
   manifest: '/favicon/site.webmanifest',
-  themeColor: siteConfig.themeColor,
-
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
 
   icons: {
     icon: [
@@ -108,4 +101,11 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: siteConfig.themeColor,
 };
