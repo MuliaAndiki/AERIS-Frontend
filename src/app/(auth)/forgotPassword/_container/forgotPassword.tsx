@@ -16,9 +16,16 @@ const ForgotPasswordContainer = () => {
   const handleForgot = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    forgotMutate.mutate({
-      identifikasi: formForgot.idenfier,
-    } as any);
+    const payload: any = {};
+
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formForgot.idenfier);
+    if (isEmail) {
+      payload.email = formForgot.idenfier;
+    } else {
+      payload.phone = formForgot.idenfier;
+    }
+
+    forgotMutate.mutate(payload);
   };
 
   return (
