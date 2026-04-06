@@ -43,7 +43,7 @@ const LoginSection: React.FC<LoginSectionProps> = ({ state, service }) => {
           />
         </div>
 
-        <div className="w-full flex justify-center items-center flex-col p-10  lg:p-30 space-y-5">
+        <div className="w-full flex justify-center items-center flex-col p-10 z-1  lg:p-30 space-y-5">
           <div className="w-full flex items-center  justify-between">
             <h1 className="text-5xl font-extrabold text-primary">LOGIN</h1>
             <Image alt="icon" src={'/images/logo.png'} width={40} height={40} />
@@ -113,6 +113,9 @@ const LoginSection: React.FC<LoginSectionProps> = ({ state, service }) => {
                   Sign up
                 </Link>
               </FieldDescription>
+              <Link href="/forgotPassword" className="text-sm underline underline-offset-4">
+                Forgot Password?
+              </Link>
             </Field>
           </div>
         </div>

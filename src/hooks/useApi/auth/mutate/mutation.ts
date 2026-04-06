@@ -170,11 +170,11 @@ export function useForgotPassword() {
       const { email, phone } = res.data;
 
       if (email) {
-        ns.router.push(`/verify-otp?identifier=${email}&target=/reset-password`);
+        ns.router.push(`/otp?identifier=${email}&target=/reset`);
         return;
       }
       if (phone) {
-        ns.router.push(`/reset-password?identifier=${phone}`);
+        ns.router.push(`/reset?identifier=${phone}`);
         return;
       }
       ns.alert.toast({
