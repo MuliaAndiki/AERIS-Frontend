@@ -33,7 +33,9 @@ const RegisterContainer = () => {
     <main className="w-full min-h-screen overflow-y-hidden">
       <RegisterSection
         service={{
+
           mutate: {
+            
             isPending: registerMutate.isPending,
             onRegister: handleRegister,
           },
