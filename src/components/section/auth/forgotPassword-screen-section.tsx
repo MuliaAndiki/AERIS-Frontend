@@ -149,7 +149,11 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
 
         {/* Back button */}
         <div className="absolute top-6 left-8 z-10">
-          <Link href="/login" className="flex items-center gap-2 transition-colors duration-200" style={{ color: theme.primary.background }}>
+          <Link
+            href="/login"
+            className="flex items-center gap-2 transition-colors duration-200"
+            style={{ color: theme.primary.background }}
+          >
             <ArrowLeft size={16} />
             <span className="text-[12px] font-medium tracking-[0.05em]">Back</span>
           </Link>
@@ -157,7 +161,6 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
 
         {/* ── Form container ── */}
         <div className="relative w-full max-w-[400px] pt-14 lg:pt-0">
-
           {/* Heading */}
           <h1
             className="
@@ -212,7 +215,8 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
               <div
                 className="flex items-center gap-[11px] border-b-[1.5px] pb-[9px] transition-colors duration-200"
                 style={{
-                  borderBottomColor: focusedField === 'identifier' ? theme.primary.background : theme.border
+                  borderBottomColor:
+                    focusedField === 'identifier' ? theme.primary.background : theme.border,
                 }}
               >
                 {forgotMethod === 'email' ? (
@@ -220,7 +224,10 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
                     size={15}
                     className="shrink-0 transition-colors duration-200"
                     style={{
-                      color: focusedField === 'identifier' ? theme.primary.background : theme.muted.foreground
+                      color:
+                        focusedField === 'identifier'
+                          ? theme.primary.background
+                          : theme.muted.foreground,
                     }}
                   />
                 ) : (
@@ -228,7 +235,10 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
                     size={15}
                     className="shrink-0 transition-colors duration-200"
                     style={{
-                      color: focusedField === 'identifier' ? theme.primary.background : theme.muted.foreground
+                      color:
+                        focusedField === 'identifier'
+                          ? theme.primary.background
+                          : theme.muted.foreground,
                     }}
                   />
                 )}
@@ -255,7 +265,7 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
               style={{
                 backgroundColor: theme.primary.background,
                 color: theme.primary.foreground,
-                boxShadow: `0_10px_28px_${theme.primary.background}48`
+                boxShadow: `0_10px_28px_${theme.primary.background}48`,
               }}
             >
               {service.mutate.isPending ? (
@@ -274,10 +284,7 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
             className="mt-[22px] pt-5 border-t flex items-center justify-between"
             style={{ borderTopColor: `${theme.primary.background}1a` }}
           >
-            <span
-              className="text-[13px]"
-              style={{ color: theme.muted.foreground }}
-            >
+            <span className="text-[13px]" style={{ color: theme.muted.foreground }}>
               Remember your password?
             </span>
             <Link
@@ -291,10 +298,7 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
 
           {/* Footer mark */}
           <div className="absolute bottom-5 left-0 flex items-center gap-[7px] opacity-20">
-            <div
-              className="w-[22px] h-px"
-              style={{ backgroundColor: theme.primary.background }}
-            />
+            <div className="w-[22px] h-px" style={{ backgroundColor: theme.primary.background }} />
             <span
               className="text-[9px] tracking-[0.2em] uppercase"
               style={{ color: theme.primary.background }}
@@ -302,7 +306,6 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
               AERIS &copy; 2025
             </span>
           </div>
-
         </div>
       </div>
     </section>
