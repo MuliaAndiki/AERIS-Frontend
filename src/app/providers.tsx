@@ -3,7 +3,7 @@
 import { store, persistor } from '@/stores/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from '@/components/ui/sonner';
 import { AlertProvinder } from '@/hooks/useAlert/costum-alert';
 import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -29,12 +29,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       {children}
       <PWAUpdatePrompt />
       <ReactQueryDevtools initialIsOpen={false} />
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 900,
-        }}
-      />
+      <Toaster position="top-center" richColors duration={900} />
     </Providers>
   );
 }

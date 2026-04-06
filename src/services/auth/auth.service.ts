@@ -35,7 +35,7 @@ class AuthApi {
     return res.data;
   }
   async Verify(payload: PickVerify): Promise<VerifyOtpResponse> {
-    const res = await AxiosClient.post('/api/auth/verifyOtp', payload);
+    const res = await AxiosClient.post('/api/auth/verify-otp', payload);
     return res.data;
   }
   async Resend(payload: PickSendOtp): Promise<ResendOtpResponse> {
