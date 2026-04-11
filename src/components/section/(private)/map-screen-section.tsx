@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import {
   MapPin,
   Wind,
@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { themeConfig } from '@/configs/theme.config';
+import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls, type MapRef } from '@/components/ui/map';
 
 // ══ TYPES ══
 interface EnvironmentalMetric {
@@ -47,6 +48,8 @@ interface GreenSpace {
   distance: number;
   status: string;
   tags: string[];
+  latitude?: number;
+  longitude?: number;
 }
 
 interface ScoreHistory {
@@ -229,106 +232,129 @@ const EnvironmentalSummaryPanel: React.FC<{
   </div>
 );
 
-// Map Container
+// Map Container - Using MapLibre GL
 const MapContainer: React.FC<{
   theme: typeof themeConfig.light;
-  onZoomIn: () => void;
-  onZoomOut: () => void;
-}> = ({ theme, onZoomIn, onZoomOut }) => (
-  <div className="flex-1 relative flex flex-col">
-    <div
-      className="flex-1 relative"
-      style={{
-        background: `linear-gradient(135deg, ${theme.primary.background}15 0%, ${theme.secondary.background}08 100%)`,
-      }}
-    >
-      <div className="w-full h-full relative flex items-center justify-center">
-        <div
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `linear-gradient(0deg, ${theme.border} 1px, transparent 1px), linear-gradient(90deg, ${theme.border} 1px, transparent 1px)`,
-            backgroundSize: '50px 50px',
-          }}
-        />
+  greenSpaces: GreenSpace[];
+  environmentalScore?: number;
+  location?: string;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+}> = ({ theme, greenSpaces, environmentalScore = 72, location = 'Banda Aceh' }) => {
+  const mapRef = useRef<MapRef>(null);
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
 
-        {/* Markers */}
-        <div className="relative w-full h-full">
-          {/* Current Location */}
-          <div className="absolute top-1/4 left-1/3 transform -translate-x-1/2 -translate-y-1/2">
+  // Default location coordinates (Banda Aceh)
+  const defaultLng = 95.3167;
+  const defaultLat = 5.5577;
+
+  return (
+    <div className="flex-1 relative flex flex-col">
+      <Map
+        ref={mapRef}
+        center={[defaultLng, defaultLat]}
+        zoom={13}
+        bearing={0}
+        pitch={0}
+        className="w-full h-full"
+      >
+        {/* Current user location marker */}
+        <MapMarker longitude={defaultLng} latitude={defaultLat}>
+          <MarkerContent>
             <div className="relative">
               <div
                 className="absolute inset-0 rounded-full animate-pulse"
                 style={{
-                  width: 60,
-                  height: 60,
-                  backgroundColor: `${theme.primary.background}20`,
+                  width: 40,
+                  height: 40,
+                  backgroundColor: `${theme.primary.background}30`,
+                  left: '-20px',
+                  top: '-20px',
                 }}
               />
               <div
-                className="absolute w-4 h-4 rounded-full flex items-center justify-center text-white text-xs"
+                className="w-4 h-4 rounded-full flex items-center justify-center text-white text-xs"
                 style={{
                   backgroundColor: theme.primary.background,
-                  left: 'calc(50% - 8px)',
-                  top: 'calc(50% - 8px)',
-                  boxShadow: `0 2px 8px ${theme.primary.background}40`,
+                  boxShadow: `0 2px 8px ${theme.primary.background}60`,
                 }}
               >
                 •
               </div>
             </div>
-          </div>
-
-          {/* Green Space POI */}
-          <div className="absolute top-1/3 right-1/4 transform -translate-x-1/2 -translate-y-1/2">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white"
-              style={{
-                backgroundColor: theme.success.background,
-                boxShadow: `0 2px 8px ${theme.success.background}40`,
-              }}
-            >
-              <TreePine size={14} />
+          </MarkerContent>
+          <MarkerPopup closeButton>
+            <div className="text-sm">
+              <p className="font-bold">{location}</p>
+              <p className="text-xs text-muted-foreground">Score: {environmentalScore}/100</p>
             </div>
-          </div>
+          </MarkerPopup>
+        </MapMarker>
 
-          {/* Heat Risk POI */}
-          <div className="absolute top-2/3 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white"
-              style={{
-                backgroundColor: theme.warning.background,
-                boxShadow: `0 2px 8px ${theme.warning.background}40`,
-              }}
+        {/* Green space markers */}
+        {greenSpaces.map((space) => {
+          // Use coordinates if available, otherwise generate approximate ones based on distance
+          const lng = space.longitude || defaultLng + (Math.random() - 0.5) * 0.1;
+          const lat = space.latitude || defaultLat + (Math.random() - 0.5) * 0.1;
+
+          return (
+            <MapMarker
+              key={space.id}
+              longitude={lng}
+              latitude={lat}
+              onClick={() => setSelectedMarker(space.id)}
             >
-              <Flame size={14} />
-            </div>
-          </div>
+              <MarkerContent
+                className={`transition-transform ${
+                  selectedMarker === space.id ? 'scale-110' : 'scale-100'
+                }`}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-white cursor-pointer"
+                  style={{
+                    backgroundColor: theme.success.background,
+                    boxShadow: `0 2px 8px ${theme.success.background}60`,
+                  }}
+                >
+                  <TreePine size={14} />
+                </div>
+              </MarkerContent>
+              <MarkerPopup closeButton>
+                <div className="text-sm">
+                  <p className="font-bold">{space.name}</p>
+                  <p className="text-xs text-muted-foreground">{space.distance} km away</p>
+                  <p className="text-xs font-medium mt-1">{space.status}</p>
+                  {space.tags.length > 0 && (
+                    <div className="flex gap-1 mt-2 flex-wrap">
+                      {space.tags.map((tag, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </MarkerPopup>
+            </MapMarker>
+          );
+        })}
 
-          {/* Tooltip */}
-          <div
-            className="absolute top-1/4 left-1/3 transform translate-x-8 -translate-y-16 bg-white rounded-lg p-3 shadow-lg z-20"
-            style={{ border: `1px solid ${theme.border}` }}
-          >
-            <p className="text-[11px] font-bold" style={{ color: theme.primary.background }}>
-              Current Location
-            </p>
-            <p className="text-[10px] mt-1" style={{ color: theme.muted.foreground }}>
-              Score 72 • Good
-            </p>
-          </div>
-        </div>
-
-        {/* Center Crosshair */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-          <div
-            className="w-6 h-6 border-2 rounded-full"
-            style={{ borderColor: `${theme.primary.background}40` }}
-          />
-        </div>
-      </div>
+        {/* Map Controls */}
+        <MapControls
+          position="bottom-right"
+          showZoom={true}
+          showCompass={true}
+          showLocate={true}
+          showFullscreen={false}
+          onLocate={(coords) => {
+            console.log('User location:', coords);
+            // Could dispatch action to update user location in Redux if needed
+          }}
+        />
+      </Map>
 
       {/* Layer Legend */}
-      <div className="absolute bottom-6 left-6 z-10">
+      <div className="absolute bottom-6 left-6 z-10 pointer-events-auto">
         <div
           className="bg-white rounded-lg p-4 shadow-lg space-y-2"
           style={{ border: `1px solid ${theme.border}` }}
@@ -338,10 +364,10 @@ const MapContainer: React.FC<{
           </p>
           <div className="space-y-2">
             {[
-              { color: theme.primary.background, label: 'Good air quality' },
-              { color: theme.warning.background, label: 'Heat risk zone' },
+              { color: theme.primary.background, label: 'Your location' },
               { color: theme.success.background, label: 'Green space' },
-              { color: theme.accent.background, label: 'Location' },
+              { color: theme.warning.background, label: 'Heat risk zone' },
+              { color: theme.accent.background, label: 'Info point' },
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
@@ -353,44 +379,9 @@ const MapContainer: React.FC<{
           </div>
         </div>
       </div>
-
-      {/* Map Controls */}
-      <div className="absolute bottom-6 right-6 flex flex-col gap-2 z-10">
-        <Button
-          onClick={onZoomIn}
-          className="w-10 h-10 p-0 rounded-lg"
-          style={{
-            backgroundColor: 'white',
-            color: theme.primary.background,
-            border: `1px solid ${theme.border}`,
-          }}
-        >
-          <ZoomIn size={18} />
-        </Button>
-        <Button
-          onClick={onZoomOut}
-          className="w-10 h-10 p-0 rounded-lg"
-          style={{
-            backgroundColor: 'white',
-            color: theme.primary.background,
-            border: `1px solid ${theme.border}`,
-          }}
-        >
-          <ZoomOut size={18} />
-        </Button>
-        <Button
-          className="w-10 h-10 p-0 rounded-lg"
-          style={{
-            backgroundColor: theme.primary.background,
-            color: theme.primary.foreground,
-          }}
-        >
-          <Crosshair size={18} />
-        </Button>
-      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Right Panel: Insights & Alerts
 const InsightsPanel: React.FC<{
@@ -542,12 +533,8 @@ const InsightsPanel: React.FC<{
 );
 
 // ══ MAIN COMPONENT ══
-const MapScreenSection: React.FC<MapScreenSectionProps> = ({
-  state = {},
-  service = {},
-}) => {
+const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service = {} }) => {
   const theme = themeConfig.light;
-  const [mapZoom, setMapZoom] = useState(14);
 
   // Destructure state with defaults
   const {
@@ -682,8 +669,9 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({
         {/* Map Container */}
         <MapContainer
           theme={theme}
-          onZoomIn={() => setMapZoom(Math.min(mapZoom + 1, 20))}
-          onZoomOut={() => setMapZoom(Math.max(mapZoom - 1, 5))}
+          greenSpaces={greenSpaces}
+          environmentalScore={environmentalScore}
+          location={location}
         />
 
         {/* Right Panel */}

@@ -3,9 +3,11 @@ import { combineReducers } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import authReducer from '../authSlice/authSlice';
+import mapReducer from '../mapSlice/mapSlice';
 
 const rootReduser = combineReducers({
   auth: authReducer,
+  map: mapReducer,
 });
 
 const persistConfig = {
