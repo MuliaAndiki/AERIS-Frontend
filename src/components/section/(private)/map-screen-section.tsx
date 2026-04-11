@@ -59,7 +59,13 @@ interface MapScreenSectionProps {
   state?: {
     location?: string;
     environmentalScore?: number;
-    metrics?: Record<string, EnvironmentalMetric>;
+    metrics?: EnvironmentalMetric[];
+    alerts?: Alert[];
+    greenSpaces?: GreenSpace[];
+    scoreHistory?: ScoreHistory[];
+    searchQuery?: string;
+    loading?: boolean;
+    error?: string | null;
   };
   service?: {
     onLocationSearch?: (query: string) => void;
@@ -140,10 +146,7 @@ const EnvironmentalSummaryPanel: React.FC<{
         </div>
       </div>
       <div className="text-center">
-        <p
-          className="text-[12px] font-semibold mb-1"
-          style={{ color: theme.success.background }}
-        >
+        <p className="text-[12px] font-semibold mb-1" style={{ color: theme.success.background }}>
           ✓ Good
         </p>
         <p className="text-[11px]" style={{ color: theme.muted.foreground }}>
@@ -164,19 +167,14 @@ const EnvironmentalSummaryPanel: React.FC<{
         {metrics.map((metric, idx) => (
           <div key={idx}>
             <div className="flex items-center gap-2 mb-2">
-              <div style={{ color: getMetricColor(metric.level, theme) }}>
-                {metric.icon}
-              </div>
+              <div style={{ color: getMetricColor(metric.level, theme) }}>{metric.icon}</div>
               <div>
                 <p className="text-[11px]" style={{ color: theme.muted.foreground }}>
                   {metric.label}
                 </p>
                 <p className="text-[13px] font-bold" style={{ color: theme.foreground }}>
                   {metric.value}
-                  <span
-                    className="text-[10px] ml-1"
-                    style={{ color: theme.muted.foreground }}
-                  >
+                  <span className="text-[10px] ml-1" style={{ color: theme.muted.foreground }}>
                     {metric.unit}
                   </span>
                 </p>
@@ -346,10 +344,7 @@ const MapContainer: React.FC<{
               { color: theme.accent.background, label: 'Location' },
             ].map((item, idx) => (
               <div key={idx} className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                 <p className="text-[10px]" style={{ color: theme.foreground }}>
                   {item.label}
                 </p>
@@ -403,7 +398,9 @@ const InsightsPanel: React.FC<{
   alerts: Alert[];
   greenSpaces: GreenSpace[];
   scoreHistory: ScoreHistory[];
-}> = ({ theme, alerts, greenSpaces, scoreHistory }) => (
+  onAlertClick?: (alertId: string) => void;
+  onGreenSpaceClick?: (spaceId: string) => void;
+}> = ({ theme, alerts, greenSpaces, scoreHistory, onAlertClick, onGreenSpaceClick }) => (
   <div
     className="hidden lg:flex flex-col w-80 p-6 overflow-y-auto border-l gap-6"
     style={{ backgroundColor: 'white', borderLeftColor: theme.border }}
@@ -420,6 +417,7 @@ const InsightsPanel: React.FC<{
         {alerts.map((alert) => (
           <div
             key={alert.id}
+            onClick={() => onAlertClick?.(alert.id)}
             className="p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md"
             style={{
               borderColor:
@@ -467,6 +465,7 @@ const InsightsPanel: React.FC<{
         {greenSpaces.map((space) => (
           <div
             key={space.id}
+            onClick={() => onGreenSpaceClick?.(space.id)}
             className="p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md"
             style={{ borderColor: theme.border, backgroundColor: theme.background }}
           >
@@ -544,95 +543,60 @@ const InsightsPanel: React.FC<{
 
 // ══ MAIN COMPONENT ══
 const MapScreenSection: React.FC<MapScreenSectionProps> = ({
-  state = {
-    location: 'Banda Aceh, Aceh',
-    environmentalScore: 72,
-  },
+  state = {},
   service = {},
 }) => {
   const theme = themeConfig.light;
-  const [searchQuery, setSearchQuery] = useState('');
   const [mapZoom, setMapZoom] = useState(14);
 
-  // Default metrics data
-  const defaultMetrics: EnvironmentalMetric[] = [
-    {
-      label: 'Air Quality',
-      value: 58,
-      unit: 'AQI',
-      level: 'moderate',
-      icon: <Wind size={20} />,
-    },
-    {
-      label: 'Heat Risk',
-      value: 34,
-      unit: '°C',
-      level: 'poor',
-      icon: <Flame size={20} />,
-    },
-    {
-      label: 'Flood Risk',
-      value: 12,
-      unit: '%',
-      level: 'good',
-      icon: <Droplets size={20} />,
-    },
-    {
-      label: 'Noise',
-      value: 62,
-      unit: 'dB',
-      level: 'moderate',
-      icon: <Volume2 size={20} />,
-    },
-  ];
+  // Destructure state with defaults
+  const {
+    location = 'Banda Aceh, Aceh',
+    environmentalScore = 72,
+    metrics = [],
+    alerts = [],
+    greenSpaces = [],
+    scoreHistory = [],
+    searchQuery = '',
+    loading = false,
+    error = null,
+  } = state;
 
-  const alerts: Alert[] = [
-    {
-      id: '1',
-      type: 'warning',
-      title: 'High Heat Index',
-      description: 'Heat index expected until 5 PM. Feels like 38°C.',
-      icon: <AlertCircle size={20} />,
-    },
-    {
-      id: '2',
-      type: 'info',
-      title: 'Air Quality Improved',
-      description: 'Air quality improved by 12% compared to yesterday.',
-      icon: <TrendingUp size={20} />,
-    },
-  ];
+  // Destructure service handlers
+  const {
+    onLocationSearch = () => {},
+    onAlertClick = () => {},
+    onGreenSpaceClick = () => {},
+  } = service;
 
-  const greenSpaces: GreenSpace[] = [
-    {
-      id: '1',
-      name: 'Taman Sari Park',
-      distance: 0.8,
-      status: 'Open now',
-      tags: ['Low noise'],
-    },
-    {
-      id: '2',
-      name: 'Blang Padang Field',
-      distance: 1.4,
-      status: 'Open now',
-      tags: ['Good air'],
-    },
-    {
-      id: '3',
-      name: 'Ulee Lheue Beach',
-      distance: 3.2,
-      status: 'Open',
-      tags: ['Breezy'],
-    },
-  ];
+  // Show loading state
+  if (loading) {
+    return (
+      <section
+        className="w-full h-screen flex items-center justify-center"
+        style={{ backgroundColor: theme.background }}
+      >
+        <div className="text-center">
+          <div
+            className="w-12 h-12 rounded-full border-4 border-opacity-30 border-t-opacity-100 animate-spin mx-auto mb-4"
+            style={{
+              borderColor: `${theme.primary.background}30`,
+              borderTopColor: theme.primary.background,
+            }}
+          />
+          <p style={{ color: theme.muted.foreground }}>Loading map data...</p>
+        </div>
+      </section>
+    );
+  }
 
-  const scoreHistory: ScoreHistory[] = [
-    { date: 'Today, 10:00 AM', score: 72, change: 5 },
-    { date: 'Yesterday', score: 67, change: -10 },
-    { date: '2 days ago', score: 67, change: -3 },
-    { date: '3 days ago', score: 70, change: 8 },
-  ];
+  // Handle search query locally
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
+
+  const handleSearch = (query: string) => {
+    setLocalSearchQuery(query);
+    onLocationSearch?.(query);
+  };
 
   return (
     <section
@@ -669,8 +633,8 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({
           <input
             type="text"
             placeholder="Search location..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localSearchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
             className="flex-1 bg-transparent outline-none text-[13px]"
             style={{ color: theme.foreground }}
           />
@@ -683,10 +647,12 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({
             style={{ backgroundColor: theme.background }}
           >
             <Bell size={18} style={{ color: theme.primary.background }} />
-            <span
-              className="absolute top-1 right-1 w-2 h-2 rounded-full"
-              style={{ backgroundColor: theme.destructive.background }}
-            />
+            {alerts.length > 0 && (
+              <span
+                className="absolute top-1 right-1 w-2 h-2 rounded-full"
+                style={{ backgroundColor: theme.destructive.background }}
+              />
+            )}
           </button>
           <button
             className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
@@ -708,9 +674,9 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({
         {/* Left Panel */}
         <EnvironmentalSummaryPanel
           theme={theme}
-          location={state.location}
-          score={state.environmentalScore}
-          metrics={defaultMetrics}
+          location={location}
+          score={environmentalScore}
+          metrics={metrics}
         />
 
         {/* Map Container */}
@@ -726,6 +692,8 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({
           alerts={alerts}
           greenSpaces={greenSpaces}
           scoreHistory={scoreHistory}
+          onAlertClick={onAlertClick}
+          onGreenSpaceClick={onGreenSpaceClick}
         />
 
         {/* Mobile FAB */}
