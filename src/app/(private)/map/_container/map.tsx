@@ -27,8 +27,19 @@ export default function MapContainer() {
   // ══ REDUX STATE ══
   const dispatch = useDispatch<AppDispatch>();
   const mapState = useSelector((state: RootState) => state.map);
-  const { location, environmentalScore, metrics, alerts, greenSpaces, scoreHistory, loading, error } = mapState;
-  
+  const {
+    location,
+    latitude,
+    longitude,
+    environmentalScore,
+    metrics,
+    alerts,
+    greenSpaces,
+    scoreHistory,
+    loading,
+    error,
+  } = mapState;
+
   // ══ LOCAL STATE ══
   const [searchQuery, setSearchQuery] = useState('');
   const [detectingLocation, setDetectingLocation] = useState(false);
@@ -48,7 +59,7 @@ export default function MapContainer() {
       try {
         setDetectingLocation(true);
         const response = await LocationApi.Detect();
-        
+
         if (response.data?.city && response.data?.country) {
           const locationString = `${response.data.city}, ${response.data.country}`;
           dispatch(
@@ -319,6 +330,8 @@ export default function MapContainer() {
     <MapScreenSection
       state={{
         location,
+        latitude,
+        longitude,
         environmentalScore,
         metrics: transformedMetrics,
         alerts: transformedAlerts,

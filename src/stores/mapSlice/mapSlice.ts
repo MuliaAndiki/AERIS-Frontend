@@ -66,7 +66,17 @@ const mapSlice = createSlice({
   reducers: {
     // Set all map data
     setMapData(state, action: PayloadAction<Omit<MapState, 'loading' | 'error' | 'lastUpdated'>>) {
-      const { location, latitude, longitude, environmentalScore, metrics, alerts, greenSpaces, scoreHistory, searchQuery } = action.payload;
+      const {
+        location,
+        latitude,
+        longitude,
+        environmentalScore,
+        metrics,
+        alerts,
+        greenSpaces,
+        scoreHistory,
+        searchQuery,
+      } = action.payload;
       state.location = location;
       state.latitude = latitude;
       state.longitude = longitude;
@@ -86,13 +96,8 @@ const mapSlice = createSlice({
     },
 
     // Update single metric
-    updateMetric(
-      state,
-      action: PayloadAction<{ label: string; value: number; level: string }>
-    ) {
-      const metricIndex = state.metrics.findIndex(
-        (m) => m.label === action.payload.label
-      );
+    updateMetric(state, action: PayloadAction<{ label: string; value: number; level: string }>) {
+      const metricIndex = state.metrics.findIndex((m) => m.label === action.payload.label);
       if (metricIndex !== -1) {
         state.metrics[metricIndex].value = action.payload.value;
         state.metrics[metricIndex].level = action.payload.level as any;

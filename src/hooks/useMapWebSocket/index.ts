@@ -12,7 +12,7 @@ interface WebSocketMessage {
 /**
  * Hook for real-time environmental score updates
  * Currently uses polling as fallback. Can be upgraded to actual WebSocket when backend supports it.
- * 
+ *
  * Usage:
  * ```tsx
  * useMapWebSocket({

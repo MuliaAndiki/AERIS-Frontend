@@ -1,4 +1,4 @@
-import React, { useState,useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   MapPin,
   Wind,
@@ -23,7 +23,14 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { themeConfig } from '@/configs/theme.config';
-import { Map, MapMarker, MarkerContent, MarkerPopup, MapControls, type MapRef } from '@/components/ui/map';
+import {
+  Map,
+  MapMarker,
+  MarkerContent,
+  MarkerPopup,
+  MapControls,
+  type MapRef,
+} from '@/components/ui/map';
 
 // ══ TYPES ══
 interface EnvironmentalMetric {
@@ -61,6 +68,8 @@ interface ScoreHistory {
 interface MapScreenSectionProps {
   state?: {
     location?: string;
+    latitude?: number;
+    longitude?: number;
     environmentalScore?: number;
     metrics?: EnvironmentalMetric[];
     alerts?: Alert[];
@@ -238,28 +247,37 @@ const MapContainer: React.FC<{
   greenSpaces: GreenSpace[];
   environmentalScore?: number;
   location?: string;
+  latitude?: number;
+  longitude?: number;
   onZoomIn?: () => void;
   onZoomOut?: () => void;
-}> = ({ theme, greenSpaces, environmentalScore = 72, location = 'Banda Aceh' }) => {
+}> = ({
+  theme,
+  greenSpaces,
+  environmentalScore = 72,
+  location = 'Banda Aceh',
+  latitude,
+  longitude,
+}) => {
   const mapRef = useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
 
-  // Default location coordinates (Banda Aceh)
-  const defaultLng = 95.3167;
-  const defaultLat = 5.5577;
+  // Use real coordinates from Redux, fallback to Banda Aceh
+  const mapLng = longitude ?? 95.3167;
+  const mapLat = latitude ?? 5.5577;
 
   return (
     <div className="flex-1 relative flex flex-col">
       <Map
         ref={mapRef}
-        center={[defaultLng, defaultLat]}
+        center={[mapLng, mapLat]}
         zoom={13}
         bearing={0}
         pitch={0}
         className="w-full h-full"
       >
         {/* Current user location marker */}
-        <MapMarker longitude={defaultLng} latitude={defaultLat}>
+        <MapMarker longitude={mapLng} latitude={mapLat}>
           <MarkerContent>
             <div className="relative">
               <div
@@ -294,8 +312,8 @@ const MapContainer: React.FC<{
         {/* Green space markers */}
         {greenSpaces.map((space) => {
           // Use coordinates if available, otherwise generate approximate ones based on distance
-          const lng = space.longitude || defaultLng + (Math.random() - 0.5) * 0.1;
-          const lat = space.latitude || defaultLat + (Math.random() - 0.5) * 0.1;
+          const lng = space.longitude || mapLng + (Math.random() - 0.5) * 0.1;
+          const lat = space.latitude || mapLat + (Math.random() - 0.5) * 0.1;
 
           return (
             <MapMarker
@@ -539,6 +557,8 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
   // Destructure state with defaults
   const {
     location = 'Banda Aceh, Aceh',
+    latitude,
+    longitude,
     environmentalScore = 72,
     metrics = [],
     alerts = [],
@@ -672,6 +692,8 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           greenSpaces={greenSpaces}
           environmentalScore={environmentalScore}
           location={location}
+          latitude={latitude}
+          longitude={longitude}
         />
 
         {/* Right Panel */}
