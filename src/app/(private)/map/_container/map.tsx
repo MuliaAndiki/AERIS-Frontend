@@ -7,6 +7,7 @@ import EnvironmentApi from '@/services/env/env.service';
 import ScoringApi from '@/services/scoring/scoring.service';
 import InsightApi from '@/services/insight/insight.service';
 import LocationApi from '@/services/location/location.service';
+import RecommendationApi from '@/services/recommendation/recommendation.service';
 import { useMapWebSocket } from '@/hooks/useMapWebSocket';
 import {
   setMapData,
@@ -15,11 +16,13 @@ import {
   setLocation,
   type EnvironmentalMetric,
   type Alert,
+  type Recommendation,
   type GreenSpace,
   type ScoreHistory,
   clearError,
 } from '@/stores/mapSlice/mapSlice';
 import { RootState, AppDispatch } from '@/stores/store';
+import { SearchLocation } from '@/types/res/location.res';
 
 import { Wind, Flame, Droplets, Volume2, AlertCircle, TrendingUp, CheckCircle } from 'lucide-react';
 
@@ -34,6 +37,7 @@ export default function MapContainer() {
     environmentalScore,
     metrics,
     alerts,
+    recommendations,
     greenSpaces,
     scoreHistory,
     loading,
@@ -43,6 +47,13 @@ export default function MapContainer() {
   // ══ LOCAL STATE ══
   const [searchQuery, setSearchQuery] = useState('');
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [detectedLocation, setDetectedLocation] = useState<{
+    lat: number;
+    lon: number;
+    city: string;
+  } | null>(null);
+  const [isCurrentLocationDetected, setIsCurrentLocationDetected] = useState(true);
+  const [locationReady, setLocationReady] = useState(false);
 
   // ══ WEBSOCKET - Real-time score updates ══
   useMapWebSocket({
@@ -62,13 +73,35 @@ export default function MapContainer() {
 
         if (response.data?.city && response.data?.country) {
           const locationString = `${response.data.city}, ${response.data.country}`;
+          const lat = response.data.latitude ?? 0;
+          const lon = response.data.longitude ?? 0;
+
+          setDetectedLocation({
+            lat,
+            lon,
+            city: response.data.city,
+          });
+
+          // Auto-resolve detected location to backend
+          await LocationApi.Resolve({
+            latitude: lat,
+            longitude: lon,
+            city: response.data.city,
+            state: response.data.city, // Use city as state for now
+            country: response.data.country,
+            radius: 10,
+          });
+
           dispatch(
             setLocation({
               location: locationString,
-              latitude: response.data.latitude ?? undefined,
-              longitude: response.data.longitude ?? undefined,
+              latitude: lat,
+              longitude: lon,
             })
           );
+          setIsCurrentLocationDetected(true);
+          setLocationReady(true); // Location is ready for data fetching
+          console.log('✓ Location auto-detected and saved:', response.data.city);
         }
       } catch (err) {
         console.error('Failed to detect location:', err);
@@ -83,57 +116,140 @@ export default function MapContainer() {
 
   // ══ API CALLS - Fetch all environmental data ══
   useEffect(() => {
+    if (!latitude || !longitude) {
+      console.warn('⚠️ FETCH SKIPPED: Missing coordinates', { latitude, longitude });
+      return; // Only fetch if coordinates are set
+    }
+
+    console.log('🔄 FETCHING DATA FOR:', { latitude, longitude, location });
+
     const fetchAllData = async () => {
       try {
         dispatch(setLoading(true));
         dispatch(setError(null));
 
-        // Fetch all data in parallel
-        const [airQualityRes, heatRiskRes, noiseRes, greenSpaceRes, scoreRes, insightRes] =
-          await Promise.all([
-            EnvironmentApi.AirQuality(),
-            EnvironmentApi.HeatRisk(),
-            EnvironmentApi.Noise(),
-            EnvironmentApi.GreenSpace(),
-            ScoringApi.Score(),
-            InsightApi.Daily(),
-          ]);
+        // Fetch all data in parallel - use allSettled so one failure doesn't break all
+        const results = await Promise.allSettled([
+          EnvironmentApi.AirQuality(),
+          EnvironmentApi.HeatRisk(),
+          EnvironmentApi.Noise(),
+          EnvironmentApi.DisasterRisk(),
+          EnvironmentApi.GreenSpace(),
+          ScoringApi.Score(),
+          InsightApi.Daily(),
+          RecommendationApi.Daily(),
+        ]);
+
+        // Extract results - each can succeed or fail independently
+        const airQualityRes = results[0].status === 'fulfilled' ? results[0].value : null;
+        const heatRiskRes = results[1].status === 'fulfilled' ? results[1].value : null;
+        const noiseRes = results[2].status === 'fulfilled' ? results[2].value : null;
+        const disasterRiskRes = results[3].status === 'fulfilled' ? results[3].value : null;
+        const greenSpaceRes = results[4].status === 'fulfilled' ? results[4].value : null;
+        const scoreRes = results[5].status === 'fulfilled' ? results[5].value : null;
+        const insightRes = results[6].status === 'fulfilled' ? results[6].value : null;
+        const recommendationRes = results[7].status === 'fulfilled' ? results[7].value : null;
+
+        // Log failures for debugging
+        results.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            const apiNames = [
+              'AirQuality',
+              'HeatRisk',
+              'Noise',
+              'DisasterRisk',
+              'GreenSpace',
+              'Score',
+              'Insight',
+              'Recommendation',
+            ];
+            console.warn(`⚠️ ${apiNames[index]} API failed:`, result.reason);
+          }
+        });
+
+        // DEBUG: Log responses
+        console.log('=== AIR QUALITY DEBUG ===');
+        console.log('airQualityRes (full):', airQualityRes);
+        console.log('airQualityRes?.data:', airQualityRes?.data);
+        console.log('airQualityRes?.data?.airQuality:', (airQualityRes?.data as any)?.airQuality);
+        console.log(
+          'airQualityRes["data"]?.["airQuality"]?.["overall_aqi"]:',
+          (airQualityRes as any)?.['data']?.['airQuality']?.['overall_aqi']
+        );
+
+        // Try direct access pattern used by backend
+        const directAqi = (airQualityRes as any)?.airQuality?.overall_aqi;
+        console.log('Direct access (airQualityRes?.airQuality?.overall_aqi):', directAqi);
+
+        // Extract air quality AQI - try both patterns
+        const airQualityAqi =
+          directAqi ?? (airQualityRes?.data?.airQuality as any)?.overall_aqi ?? 58;
+        console.log('Final airQualityAqi:', airQualityAqi);
+        const airQualityCategory =
+          airQualityAqi <= 50 ? 'Good' : airQualityAqi <= 100 ? 'Moderate' : 'Poor';
+
+        // Extract heat data
+        const heatFeelsLike = heatRiskRes?.data?.feelsLike ?? 34;
+        const heatScore = heatRiskRes?.data?.heatScore ?? 50;
+
+        // Extract flood/heat from DisasterRisk (NOT from Noise)
+        const floodScore = disasterRiskRes?.data?.floodScore ?? 12;
+
+        // Extract noise data
+        const noiseLevel = noiseRes?.data?.estimatedNoiseLevel ?? 62;
+        const noiseScore = noiseRes?.data?.noiseScore ?? 62;
 
         // Transform and set metrics
         const transformedMetrics: EnvironmentalMetric[] = [
           {
             label: 'Air Quality',
-            value: (airQualityRes.data?.airQuality as any)?.aqi ?? 58,
+            value: airQualityAqi,
             unit: 'AQI',
-            level: (airQualityRes.data?.airQuality as any)?.level ?? 'moderate',
+            level: airQualityCategory.toLowerCase().includes('good')
+              ? 'good'
+              : airQualityCategory.toLowerCase().includes('moderate')
+                ? 'moderate'
+                : 'poor',
             icon: 'wind',
           },
           {
             label: 'Heat Risk',
-            value: heatRiskRes.data?.feelsLike ?? 34,
+            value: heatFeelsLike,
             unit: '°C',
-            level: heatRiskRes.data?.level ?? 'poor',
+            level: heatScore > 70 ? 'poor' : heatScore > 50 ? 'moderate' : 'good',
             icon: 'flame',
           },
           {
             label: 'Flood Risk',
-            value: (noiseRes.data as any)?.floodRisk ?? 12,
+            value: floodScore,
             unit: '%',
-            level: (noiseRes.data as any)?.floodLevel ?? 'good',
+            level: floodScore > 70 ? 'poor' : floodScore > 50 ? 'moderate' : 'good',
             icon: 'droplets',
           },
           {
             label: 'Noise',
-            value: noiseRes.data?.estimatedNoiseLevel ?? 62,
+            value: noiseLevel,
             unit: 'dB',
-            level: (noiseRes.data?.noiseScore ?? 62 > 70) ? 'poor' : 'moderate',
+            level: noiseLevel > 70 ? 'poor' : noiseLevel > 60 ? 'moderate' : 'good',
             icon: 'volume',
           },
         ];
 
+        console.log('📊 Environmental Metrics:', {
+          airQuality: { aqi: airQualityAqi, category: airQualityCategory },
+          heatRisk: { feelsLike: heatFeelsLike, score: heatScore },
+          floodRisk: { score: floodScore },
+          noise: { level: noiseLevel, score: noiseScore },
+          transformedMetrics,
+        });
+
         // Transform green spaces
-        const greenSpacesData =
-          greenSpaceRes.data?.greenAreas ?? greenSpaceRes.data?.greenSpace?.parkData ?? [];
+        const greenSpacesData = greenSpaceRes?.data?.greenAreas ?? [];
+        console.log('🌳 Green Spaces Data:', {
+          hasData: !!greenSpaceRes?.data,
+          greenSpaces: greenSpacesData,
+          length: greenSpacesData.length,
+        });
         const transformedGreenSpaces: GreenSpace[] = greenSpacesData.map((space: any) => ({
           id: space.id,
           name: space.name,
@@ -145,7 +261,7 @@ export default function MapContainer() {
         }));
 
         // Transform alerts from insights
-        const transformedAlerts: Alert[] = insightRes.data
+        const transformedAlerts: Alert[] = insightRes?.data
           ? [
               {
                 id: insightRes.data.snapshotId ?? '1',
@@ -157,8 +273,25 @@ export default function MapContainer() {
             ]
           : [];
 
+        // Transform recommendations - Filter based on environmental score
+        const recommendationItems = recommendationRes?.data?.items ?? [];
+        console.log('🎯 Recommendations API Response:', {
+          hasData: !!recommendationRes?.data,
+          items: recommendationItems,
+          length: recommendationItems.length,
+        });
+        const transformedRecommendations: Recommendation[] = recommendationItems.map(
+          (rec: any) => ({
+            id: rec.id,
+            message: rec.message,
+            severity: rec.severity ?? 1,
+            recommendationType: rec.recommendationType,
+            icon: rec.severity === 2 ? 'alert' : rec.severity === 1 ? 'info' : 'check',
+          })
+        );
+
         // Set score history
-        const currentScore = scoreRes.data?.environmentalScore ?? 72;
+        const currentScore = scoreRes?.data?.environmentalScore ?? 72;
         const transformedScoreHistory: ScoreHistory[] = [
           { date: 'Today, 10:00 AM', score: currentScore, change: 5 },
           { date: 'Yesterday', score: currentScore - 5, change: -10 },
@@ -169,28 +302,31 @@ export default function MapContainer() {
         // Dispatch all data to Redux
         dispatch(
           setMapData({
-            location: mapState.location,
-            latitude: mapState.latitude,
-            longitude: mapState.longitude,
+            location,
+            latitude,
+            longitude,
             environmentalScore: currentScore,
             metrics: transformedMetrics,
             alerts: transformedAlerts,
+            recommendations: transformedRecommendations,
             greenSpaces: transformedGreenSpaces,
             scoreHistory: transformedScoreHistory,
             searchQuery: '',
           })
         );
+        console.log('✓ Data fetched for location:', location);
       } catch (err) {
-        console.error('Failed to fetch map data:', err);
+        console.error('❌ Failed to fetch map data:', err);
         const errorMsg = err instanceof Error ? err.message : 'Failed to load map data';
         dispatch(setError(errorMsg));
 
         // Set fallback data
+        console.warn('⚠️  Using FALLBACK DATA - API calls failed');
         dispatch(
           setMapData({
-            location: mapState.location,
-            latitude: mapState.latitude,
-            longitude: mapState.longitude,
+            location,
+            latitude,
+            longitude,
             environmentalScore: 72,
             metrics: [
               {
@@ -238,6 +374,22 @@ export default function MapContainer() {
                 icon: 'trending-up',
               },
             ],
+            recommendations: [
+              {
+                id: 'rec-1',
+                message: 'Reduce outdoor activities during peak heat hours (11 AM - 3 PM)',
+                severity: 2,
+                recommendationType: 'heat_warning',
+                icon: 'alert',
+              },
+              {
+                id: 'rec-2',
+                message: 'Air quality is improving. Great day for outdoor exercise!',
+                severity: 0,
+                recommendationType: 'positive_feedback',
+                icon: 'check',
+              },
+            ],
             greenSpaces: [
               {
                 id: '1',
@@ -276,18 +428,78 @@ export default function MapContainer() {
     };
 
     fetchAllData();
-  }, [dispatch, mapState.location, mapState.latitude, mapState.longitude]);
+  }, [dispatch, latitude, longitude, location]);
 
   // ══ EVENT HANDLERS ══
-  const handleLocationSearch = useCallback(async (query: string) => {
-    setSearchQuery(query);
-    if (!query.trim()) return;
+  const handleLocationSearch = useCallback(
+    async (query: string) => {
+      if (!query.trim()) return;
 
-    console.log('Location search query:', query);
-    // TODO: Implement location search when backend provides search endpoint
-    // For now, LocationApi.Resolve() requires lat/lng/city/country, not text query
-    // This feature will be implemented when backend adds location search endpoint
-  }, []);
+      try {
+        dispatch(setLoading(true));
+
+        // Search locations from API
+        const searchRes = await LocationApi.Search(query);
+
+        if (searchRes.data && searchRes.data.length > 0) {
+          // Use first result
+          const foundLocation = searchRes.data[0] as SearchLocation;
+
+          // Resolve location to backend (save user location)
+          console.log('🌍 RESOLVE REQUEST:', {
+            lat: foundLocation.latitude,
+            lon: foundLocation.longitude,
+            city: foundLocation.city,
+          });
+
+          const resolveRes = await LocationApi.Resolve({
+            latitude: foundLocation.latitude,
+            longitude: foundLocation.longitude,
+            city: foundLocation.city,
+            state: foundLocation.state,
+            country: foundLocation.country,
+            radius: 10, // Default 10km radius
+          });
+
+          console.log('🌍 RESOLVE RESPONSE:', resolveRes.data);
+
+          if (resolveRes.data) {
+            // Update Redux state with resolved location
+            console.log('📍 UPDATING REDUX WITH:', {
+              lat: foundLocation.latitude,
+              lon: foundLocation.longitude,
+            });
+
+            dispatch(
+              setLocation({
+                location: `${foundLocation.city}, ${foundLocation.state}`,
+                latitude: foundLocation.latitude,
+                longitude: foundLocation.longitude,
+              })
+            );
+
+            dispatch(clearError());
+            setSearchQuery('');
+            setIsCurrentLocationDetected(false);
+            setLocationReady(true); // Location is ready for data fetching
+            console.log('✓ Location saved and updated:', foundLocation.name);
+          } else {
+            console.error('❌ RESOLVE FAILED - No data in response');
+          }
+        } else {
+          dispatch(setError(`Location "${query}" not found. Please try another search.`));
+          console.warn('✗ Location not found:', query);
+        }
+      } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Failed to update location';
+        dispatch(setError(errorMsg));
+        console.error('Location search error:', err);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    },
+    [dispatch]
+  );
 
   const handleGreenSpaceClick = useCallback((spaceId: string) => {
     console.log('Green space clicked:', spaceId);
@@ -335,11 +547,14 @@ export default function MapContainer() {
         environmentalScore,
         metrics: transformedMetrics,
         alerts: transformedAlerts,
+        recommendations,
         greenSpaces,
         scoreHistory,
         searchQuery,
         loading,
         error,
+        isCurrentLocationDetected,
+        detectedLocation,
       }}
       service={{
         onLocationSearch: handleLocationSearch,

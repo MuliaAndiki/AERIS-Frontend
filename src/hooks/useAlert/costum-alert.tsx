@@ -20,7 +20,7 @@ export const useAlert = (): AlertContexType => {
   if (!contex) throw new Error('useAlert must be used within an AlertProvider');
   return contex;
 };
-export const AlertProvinder = ({ children }: { children: React.ReactNode }) => {
+export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
   const [modal, setModal] = useState<ModalProps | null>(null);
   const [resolver, setResolver] = useState<(res: boolean) => void>();
 

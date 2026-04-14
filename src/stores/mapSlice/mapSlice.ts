@@ -32,6 +32,14 @@ export interface ScoreHistory {
   change: number;
 }
 
+export interface Recommendation {
+  id: string;
+  message: string;
+  severity: number; // 0-2 (low, medium, high)
+  recommendationType?: string;
+  icon?: string;
+}
+
 export interface MapState {
   location: string;
   latitude?: number;
@@ -39,6 +47,7 @@ export interface MapState {
   environmentalScore: number;
   metrics: EnvironmentalMetric[];
   alerts: Alert[];
+  recommendations: Recommendation[];
   greenSpaces: GreenSpace[];
   scoreHistory: ScoreHistory[];
   searchQuery: string;
@@ -52,6 +61,7 @@ const initialState: MapState = {
   environmentalScore: 72,
   metrics: [],
   alerts: [],
+  recommendations: [],
   greenSpaces: [],
   scoreHistory: [],
   searchQuery: '',
@@ -73,6 +83,7 @@ const mapSlice = createSlice({
         environmentalScore,
         metrics,
         alerts,
+        recommendations,
         greenSpaces,
         scoreHistory,
         searchQuery,
@@ -83,6 +94,7 @@ const mapSlice = createSlice({
       state.environmentalScore = environmentalScore;
       state.metrics = metrics;
       state.alerts = alerts;
+      state.recommendations = recommendations;
       state.greenSpaces = greenSpaces;
       state.scoreHistory = scoreHistory;
       state.searchQuery = searchQuery;

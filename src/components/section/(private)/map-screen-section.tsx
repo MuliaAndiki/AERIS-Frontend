@@ -31,6 +31,9 @@ import {
   MapControls,
   type MapRef,
 } from '@/components/ui/map';
+import GreenSpaceDetailsModal from './green-space-details-modal';
+import ScoreTrendingChart from './score-trending-chart';
+import type { ScoreHistoryData } from './score-trending-chart';
 
 // ══ TYPES ══
 interface EnvironmentalMetric {
@@ -47,6 +50,14 @@ interface Alert {
   title: string;
   description: string;
   icon: React.ReactNode;
+}
+
+interface Recommendation {
+  id: string;
+  message: string;
+  severity: number; // 0-2 (low, medium, high)
+  recommendationType?: string;
+  icon?: string;
 }
 
 interface GreenSpace {
@@ -73,11 +84,14 @@ interface MapScreenSectionProps {
     environmentalScore?: number;
     metrics?: EnvironmentalMetric[];
     alerts?: Alert[];
+    recommendations?: Recommendation[];
     greenSpaces?: GreenSpace[];
     scoreHistory?: ScoreHistory[];
     searchQuery?: string;
     loading?: boolean;
     error?: string | null;
+    isCurrentLocationDetected?: boolean;
+    detectedLocation?: { lat: number; lon: number; city: string } | null;
   };
   service?: {
     onLocationSearch?: (query: string) => void;
@@ -110,7 +124,22 @@ const EnvironmentalSummaryPanel: React.FC<{
   location?: string;
   score?: number;
   metrics: EnvironmentalMetric[];
-}> = ({ theme, location = 'Banda Aceh', score = 72, metrics }) => (
+  alerts?: Alert[];
+  greenSpaces?: GreenSpace[];
+  scoreHistory?: ScoreHistory[];
+  isCurrentLocation?: boolean;
+  detectedLocation?: { lat: number; lon: number; city: string } | null;
+}> = ({
+  theme,
+  location = 'Banda Aceh',
+  score = 72,
+  metrics,
+  alerts = [],
+  greenSpaces = [],
+  scoreHistory = [],
+  isCurrentLocation = false,
+  detectedLocation,
+}) => (
   <div
     className="hidden lg:flex flex-col w-80 p-6 overflow-y-auto border-r gap-6"
     style={{ backgroundColor: 'white', borderRightColor: theme.border }}
@@ -119,12 +148,25 @@ const EnvironmentalSummaryPanel: React.FC<{
     <div>
       <div className="flex items-start gap-2 mb-1">
         <MapPin size={16} style={{ color: theme.primary.background, marginTop: 2 }} />
-        <div>
-          <h3 className="text-[14px] font-bold" style={{ color: theme.primary.background }}>
-            {location}
-          </h3>
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-[14px] font-bold" style={{ color: theme.primary.background }}>
+              {location}
+            </h3>
+            {isCurrentLocation && (
+              <Badge
+                className="text-[10px] px-2 py-0.5"
+                style={{
+                  backgroundColor: `${theme.success.background}30`,
+                  color: theme.success.background,
+                }}
+              >
+                • Current Location
+              </Badge>
+            )}
+          </div>
           <p className="text-[11px]" style={{ color: theme.muted.foreground }}>
-            Aceh, Indonesia • Updated 3 min ago
+            {location || 'Location not set'} • Updated just now
           </p>
         </div>
       </div>
@@ -158,11 +200,25 @@ const EnvironmentalSummaryPanel: React.FC<{
         </div>
       </div>
       <div className="text-center">
-        <p className="text-[12px] font-semibold mb-1" style={{ color: theme.success.background }}>
-          ✓ Good
+        <p
+          className="text-[12px] font-semibold mb-1"
+          style={{
+            color:
+              score > 70
+                ? theme.success.background
+                : score > 50
+                  ? theme.warning.background
+                  : theme.destructive.background,
+          }}
+        >
+          {score > 70 ? '✓ Good' : score > 50 ? '⚠ Fair' : '✗ Poor'}
         </p>
         <p className="text-[11px]" style={{ color: theme.muted.foreground }}>
-          Conditions are generally safe for outdoor activities today.
+          {score > 70
+            ? 'Conditions are generally safe for outdoor activities.'
+            : score > 50
+              ? 'Conditions are moderate. Be cautious for extended outdoor activities.'
+              : 'Poor conditions. Limit outdoor activities.'}
         </p>
       </div>
     </div>
@@ -251,6 +307,7 @@ const MapContainer: React.FC<{
   longitude?: number;
   onZoomIn?: () => void;
   onZoomOut?: () => void;
+  onGreenSpaceClick?: (spaceId: string) => void;
 }> = ({
   theme,
   greenSpaces,
@@ -258,6 +315,7 @@ const MapContainer: React.FC<{
   location = 'Banda Aceh',
   latitude,
   longitude,
+  onGreenSpaceClick,
 }) => {
   const mapRef = useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
@@ -320,7 +378,10 @@ const MapContainer: React.FC<{
               key={space.id}
               longitude={lng}
               latitude={lat}
-              onClick={() => setSelectedMarker(space.id)}
+              onClick={() => {
+                setSelectedMarker(space.id);
+                onGreenSpaceClick?.(space.id);
+              }}
             >
               <MarkerContent
                 className={`transition-transform ${
@@ -405,11 +466,20 @@ const MapContainer: React.FC<{
 const InsightsPanel: React.FC<{
   theme: typeof themeConfig.light;
   alerts: Alert[];
+  recommendations: Recommendation[];
   greenSpaces: GreenSpace[];
   scoreHistory: ScoreHistory[];
   onAlertClick?: (alertId: string) => void;
   onGreenSpaceClick?: (spaceId: string) => void;
-}> = ({ theme, alerts, greenSpaces, scoreHistory, onAlertClick, onGreenSpaceClick }) => (
+}> = ({
+  theme,
+  alerts,
+  recommendations,
+  greenSpaces,
+  scoreHistory,
+  onAlertClick,
+  onGreenSpaceClick,
+}) => (
   <div
     className="hidden lg:flex flex-col w-80 p-6 overflow-y-auto border-l gap-6"
     style={{ backgroundColor: 'white', borderLeftColor: theme.border }}
@@ -512,41 +582,77 @@ const InsightsPanel: React.FC<{
       </div>
     </div>
 
-    {/* Score History */}
+    {/* Score History - Trending Chart */}
     <div>
       <h4
         className="text-[11px] font-bold tracking-[0.1em] uppercase mb-4"
         style={{ color: theme.primary.background }}
       >
-        Score History
+        Score Trending
       </h4>
-      <div className="space-y-2">
-        {scoreHistory.map((item, idx) => (
-          <div key={idx} className="flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1">
-              <Clock size={12} style={{ color: theme.muted.foreground }} />
-              <p className="text-[10px]" style={{ color: theme.muted.foreground }}>
-                {item.date}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="text-[11px] font-bold" style={{ color: theme.foreground }}>
-                {item.score}
-              </p>
-              <p
-                className="text-[10px] font-semibold"
+      <ScoreTrendingChart data={scoreHistory as ScoreHistoryData[]} height={200} />
+    </div>
+
+    {/* Daily Recommendations */}
+    {recommendations && recommendations.length > 0 && (
+      <div>
+        <h4
+          className="text-[11px] font-bold tracking-[0.1em] uppercase mb-4"
+          style={{ color: theme.primary.background }}
+        >
+          Daily Recommendations
+        </h4>
+        <div className="space-y-3">
+          {recommendations.map((rec) => {
+            const severityColor =
+              rec.severity === 2
+                ? theme.destructive.background
+                : rec.severity === 1
+                  ? theme.warning.background
+                  : theme.success.background;
+            const backgroundColor =
+              rec.severity === 2
+                ? `${theme.destructive.background}10`
+                : rec.severity === 1
+                  ? `${theme.warning.background}10`
+                  : `${theme.success.background}10`;
+
+            return (
+              <div
+                key={rec.id}
+                className="p-3 rounded-lg border-l-4 flex gap-3"
                 style={{
-                  color: item.change > 0 ? theme.success.background : theme.destructive.background,
+                  borderColor: severityColor,
+                  backgroundColor: backgroundColor,
                 }}
               >
-                {item.change > 0 ? '+' : ''}
-                {item.change}
-              </p>
-            </div>
-          </div>
-        ))}
+                <div className="flex-shrink-0 mt-1">
+                  {rec.severity === 2 ? (
+                    <AlertCircle size={16} style={{ color: severityColor }} />
+                  ) : rec.severity === 1 ? (
+                    <TrendingUp size={16} style={{ color: severityColor }} />
+                  ) : (
+                    <CheckCircle size={16} style={{ color: severityColor }} />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-[11px] font-bold mb-1" style={{ color: severityColor }}>
+                    {rec.severity === 2
+                      ? 'Action Required'
+                      : rec.severity === 1
+                        ? 'Warning'
+                        : 'Good News'}
+                  </p>
+                  <p className="text-[10px]" style={{ color: theme.muted.foreground }}>
+                    {rec.message}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    )}
   </div>
 );
 
@@ -562,11 +668,14 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
     environmentalScore = 72,
     metrics = [],
     alerts = [],
+    recommendations = [],
     greenSpaces = [],
     scoreHistory = [],
     searchQuery = '',
     loading = false,
     error = null,
+    isCurrentLocationDetected = true,
+    detectedLocation = null,
   } = state;
 
   // Destructure service handlers
@@ -575,6 +684,23 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
     onAlertClick = () => {},
     onGreenSpaceClick = () => {},
   } = service;
+
+  // ══ LOCAL STATE FOR MODAL ══
+  const [selectedGreenSpaceId, setSelectedGreenSpaceId] = useState<string | null>(null);
+  const [isGreenSpaceModalOpen, setIsGreenSpaceModalOpen] = useState(false);
+
+  // Handle green space click
+  const handleGreenSpaceClick = (spaceId: string) => {
+    const space = greenSpaces.find((s) => s.id === spaceId);
+    if (space) {
+      setSelectedGreenSpaceId(spaceId);
+      setIsGreenSpaceModalOpen(true);
+      onGreenSpaceClick?.(spaceId);
+    }
+  };
+
+  // Handle search query locally
+  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
   // Show loading state
   if (loading) {
@@ -597,12 +723,10 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
     );
   }
 
-  // Handle search query locally
-  const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
-
-  const handleSearch = (query: string) => {
-    setLocalSearchQuery(query);
-    onLocationSearch?.(query);
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && localSearchQuery.trim()) {
+      onLocationSearch?.(localSearchQuery);
+    }
   };
 
   return (
@@ -639,9 +763,10 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           <Search size={16} style={{ color: theme.muted.foreground }} />
           <input
             type="text"
-            placeholder="Search location..."
+            placeholder="Search location (press Enter)..."
             value={localSearchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => setLocalSearchQuery(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
             className="flex-1 bg-transparent outline-none text-[13px]"
             style={{ color: theme.foreground }}
           />
@@ -684,6 +809,11 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           location={location}
           score={environmentalScore}
           metrics={metrics}
+          alerts={alerts}
+          greenSpaces={greenSpaces}
+          scoreHistory={scoreHistory}
+          isCurrentLocation={isCurrentLocationDetected}
+          detectedLocation={detectedLocation}
         />
 
         {/* Map Container */}
@@ -694,16 +824,18 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           location={location}
           latitude={latitude}
           longitude={longitude}
+          onGreenSpaceClick={handleGreenSpaceClick}
         />
 
         {/* Right Panel */}
         <InsightsPanel
           theme={theme}
           alerts={alerts}
+          recommendations={recommendations}
           greenSpaces={greenSpaces}
           scoreHistory={scoreHistory}
           onAlertClick={onAlertClick}
-          onGreenSpaceClick={onGreenSpaceClick}
+          onGreenSpaceClick={handleGreenSpaceClick}
         />
 
         {/* Mobile FAB */}
@@ -718,6 +850,23 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             <Menu size={20} />
           </Button>
         </div>
+
+        {/* Green Space Details Modal */}
+        {selectedGreenSpaceId && (
+          <GreenSpaceDetailsModal
+            isOpen={isGreenSpaceModalOpen}
+            onClose={() => {
+              setIsGreenSpaceModalOpen(false);
+              setSelectedGreenSpaceId(null);
+            }}
+            spaceId={selectedGreenSpaceId}
+            spaceName={
+              greenSpaces.find((s) => s.id === selectedGreenSpaceId)?.name || 'Green Space'
+            }
+            latitude={greenSpaces.find((s) => s.id === selectedGreenSpaceId)?.latitude}
+            longitude={greenSpaces.find((s) => s.id === selectedGreenSpaceId)?.longitude}
+          />
+        )}
       </div>
     </section>
   );

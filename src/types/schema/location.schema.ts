@@ -29,8 +29,11 @@ export type DetectLocationResult = RequestMeta & {
 
 type ResolveLocationPayload = Required<
   Pick<GeoLocation, 'latitude' | 'longitude' | 'city' | 'country'>
->;
+> & {
+  state: string;
+};
 
 export type ResolveLocationBody = ResolveLocationPayload & {
   userId?: string;
+  radius?: number;
 };
