@@ -1,10 +1,10 @@
-import { ResolveLocationBody } from '@/types/schema/location.schema';
-import AxiosClient from '@/utils/axios.client';
 import {
   DetectLocationResponse,
-  ResolveLocationResponse,
   LocationSearchResponse,
+  ResolveLocationResponse,
 } from '@/types/res/location.res';
+import { ResolveLocationBody } from '@/types/schema/location.schema';
+import AxiosClient from '@/utils/axios.client';
 
 class LocationApi {
   async Detect(): Promise<DetectLocationResponse> {
@@ -20,9 +20,7 @@ class LocationApi {
   }
 
   async Resolve(payload: ResolveLocationBody): Promise<ResolveLocationResponse> {
-    console.log('[LocationApi.Resolve] Sending payload:', payload);
     const res = await AxiosClient.post('/api/location/resolve', payload);
-    console.log('[LocationApi.Resolve] Response:', res.data);
     return res.data;
   }
 }

@@ -17,6 +17,34 @@ import {
   PickVerify,
 } from '@/types/schema/auth.schema';
 import { cacheKey } from '@/utils/cache';
+import { resetMapData } from '@/stores/mapSlice/mapSlice';
+
+const LOGIN_GEO_STORAGE_KEY = 'aeris:login-geolocation';
+
+function requestLocationAccessAfterLogin() {
+  if (typeof window === 'undefined') return;
+  if (!('geolocation' in navigator)) return;
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const value = JSON.stringify({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        capturedAt: new Date().toISOString(),
+      });
+      window.sessionStorage.setItem(LOGIN_GEO_STORAGE_KEY, value);
+    },
+    (error) => {
+      console.warn('[Auth] Location access request failed:', error.message);
+      window.sessionStorage.removeItem(LOGIN_GEO_STORAGE_KEY);
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    }
+  );
+}
 
 export function useLogin() {
   const ns = useAppNameSpace();
@@ -63,8 +91,9 @@ export function useLogin() {
         icon: 'success',
       });
 
-      // Redirect ke halaman map setelah login berhasil
-      ns.router.push('/map');
+      requestLocationAccessAfterLogin();
+
+      ns.router.push('/user/map');
     },
     onError: (_err, _newData, context) => {
       if (context?.previousSession) {
@@ -136,6 +165,7 @@ export function useLogout() {
       const previousSession = ns.queryClient.getQueryData(cacheKey.auth.session());
 
       ns.dispatch(logout());
+      ns.dispatch(resetMapData());
       deleteCookie(APP_SESSION_COOKIE_KEY, { path: '/' });
       deleteCookie('user_role', { path: '/' });
 
@@ -151,6 +181,10 @@ export function useLogout() {
         title: ns.t('alerts.title.failed'),
         message: ns.t('alerts.auth.logout.failed'),
         icon: 'error',
+        onVoid: () => {
+          ns.dispatch(logout());
+          ns.dispatch(resetMapData());
+        },
       });
     },
     onSettled: () => {
