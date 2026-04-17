@@ -1,8 +1,14 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/stores/store';
-import { updateEnvironmentalScore, updateMetric, addAlert } from '@/stores/mapSlice/mapSlice';
+
 import ScoringApi from '@/services/scoring/scoring.service';
+import { addAlert, updateEnvironmentalScore, updateMetric } from '@/stores/mapSlice/mapSlice';
+import { AppDispatch } from '@/stores/store';
+const POLL_ERROR_LOG_WINDOW_MS = 120000;
+function resolveHttpStatus(error: unknown): number | null {
+  const status = (error as any)?.response?.status;
+  return typeof status === 'number' ? status : null;
+}
 
 interface WebSocketMessage {
   type: 'SCORE_UPDATED' | 'METRIC_UPDATED' | 'ALERT' | 'PING';
@@ -24,7 +30,7 @@ interface WebSocketMessage {
  */
 export function useMapWebSocket({
   enabled = true,
-  pollInterval = 30000, // Default: 30 seconds
+  pollInterval = 60000,
   onScoreUpdate,
 }: {
   enabled?: boolean;
@@ -34,6 +40,8 @@ export function useMapWebSocket({
   const dispatch = useDispatch<AppDispatch>();
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastScoreRef = useRef<number | null>(null);
+  const lastErrorStatusRef = useRef<number | null>(null);
+  const lastErrorLoggedAtRef = useRef<number>(0);
 
   // Handle incoming WebSocket message
   const handleMessage = useCallback(
@@ -88,6 +96,10 @@ export function useMapWebSocket({
       const response = await ScoringApi.Score();
       const currentScore = response.data?.environmentalScore;
 
+      // Reset error log guards after a successful response.
+      lastErrorStatusRef.current = null;
+      lastErrorLoggedAtRef.current = 0;
+
       // Only dispatch if score changed
       if (currentScore !== undefined && currentScore !== lastScoreRef.current) {
         lastScoreRef.current = currentScore;
@@ -97,6 +109,31 @@ export function useMapWebSocket({
         });
       }
     } catch (error) {
+      const status = resolveHttpStatus(error);
+      const now = Date.now();
+      const shouldLog =
+        status !== lastErrorStatusRef.current ||
+        now - lastErrorLoggedAtRef.current > POLL_ERROR_LOG_WINDOW_MS;
+
+      if (!shouldLog) {
+        return;
+      }
+
+      lastErrorStatusRef.current = status;
+      lastErrorLoggedAtRef.current = now;
+
+      if (status === 500) {
+        console.warn(
+          '[Map] Score endpoint returned 500. Polling will retry automatically when backend is ready.'
+        );
+        return;
+      }
+
+      if (status === 401 || status === 403) {
+        console.warn('[Map] Score polling skipped due to unauthorized session state.');
+        return;
+      }
+
       console.error('Failed to poll environmental score:', error);
     }
   }, [handleMessage]);

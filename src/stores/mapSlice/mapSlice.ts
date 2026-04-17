@@ -57,8 +57,8 @@ export interface MapState {
 }
 
 const initialState: MapState = {
-  location: 'Banda Aceh, Aceh',
-  environmentalScore: 72,
+  location: '',
+  environmentalScore: 0,
   metrics: [],
   alerts: [],
   recommendations: [],

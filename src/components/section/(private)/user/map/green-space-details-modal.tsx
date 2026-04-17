@@ -1,20 +1,21 @@
 'use client';
 
+import { AlertCircle, Clock, MapPin, Star, Users } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { X, MapPin, Clock, Star, Users, AlertCircle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { themeConfig } from '@/configs/theme.config';
 import EnvironmentApi from '@/services/env/env.service';
 
 export interface GreenSpaceDetail {
   id: string;
   name: string;
-  latitude: number;
-  longitude: number;
-  distance: number;
-  status: string;
+  latitude?: number;
+  longitude?: number;
+  distance?: number;
+  status?: string;
   tags: string[];
   description?: string;
   operatingHours?: string;
@@ -24,6 +25,10 @@ export interface GreenSpaceDetail {
   capacity?: number;
   accessibility?: boolean;
   parkingAvailable?: boolean;
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
 interface GreenSpaceDetailsModalProps {
@@ -50,84 +55,39 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
 
   useEffect(() => {
     if (isOpen && spaceId) {
+      const minimalDetails: GreenSpaceDetail = {
+        id: spaceId,
+        name: spaceName,
+        latitude,
+        longitude,
+        tags: [],
+      };
+
       const fetchDetails = async () => {
         try {
           setLoading(true);
           setError(null);
+          setDetails(minimalDetails);
 
-          // Fetch green space details from API
-          const response = await EnvironmentApi.GreenSpace();
-          const greenSpaces =
-            response.data?.greenAreas ?? response.data?.greenSpace?.parkData ?? [];
-
-          // Find matching green space by ID
-          const space = greenSpaces.find((g: any) => g.id === spaceId);
-          if (space) {
-            const spaceData = space as any; // Type cast to any for flexible property access
-            setDetails({
-              id: spaceData.id ?? spaceId,
-              name: spaceData.name ?? spaceName,
-              latitude: spaceData.latitude ?? latitude ?? 0,
-              longitude: spaceData.longitude ?? longitude ?? 0,
-              distance: spaceData.distance ?? 0.8,
-              status: spaceData.status ?? 'Open now',
-              tags: spaceData.tags ?? [],
-              description:
-                spaceData.description ?? 'A wonderful green space for leisure and relaxation.',
-              operatingHours: spaceData.operatingHours ?? '6:00 AM - 6:00 PM',
-              averageRating: spaceData.averageRating ?? 4.5,
-              reviewCount: spaceData.reviewCount ?? 127,
-              amenities: spaceData.amenities ?? [
-                'Parking',
-                'Restrooms',
-                'Picnic Area',
-                'Walking Trails',
-              ],
-              capacity: spaceData.capacity ?? 500,
-              accessibility: spaceData.accessibility ?? true,
-              parkingAvailable: spaceData.parkingAvailable ?? true,
-            });
-          } else {
-            // Fallback if space not found
-            setDetails({
-              id: spaceId ?? 'unknown',
-              name: spaceName,
-              latitude: latitude ?? 0,
-              longitude: longitude ?? 0,
-              distance: 0.8,
-              status: 'Open now',
-              tags: [],
-              description: 'A wonderful green space for leisure and relaxation.',
-              operatingHours: '6:00 AM - 6:00 PM',
-              averageRating: 4.5,
-              reviewCount: 127,
-              amenities: ['Parking', 'Restrooms', 'Picnic Area', 'Walking Trails'],
-              capacity: 500,
-              accessibility: true,
-              parkingAvailable: true,
-            });
+          const response = await EnvironmentApi.GreenSpaceDetail(spaceId);
+          if (!response.data) {
+            setError('Detail green space tidak tersedia dari server.');
+            return;
           }
-        } catch (err) {
-          console.error('Failed to fetch green space details:', err);
-          setError('Unable to load space details');
-          // Set fallback data
+
+          const detail = response.data;
           setDetails({
-            id: spaceId ?? 'unknown',
-            name: spaceName,
-            latitude: latitude ?? 0,
-            longitude: longitude ?? 0,
-            distance: 0.8,
-            status: 'Open now',
+            id: detail.id,
+            name: detail.name,
+            latitude: detail.latitude,
+            longitude: detail.longitude,
             tags: [],
-            description: 'A wonderful green space for leisure and relaxation.',
-            operatingHours: '6:00 AM - 6:00 PM',
-            averageRating: 4.5,
-            reviewCount: 127,
-            amenities: ['Parking', 'Restrooms', 'Picnic Area', 'Walking Trails'],
-            capacity: 500,
-            accessibility: true,
-            parkingAvailable: true,
+            averageRating: detail.averageRating,
+            reviewCount: detail.totalReviews,
+            capacity: isNumber(detail.areaSize) ? Math.round(detail.areaSize) : undefined,
           });
+        } catch (err) {
+          setError('Unable to load space details from API');
         } finally {
           setLoading(false);
         }
@@ -165,10 +125,10 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
                 border: 'none',
               }}
             >
-              {details.status}
+              {details.status ?? 'Unknown'}
             </Badge>
             <span style={{ color: theme.muted.foreground }} className="text-xs">
-              {details.distance} km away
+              {isNumber(details.distance) ? `${details.distance} km away` : 'Distance unavailable'}
             </span>
           </div>
 
@@ -225,7 +185,9 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
                 Location
               </p>
               <p style={{ color: theme.muted.foreground }} className="text-[11px] mt-1">
-                {details.latitude.toFixed(4)}, {details.longitude.toFixed(4)}
+                {isNumber(details.latitude) && isNumber(details.longitude)
+                  ? `${details.latitude.toFixed(4)}, ${details.longitude.toFixed(4)}`
+                  : 'Coordinates unavailable'}
               </p>
             </div>
           </div>
@@ -339,7 +301,7 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
               variant="outline"
               className="flex-1 text-xs"
               onClick={() => {
-                // Could open external map or navigation
+                if (!isNumber(details.latitude) || !isNumber(details.longitude)) return;
                 const mapUrl = `https://www.google.com/maps/search/${details.latitude},${details.longitude}`;
                 window.open(mapUrl, '_blank');
               }}

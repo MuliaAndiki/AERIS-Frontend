@@ -23,27 +23,28 @@ interface ScoreTrendingChartProps {
   height?: number;
 }
 
+const transformScoreHistory = (data: ScoreHistoryData[]) => {
+  return data.map((item) => {
+    const dateLabel = item.date.includes('Today')
+      ? 'Today'
+      : item.date.includes('Yesterday')
+        ? 'Yesterday'
+        : item.date.replace(' ago', '').replace('days', 'd').replace('day', 'd');
+
+    return {
+      name: dateLabel,
+      score: item.score,
+      change: item.change,
+      fullDate: item.date,
+    };
+  });
+};
+
 const ScoreTrendingChart: React.FC<ScoreTrendingChartProps> = ({ data, height = 250 }) => {
   const theme = themeConfig.light;
-
-  // Transform data for Recharts - extract simple labels from date strings
   const chartData = useMemo(() => {
-    return data.map((item) => {
-      // Parse date string like "Today, 10:00 AM" to simple label
-      const dateLabel = item.date.includes('Today')
-        ? 'Today'
-        : item.date.includes('Yesterday')
-          ? 'Yesterday'
-          : item.date.replace(' ago', '').replace('days', 'd').replace('day', 'd');
-
-      return {
-        name: dateLabel,
-        score: item.score,
-        change: item.change,
-        fullDate: item.date,
-      };
-    });
-  }, [data]);
+    return transformScoreHistory(data);
+  }, [data.length, data.map((item) => `${item.date}:${item.score}:${item.change}`).join('|')]);
 
   // Custom tooltip for hover
   const CustomTooltip = ({ active, payload }: any) => {
@@ -145,7 +146,7 @@ const ScoreTrendingChart: React.FC<ScoreTrendingChartProps> = ({ data, height = 
             Highest Score
           </p>
           <p style={{ color: theme.success.background }} className="text-lg font-bold mt-1">
-            {Math.max(...chartData.map((d) => d.score))}
+            {chartData.length > 0 ? Math.max(...chartData.map((d) => d.score)) : 0}
           </p>
         </div>
 
@@ -155,7 +156,7 @@ const ScoreTrendingChart: React.FC<ScoreTrendingChartProps> = ({ data, height = 
             Lowest Score
           </p>
           <p style={{ color: theme.destructive.background }} className="text-lg font-bold mt-1">
-            {Math.min(...chartData.map((d) => d.score))}
+            {chartData.length > 0 ? Math.min(...chartData.map((d) => d.score)) : 0}
           </p>
         </div>
       </div>
