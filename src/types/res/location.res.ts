@@ -21,5 +21,15 @@ export interface ResolvedLocation {
   createdAt: string;
 }
 
+export interface SearchLocation {
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
 export type DetectLocationResponse = ApiResponse<DetectLocationData>;
 export type ResolveLocationResponse = ApiResponse<ResolvedLocation>;
+export type LocationSearchResponse = ApiResponse<SearchLocation[]>;

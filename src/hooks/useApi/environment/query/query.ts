@@ -90,7 +90,7 @@ export function useRawEnvironment() {
 export function useProviders() {
   return useQuery({
     queryKey: cacheKey.environment.providers(),
-    queryFn: () => Api.Environment.Provinder(),
+    queryFn: () => Api.Environment.Provider(),
     staleTime: 1000 * 60 * 5,
   });
 }
@@ -98,7 +98,7 @@ export function useProviders() {
 export function useProviderStatus() {
   return useQuery({
     queryKey: cacheKey.environment.providerStatus(),
-    queryFn: () => Api.Environment.ProvinderStatus(),
+    queryFn: () => Api.Environment.ProviderStatus(),
     staleTime: 1000 * 60 * 5,
   });
 }

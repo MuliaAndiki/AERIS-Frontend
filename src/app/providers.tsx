@@ -4,7 +4,7 @@ import { store, persistor } from '@/stores/store';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Toaster } from '@/components/ui/sonner';
-import { AlertProvinder } from '@/hooks/useAlert/costum-alert';
+import { AlertProvider } from '@/hooks/useAlert/costum-alert';
 import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from '@/core/providers/theme.provider';
@@ -19,7 +19,7 @@ const Providers = composeProviders([
   ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
   AuthProvider,
   ThemeProvider,
-  AlertProvinder,
+  AlertProvider,
   ReactQueryClientProvider,
 ]);
 

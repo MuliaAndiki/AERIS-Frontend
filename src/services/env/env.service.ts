@@ -94,11 +94,11 @@ class EnvironmentApi {
     const res = await AxiosClient.get('/api/environment/raw');
     return res.data;
   }
-  async Provinder(): Promise<EnvironmentProviderResponse> {
+  async Provider(): Promise<EnvironmentProviderResponse> {
     const res = await AxiosClient.get('/api/environment/providers');
     return res.data;
   }
-  async ProvinderStatus(): Promise<EnvironmentProviderStatusResponse> {
+  async ProviderStatus(): Promise<EnvironmentProviderStatusResponse> {
     const res = await AxiosClient.get('/api/environment/providers/status');
     return res.data;
   }
