@@ -62,6 +62,9 @@ export function useLogin() {
         message: ns.t('alerts.auth.login.success'),
         icon: 'success',
       });
+
+      // Redirect ke halaman map setelah login berhasil
+      ns.router.push('/map');
     },
     onError: (_err, _newData, context) => {
       if (context?.previousSession) {

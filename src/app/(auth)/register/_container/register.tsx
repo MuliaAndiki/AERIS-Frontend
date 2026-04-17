@@ -14,6 +14,7 @@ const RegisterContainer = () => {
     fullname: '',
     idenfier: '',
     password: '',
+    role: 'USER',
   });
 
   const [visible, setVisble] = useState<boolean>(false);
@@ -21,21 +22,26 @@ const RegisterContainer = () => {
   const handleRegister = (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
-    registerMutate.mutate({
+    const payload: any = {
       fullName: formRegister.fullname,
-      identifikasi: formRegister.idenfier,
       password: formRegister.password,
-      role: 'USER',
-    } as any);
+      role: formRegister.role,
+    };
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formRegister.idenfier);
+
+    if (isEmail) {
+      payload.email = formRegister.idenfier;
+    } else {
+      payload.phone = formRegister.idenfier;
+    }
+    registerMutate.mutate(payload);
   };
 
   return (
     <main className="w-full min-h-screen overflow-y-hidden">
       <RegisterSection
         service={{
-
           mutate: {
-            
             isPending: registerMutate.isPending,
             onRegister: handleRegister,
           },
