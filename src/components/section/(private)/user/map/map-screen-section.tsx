@@ -70,7 +70,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
 
   return (
     <section
-      className="w-full min-h-screen flex flex-col overflow-hidden"
+      className="w-full h-screen flex flex-col  overflow-hidden"
       style={{ backgroundColor: theme.background }}
     >
       {/* ══ MAIN CONTENT ══ */}

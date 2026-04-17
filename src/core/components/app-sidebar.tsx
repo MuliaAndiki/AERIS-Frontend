@@ -70,7 +70,7 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>My Classes</SidebarGroupLabel>
-          <SidebarGroupContent>
+          {/* <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
                 const isActive = pathname === item.url;
@@ -92,7 +92,7 @@ export function AppSidebar() {
                 );
               })}
             </SidebarMenu>
-          </SidebarGroupContent>
+          </SidebarGroupContent> */}
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>

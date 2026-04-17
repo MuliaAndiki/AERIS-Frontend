@@ -520,27 +520,29 @@ export default function MapContainer() {
   // ══ RENDER ══
   return (
     <SidebarLayout onSearch={handleLocationSearch}>
-      <MapScreenSection
-        state={{
-          location,
-          latitude,
-          longitude,
-          environmentalScore,
-          metrics: transformedMetrics,
-          alerts: transformedAlerts,
-          recommendations,
-          greenSpaces,
-          scoreHistory,
-          loading: loading || detectingLocation,
-          error,
-          isCurrentLocationDetected,
-          detectedLocation,
-        }}
-        service={{
-          onAlertClick: (alertId: string) => console.log('Alert clicked:', alertId),
-          onGreenSpaceClick: handleGreenSpaceClick,
-        }}
-      />
+      <main className="w-full min-h-screen overflow-hidden">
+        <MapScreenSection
+          state={{
+            location,
+            latitude,
+            longitude,
+            environmentalScore,
+            metrics: transformedMetrics,
+            alerts: transformedAlerts,
+            recommendations,
+            greenSpaces,
+            scoreHistory,
+            loading: loading || detectingLocation,
+            error,
+            isCurrentLocationDetected,
+            detectedLocation,
+          }}
+          service={{
+            onAlertClick: (alertId: string) => console.log('Alert clicked:', alertId),
+            onGreenSpaceClick: handleGreenSpaceClick,
+          }}
+        />
+      </main>
     </SidebarLayout>
   );
 }

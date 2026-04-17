@@ -7,7 +7,9 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { themeConfig } from '@/configs/theme.config';
 import { AppSidebar } from '@/core/components/app-sidebar';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { useApi } from '@/hooks/useApi/props.api';
+import ThemeToggle from '../components/theme-toggle';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -32,7 +34,6 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
   return (
     <SidebarProvider defaultOpen>
       <div className="flex min-h-screen w-full">
-        <AppSidebar />
         <SidebarInset>
           <div className="flex h-full flex-col w-full">
             <div className="flex items-center justify-between px-6 py-4 border-b gap-4">
@@ -62,19 +63,23 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
                 >
                   <Layers size={18} style={{ color: theme.primary.background }} />
                 </button>
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                  style={{ backgroundColor: theme.secondary.background }}
-                >
-                  MA
-                </div>
+
+                <Link href={'/user/map/profile'} className="">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    style={{ backgroundColor: theme.secondary.background }}
+                  >
+                    MA
+                  </div>
+                </Link>
+
+                <ThemeToggle />
               </div>
-              <Button onClick={() => logoutMutate.mutate()}>Keluar</Button>
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-auto w-full">
-              <div className=" h-full max-w-full w-full mx-auto p-[1rem]">{children}</div>
+            <div className="flex-1 overflow-hidden w-full">
+              <div className=" h-full container max-w-full w-full ">{children}</div>
             </div>
           </div>
         </SidebarInset>

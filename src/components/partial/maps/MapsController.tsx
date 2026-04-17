@@ -145,7 +145,7 @@ export const MapContainer: React.FC<{
 
         {/* Map Controls */}
         <MapControls
-          position="bottom-right"
+          position="top-right"
           showZoom={true}
           showCompass={true}
           showLocate={true}
@@ -158,7 +158,7 @@ export const MapContainer: React.FC<{
       </Map>
 
       {/* Layer Legend */}
-      <div className="absolute bottom-6 left-6 z-10 pointer-events-auto">
+      <div className="absolute top-6 left-6 z-10 pointer-events-auto">
         <div
           className="bg-white rounded-lg p-4 shadow-lg space-y-2"
           style={{ border: `1px solid ${theme.border}` }}
