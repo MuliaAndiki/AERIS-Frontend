@@ -133,13 +133,15 @@ export default function MapContainer() {
   const hasResolvedCoordinates = isNumber(latitude) && isNumber(longitude);
   const canPollScore = Boolean(authToken && hasResolvedCoordinates && !detectingLocation);
 
+  const handleScoreUpdate = useCallback((score: any) => {
+    console.log('Score updated via WebSocket:', score);
+  }, []);
+
   // ══ WEBSOCKET - Real-time score updates ══
   useMapWebSocket({
     enabled: canPollScore,
     pollInterval: 60000,
-    onScoreUpdate: (score) => {
-      console.log('Score updated via WebSocket:', score);
-    },
+    onScoreUpdate: handleScoreUpdate,
   });
 
   // ══ DETECT USER LOCATION ON MOUNT ══
