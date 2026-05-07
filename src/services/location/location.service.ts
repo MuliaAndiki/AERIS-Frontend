@@ -23,6 +23,13 @@ class LocationApi {
     const res = await AxiosClient.post('/api/location/resolve', payload);
     return res.data;
   }
+
+  async Reverse(lat: number, lon: number): Promise<any> {
+    const res = await AxiosClient.get('/api/location/reverse', {
+      params: { latitude: lat, longitude: lon },
+    });
+    return res.data;
+  }
 }
 
 export default new LocationApi();
