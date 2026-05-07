@@ -1,8 +1,9 @@
 'use client';
 
 import { AlertCircle, CheckCircle, Droplets, Flame, TrendingUp, Volume2, Wind } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useGeolocation } from 'react-use';
 
 import MapScreenSection from '@/components/section/(private)/user/map/map-screen-section';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
@@ -25,6 +26,7 @@ import {
   setLocation,
   setMapData,
 } from '@/stores/mapSlice/mapSlice';
+
 import { AppDispatch, RootState } from '@/stores/store';
 import { SearchLocation } from '@/types/res/location.res';
 
@@ -66,35 +68,7 @@ function readStoredLoginGeolocation(): StoredLoginGeolocation | null {
   }
 }
 
-function requestBrowserGeolocation(): Promise<StoredLoginGeolocation | null> {
-  if (typeof window === 'undefined') return Promise.resolve(null);
-  if (!('geolocation' in navigator)) return Promise.resolve(null);
 
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          capturedAt: new Date().toISOString(),
-        });
-      },
-      () => {
-        resolve(null);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      }
-    );
-  });
-}
-
-function clearStoredLoginGeolocation() {
-  if (typeof window === 'undefined') return;
-  window.sessionStorage.removeItem(LOGIN_GEO_STORAGE_KEY);
-}
 
 function formatSnapshotLabel(snapshotTime: string) {
   const parsed = new Date(snapshotTime);
@@ -144,20 +118,67 @@ export default function MapContainer() {
     onScoreUpdate: handleScoreUpdate,
   });
 
+  // ══ GEOLOCATION HOOK ══
+  const browserGeo = useGeolocation({
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000,
+  });
+
+  // ══ REVERSE GEOCODING ══
+  const reverseGeocode = async (lat: number, lon: number) => {
+    try {
+      const res = await LocationApi.Reverse(lat, lon);
+      if (res.data) {
+        return {
+          city: res.data.city,
+          country: res.data.country,
+          state: res.data.state,
+        };
+      }
+      return null;
+    } catch (err) {
+      return null;
+    }
+  };
+
   // ══ DETECT USER LOCATION ON MOUNT ══
   useEffect(() => {
     const detectLocation = async () => {
+      // Only proceed if geolocation has resolved or failed
+      if (browserGeo.loading) return;
+
       try {
         setDetectingLocation(true);
 
         const storedBrowserGeo = readStoredLoginGeolocation();
-        const browserGeo = storedBrowserGeo ?? (await requestBrowserGeolocation());
-        const response = await LocationApi.Detect();
+        
+        // Use coordinates from browser or stored geo
+        let detectedLatitude = browserGeo.latitude ?? storedBrowserGeo?.latitude;
+        let detectedLongitude = browserGeo.longitude ?? storedBrowserGeo?.longitude;
+        
+        // Fallback to IP-based detection if browser geo fails
+        let detectedCity = 'Detected Location';
+        let detectedCountry = 'Unknown';
+        let detectedState = '';
 
-        const detectedLatitude = browserGeo?.latitude ?? response.data?.latitude;
-        const detectedLongitude = browserGeo?.longitude ?? response.data?.longitude;
-        const detectedCity = response.data?.city?.trim() || 'Current Location';
-        const detectedCountry = response.data?.country?.trim() || 'Unknown';
+        if (!isNumber(detectedLatitude) || !isNumber(detectedLongitude)) {
+          const ipResponse = await LocationApi.Detect();
+          detectedLatitude = ipResponse.data?.latitude ?? detectedLatitude;
+          detectedLongitude = ipResponse.data?.longitude ?? detectedLongitude;
+          detectedCity = ipResponse.data?.city?.trim() || 'City via IP';
+          detectedCountry = ipResponse.data?.country?.trim() || 'Unknown';
+        } else {
+          // If we have precise browser coords, try to get precise city name
+          const geoInfo = await reverseGeocode(detectedLatitude, detectedLongitude);
+          if (geoInfo) {
+            detectedCity = geoInfo.city;
+            detectedCountry = geoInfo.country;
+            detectedState = geoInfo.state;
+          } else {
+            detectedCity = 'Current Location';
+          }
+        }
 
         if (!isNumber(detectedLatitude) || !isNumber(detectedLongitude)) {
           setIsCurrentLocationDetected(false);
@@ -172,13 +193,13 @@ export default function MapContainer() {
             latitude: detectedLatitude,
             longitude: detectedLongitude,
             city: detectedCity,
-            state: detectedCity,
+            state: detectedState || detectedCity,
             country: detectedCountry,
             radius: 10,
           });
         } catch (error) {
           console.warn('[Map] Failed to resolve location to backend:', error);
-          dispatch(setError('Lokasi terdeteksi di browser tetapi gagal disimpan ke server.'));
+          // Don't stop here, we still have coordinates for the map
         }
 
         setDetectedLocation({
@@ -195,9 +216,8 @@ export default function MapContainer() {
           })
         );
 
-        setIsCurrentLocationDetected(Boolean(response.data?.city && response.data?.country));
+        setIsCurrentLocationDetected(true);
         dispatch(clearError());
-        clearStoredLoginGeolocation();
       } catch (err) {
         setIsCurrentLocationDetected(false);
         const errorMsg = err instanceof Error ? err.message : 'Failed to detect location';
@@ -209,9 +229,14 @@ export default function MapContainer() {
     };
 
     void detectLocation();
-  }, [dispatch]);
+  }, [dispatch, browserGeo.loading, browserGeo.latitude, browserGeo.longitude]);
 
   // ══ API CALLS - Fetch all environmental data ══
+  // Use a ref for location to avoid circular dependency:
+  // setMapData dispatches `location` back → location changes → effect re-fires → ∞
+  const locationRef = useRef(location);
+  locationRef.current = location;
+
   useEffect(() => {
     if (!isNumber(latitude) || !isNumber(longitude)) {
       if (!detectingLocation) {
@@ -219,6 +244,9 @@ export default function MapContainer() {
       }
       return;
     }
+
+    // Skip fetch while still detecting location
+    if (detectingLocation) return;
 
     const fetchAllData = async () => {
       try {
@@ -413,7 +441,7 @@ export default function MapContainer() {
 
         dispatch(
           setMapData({
-            location,
+            location: locationRef.current,
             latitude,
             longitude,
             environmentalScore: currentScore,
@@ -434,7 +462,8 @@ export default function MapContainer() {
     };
 
     void fetchAllData();
-  }, [dispatch, detectingLocation, latitude, longitude, location]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, latitude, longitude]);
 
   // ══ EVENT HANDLERS ══
   const handleLocationSearch = useCallback(
