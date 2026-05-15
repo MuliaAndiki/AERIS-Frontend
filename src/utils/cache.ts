@@ -2,6 +2,10 @@ export const cacheKey = {
   auth: {
     session: () => ['auth', 'session'] as const,
   },
+  user: {
+    me: () => ['user', 'me'] as const,
+    profile: () => ['user', 'profile'] as const,
+  },
   location: {
     detect: () => ['location', 'detect'] as const,
     resolve: () => ['location', 'resolve'] as const,

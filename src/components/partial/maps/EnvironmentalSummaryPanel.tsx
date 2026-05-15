@@ -33,7 +33,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
   detectedLocation,
 }) => (
   <div
-    className="hidden lg:flex flex-col w-80 p-6 overflow-y-auto border-r gap-6"
+    className="flex flex-col w-full h-full p-6 overflow-y-auto border-r gap-6"
     style={{ backgroundColor: 'white', borderRightColor: theme.border }}
   >
     {/* Location Header */}
@@ -168,7 +168,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
         className="text-[11px] font-bold tracking-widest uppercase mb-4"
         style={{ color: theme.primary.background }}
       >
-        Daily Recommendations
+        Daily Recommendations BY GROC
       </h4>
       {recommendations.length > 0 ? (
         <div className="space-y-3">

@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 
 import ScoringApi from '@/services/scoring/scoring.service';
-import { addAlert, updateEnvironmentalScore, updateMetric } from '@/stores/mapSlice/mapSlice';
-import { AppDispatch } from '@/stores/store';
+
 const POLL_ERROR_LOG_WINDOW_MS = 120000;
 function resolveHttpStatus(error: unknown): number | null {
   const status = (error as any)?.response?.status;
@@ -37,7 +35,6 @@ export function useMapWebSocket({
   pollInterval?: number;
   onScoreUpdate?: (score: number) => void;
 } = {}) {
-  const dispatch = useDispatch<AppDispatch>();
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastScoreRef = useRef<number | null>(null);
   const lastErrorStatusRef = useRef<number | null>(null);
@@ -49,34 +46,18 @@ export function useMapWebSocket({
       switch (message.type) {
         case 'SCORE_UPDATED':
           if (message.payload?.score !== undefined) {
-            dispatch(updateEnvironmentalScore(message.payload.score));
             onScoreUpdate?.(message.payload.score);
           }
           break;
 
         case 'METRIC_UPDATED':
-          if (message.payload?.label) {
-            dispatch(
-              updateMetric({
-                label: message.payload.label,
-                value: message.payload.value,
-                level: message.payload.level,
-              })
-            );
-          }
+          // Metrics are managed locally in the map container now
+          console.log('[WebSocket] Metric update received:', message.payload);
           break;
 
         case 'ALERT':
-          if (message.payload?.id) {
-            dispatch(
-              addAlert({
-                id: message.payload.id,
-                type: message.payload.type || 'info',
-                title: message.payload.title,
-                description: message.payload.description,
-              })
-            );
-          }
+          // Alerts are managed locally in the map container now
+          console.log('[WebSocket] Alert received:', message.payload);
           break;
 
         case 'PING':
@@ -87,7 +68,7 @@ export function useMapWebSocket({
           console.warn('Unknown WebSocket message type:', message.type);
       }
     },
-    [dispatch, onScoreUpdate]
+    [onScoreUpdate]
   );
 
   // Polling fallback: fetch latest score periodically
