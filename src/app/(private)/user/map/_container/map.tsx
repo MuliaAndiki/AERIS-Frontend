@@ -2,35 +2,80 @@
 
 import { AlertCircle, CheckCircle, Droplets, Flame, TrendingUp, Volume2, Wind } from 'lucide-react';
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useGeolocation } from 'react-use';
 
 import MapScreenSection from '@/components/section/(private)/user/map/map-screen-section';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
-import { useMapWebSocket } from '@/hooks/useMapWebSocket';
 import EnvironmentApi from '@/services/env/env.service';
 import InsightApi from '@/services/insight/insight.service';
 import LocationApi from '@/services/location/location.service';
 import RecommendationApi from '@/services/recommendation/recommendation.service';
 import ScoringApi from '@/services/scoring/scoring.service';
 import SnapshotApi from '@/services/snapshot/snapshot.service';
-import {
-  type Alert,
-  clearError,
-  type EnvironmentalMetric,
-  type GreenSpace,
-  type Recommendation,
-  type ScoreHistory,
-  setError,
-  setLoading,
-  setLocation,
-  setMapData,
-} from '@/stores/mapSlice/mapSlice';
+import { useAuthStore } from '@/stores/auth.store';
 
-import { AppDispatch, RootState } from '@/stores/store';
 import { SearchLocation } from '@/types/res/location.res';
 
+/* ─── Types ─── */
+interface EnvironmentalMetric {
+  id: string;
+  label: string;
+  value: number;
+  unit: string;
+  level: 'good' | 'moderate' | 'poor' | 'unhealthy';
+  icon?: string;
+  color?: string;
+  radiusKm?: number;
+  description?: string;
+  shape?: 'dot' | 'ring';
+}
+
+interface Alert {
+  id: string;
+  type: 'warning' | 'info';
+  title: string;
+  description: string;
+  icon?: string;
+}
+
+interface GreenSpace {
+  id: string;
+  name: string;
+  distance: number;
+  status: string;
+  tags: string[];
+  latitude?: number;
+  longitude?: number;
+}
+
+interface ScoreHistory {
+  date: string;
+  score: number;
+  change: number;
+}
+
+interface Recommendation {
+  id: string;
+  message: string;
+  severity: number;
+  recommendationType?: string;
+  icon?: string;
+}
+
+interface MapData {
+  location: string;
+  latitude?: number;
+  longitude?: number;
+  environmentalScore: number;
+  metrics: EnvironmentalMetric[];
+  alerts: Alert[];
+  recommendations: Recommendation[];
+  greenSpaces: GreenSpace[];
+  scoreHistory: ScoreHistory[];
+}
+
+/* ─── Constants ─── */
 const LOGIN_GEO_STORAGE_KEY = 'aeris:login-geolocation';
+const GEO_TIMEOUT_MS = 8000; // Max wait for browser geolocation
 
 type StoredLoginGeolocation = {
   latitude: number;
@@ -38,6 +83,7 @@ type StoredLoginGeolocation = {
   capturedAt: string;
 };
 
+/* ─── Helpers ─── */
 function isNumber(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value);
 }
@@ -48,16 +94,11 @@ function getFulfilledValue<T>(result: PromiseSettledResult<T>) {
 
 function readStoredLoginGeolocation(): StoredLoginGeolocation | null {
   if (typeof window === 'undefined') return null;
-
   const raw = window.sessionStorage.getItem(LOGIN_GEO_STORAGE_KEY);
   if (!raw) return null;
-
   try {
     const parsed = JSON.parse(raw) as Partial<StoredLoginGeolocation>;
-    if (!isNumber(parsed.latitude) || !isNumber(parsed.longitude)) {
-      return null;
-    }
-
+    if (!isNumber(parsed.latitude) || !isNumber(parsed.longitude)) return null;
     return {
       latitude: parsed.latitude,
       longitude: parsed.longitude,
@@ -68,7 +109,47 @@ function readStoredLoginGeolocation(): StoredLoginGeolocation | null {
   }
 }
 
+/**
+ * Request browser geolocation with a timeout.
+ * Returns coords or null — never hangs.
+ */
+function requestBrowserGeolocation(): Promise<{ latitude: number; longitude: number } | null> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined' || !('geolocation' in navigator)) {
+      resolve(null);
+      return;
+    }
 
+    const timeout = setTimeout(() => {
+      console.warn('[Map] Browser geolocation timed out');
+      resolve(null);
+    }, GEO_TIMEOUT_MS);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        clearTimeout(timeout);
+        // Also store for future use
+        try {
+          window.sessionStorage.setItem(
+            LOGIN_GEO_STORAGE_KEY,
+            JSON.stringify({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              capturedAt: new Date().toISOString(),
+            }),
+          );
+        } catch { /* noop */ }
+        resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
+      },
+      (err) => {
+        clearTimeout(timeout);
+        console.warn('[Map] Browser geolocation denied/failed:', err.message);
+        resolve(null);
+      },
+      { enableHighAccuracy: true, timeout: GEO_TIMEOUT_MS, maximumAge: 30000 },
+    );
+  });
+}
 
 function formatSnapshotLabel(snapshotTime: string) {
   const parsed = new Date(snapshotTime);
@@ -77,26 +158,23 @@ function formatSnapshotLabel(snapshotTime: string) {
 }
 
 export default function MapContainer() {
-  // ══ REDUX STATE ══
-  const dispatch = useDispatch<AppDispatch>();
-  const authToken = useSelector((state: RootState) => state.auth.currentUser?.user?.token);
-  const mapState = useSelector((state: RootState) => state.map);
-  const {
-    location,
-    latitude,
-    longitude,
-    environmentalScore,
-    metrics,
-    alerts,
-    recommendations,
-    greenSpaces,
-    scoreHistory,
-    loading,
-    error,
-  } = mapState;
+  const { currentUser } = useAuthStore();
 
-  // ══ LOCAL STATE ══
-  const [detectingLocation, setDetectingLocation] = useState(false);
+  // ══ MAP STATE ══
+  const [mapData, setMapData] = useState<MapData>({
+    location: '',
+    environmentalScore: 0,
+    metrics: [],
+    alerts: [],
+    recommendations: [],
+    greenSpaces: [],
+    scoreHistory: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // ══ LOCATION STATE ══
+  const [locationPhase, setLocationPhase] = useState<'detecting' | 'resolved' | 'failed'>('detecting');
   const [detectedLocation, setDetectedLocation] = useState<{
     lat: number;
     lon: number;
@@ -104,154 +182,131 @@ export default function MapContainer() {
   } | null>(null);
   const [isCurrentLocationDetected, setIsCurrentLocationDetected] = useState(true);
 
-  const hasResolvedCoordinates = isNumber(latitude) && isNumber(longitude);
-  const canPollScore = Boolean(authToken && hasResolvedCoordinates && !detectingLocation);
+  // ══ DATA FETCH TRACKING ══
+  const hasFetchedData = useRef(false);
+  const locationDetectionRan = useRef(false);
 
-  const handleScoreUpdate = useCallback((score: any) => {
-    console.log('Score updated via WebSocket:', score);
-  }, []);
-
-  // ══ WEBSOCKET - Real-time score updates ══
-  useMapWebSocket({
-    enabled: canPollScore,
-    pollInterval: 60000,
-    onScoreUpdate: handleScoreUpdate,
-  });
-
-  // ══ GEOLOCATION HOOK ══
-  const browserGeo = useGeolocation({
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 10000,
-  });
-
-  // ══ REVERSE GEOCODING ══
-  const reverseGeocode = async (lat: number, lon: number) => {
-    try {
-      const res = await LocationApi.Reverse(lat, lon);
-      if (res.data) {
-        return {
-          city: res.data.city,
-          country: res.data.country,
-          state: res.data.state,
-        };
-      }
-      return null;
-    } catch (err) {
-      return null;
-    }
-  };
-
-  // ══ DETECT USER LOCATION ON MOUNT ══
+  // ══ STEP 1: DETECT LOCATION (runs once on mount) ══
   useEffect(() => {
+    if (locationDetectionRan.current) return;
+    locationDetectionRan.current = true;
+
     const detectLocation = async () => {
-      // Only proceed if geolocation has resolved or failed
-      if (browserGeo.loading) return;
-
       try {
-        setDetectingLocation(true);
+        setLocationPhase('detecting');
+        setLoading(true);
 
-        const storedBrowserGeo = readStoredLoginGeolocation();
-        
-        // Use coordinates from browser or stored geo
-        let detectedLatitude = browserGeo.latitude ?? storedBrowserGeo?.latitude;
-        let detectedLongitude = browserGeo.longitude ?? storedBrowserGeo?.longitude;
-        
-        // Fallback to IP-based detection if browser geo fails
-        let detectedCity = 'Detected Location';
-        let detectedCountry = 'Unknown';
+        // 1) Check sessionStorage for coordinates stored during login
+        const storedGeo = readStoredLoginGeolocation();
+
+        // 2) Try browser geolocation (with timeout, won't hang)
+        let coords = storedGeo
+          ? { latitude: storedGeo.latitude, longitude: storedGeo.longitude }
+          : null;
+
+        if (!coords) {
+          coords = await requestBrowserGeolocation();
+        }
+
+        // 3) Fallback: IP-based detection
+        let detectedCity = '';
+        let detectedCountry = '';
         let detectedState = '';
 
-        if (!isNumber(detectedLatitude) || !isNumber(detectedLongitude)) {
-          const ipResponse = await LocationApi.Detect();
-          detectedLatitude = ipResponse.data?.latitude ?? detectedLatitude;
-          detectedLongitude = ipResponse.data?.longitude ?? detectedLongitude;
-          detectedCity = ipResponse.data?.city?.trim() || 'City via IP';
-          detectedCountry = ipResponse.data?.country?.trim() || 'Unknown';
-        } else {
-          // If we have precise browser coords, try to get precise city name
-          const geoInfo = await reverseGeocode(detectedLatitude, detectedLongitude);
-          if (geoInfo) {
-            detectedCity = geoInfo.city;
-            detectedCountry = geoInfo.country;
-            detectedState = geoInfo.state;
-          } else {
+        if (!coords) {
+          try {
+            const ipResponse = await LocationApi.Detect();
+            if (isNumber(ipResponse.data?.latitude) && isNumber(ipResponse.data?.longitude)) {
+              coords = { latitude: ipResponse.data.latitude, longitude: ipResponse.data.longitude };
+              detectedCity = ipResponse.data?.city?.trim() || '';
+              detectedCountry = ipResponse.data?.country?.trim() || '';
+            }
+          } catch (e) {
+            console.warn('[Map] IP detection failed:', e);
+          }
+        }
+
+        // 4) No coordinates at all — show error
+        if (!coords) {
+          setLocationPhase('failed');
+          setIsCurrentLocationDetected(false);
+          setError('Lokasi tidak terdeteksi. Izinkan akses lokasi atau cari lokasi manual.');
+          setLoading(false);
+          return;
+        }
+
+        // 5) Reverse geocode if we don't have a city name
+        if (!detectedCity) {
+          try {
+            const geoInfo = await LocationApi.Reverse(coords.latitude, coords.longitude);
+            if (geoInfo?.data) {
+              detectedCity = geoInfo.data.city || 'Current Location';
+              detectedCountry = geoInfo.data.country || '';
+              detectedState = geoInfo.data.state || '';
+            } else {
+              detectedCity = 'Current Location';
+            }
+          } catch {
             detectedCity = 'Current Location';
           }
         }
 
-        if (!isNumber(detectedLatitude) || !isNumber(detectedLongitude)) {
-          setIsCurrentLocationDetected(false);
-          dispatch(
-            setError('Lokasi tidak terdeteksi. Izinkan akses lokasi atau cari lokasi manual.')
-          );
-          return;
-        }
-
+        // 6) Resolve location to backend (creates UserLocation for snapshot job)
         try {
           await LocationApi.Resolve({
-            latitude: detectedLatitude,
-            longitude: detectedLongitude,
+            latitude: coords.latitude,
+            longitude: coords.longitude,
             city: detectedCity,
             state: detectedState || detectedCity,
-            country: detectedCountry,
+            country: detectedCountry || 'Unknown',
             radius: 10,
           });
-        } catch (error) {
-          console.warn('[Map] Failed to resolve location to backend:', error);
-          // Don't stop here, we still have coordinates for the map
+        } catch (e) {
+          console.warn('[Map] Location resolve failed (non-blocking):', e);
         }
 
+        // 7) Update state
         setDetectedLocation({
-          lat: detectedLatitude,
-          lon: detectedLongitude,
+          lat: coords.latitude,
+          lon: coords.longitude,
           city: detectedCity,
         });
 
-        dispatch(
-          setLocation({
-            location: `${detectedCity}, ${detectedCountry}`,
-            latitude: detectedLatitude,
-            longitude: detectedLongitude,
-          })
-        );
+        setMapData((prev) => ({
+          ...prev,
+          location: `${detectedCity}${detectedCountry ? `, ${detectedCountry}` : ''}`,
+          latitude: coords!.latitude,
+          longitude: coords!.longitude,
+        }));
 
         setIsCurrentLocationDetected(true);
-        dispatch(clearError());
+        setLocationPhase('resolved');
+        setError(null);
       } catch (err) {
+        console.error('[Map] Location detection error:', err);
+        setLocationPhase('failed');
         setIsCurrentLocationDetected(false);
-        const errorMsg = err instanceof Error ? err.message : 'Failed to detect location';
-        dispatch(setError(errorMsg));
-      } finally {
-        setDetectingLocation(false);
-        dispatch(setLoading(false));
+        setError(err instanceof Error ? err.message : 'Failed to detect location');
+        setLoading(false);
       }
     };
 
     void detectLocation();
-  }, [dispatch, browserGeo.loading, browserGeo.latitude, browserGeo.longitude]);
+  }, []);
 
-  // ══ API CALLS - Fetch all environmental data ══
-  // Use a ref for location to avoid circular dependency:
-  // setMapData dispatches `location` back → location changes → effect re-fires → ∞
-  const locationRef = useRef(location);
-  locationRef.current = location;
-
+  // ══ STEP 2: FETCH ENVIRONMENTAL DATA (only after location resolved) ══
   useEffect(() => {
-    if (!isNumber(latitude) || !isNumber(longitude)) {
-      if (!detectingLocation) {
-        dispatch(setLoading(false));
-      }
-      return;
-    }
-
-    // Skip fetch while still detecting location
-    if (detectingLocation) return;
+    if (locationPhase !== 'resolved') return;
+    if (!isNumber(mapData.latitude) || !isNumber(mapData.longitude)) return;
+    if (hasFetchedData.current) return;
+    hasFetchedData.current = true;
 
     const fetchAllData = async () => {
       try {
-        dispatch(setLoading(true));
-        dispatch(setError(null));
+        setLoading(true);
+        setError(null);
+
+        console.log('[Map] Fetching environmental data for:', mapData.latitude, mapData.longitude);
 
         const results = await Promise.allSettled([
           EnvironmentApi.AirQuality(),
@@ -278,20 +333,14 @@ export default function MapContainer() {
         results.forEach((result, index) => {
           if (result.status === 'rejected') {
             const apiNames = [
-              'AirQuality',
-              'HeatRisk',
-              'Noise',
-              'DisasterRisk',
-              'GreenSpace',
-              'Score',
-              'Insight',
-              'Recommendation',
-              'SnapshotHistory',
+              'AirQuality', 'HeatRisk', 'Noise', 'DisasterRisk', 'GreenSpace',
+              'Score', 'Insight', 'Recommendation', 'SnapshotHistory',
             ];
             console.warn(`[Map] ${apiNames[index]} API failed:`, result.reason);
           }
         });
 
+        // ── Transform metrics ──
         const transformedMetrics: EnvironmentalMetric[] = [];
 
         const airQualityPayload =
@@ -300,11 +349,16 @@ export default function MapContainer() {
         const airQualityAqi = Number(airQualityPayload?.overall_aqi ?? airQualityPayload?.aqi);
         if (isNumber(airQualityAqi)) {
           transformedMetrics.push({
+            id: 'air-quality',
             label: 'Air Quality',
             value: airQualityAqi,
             unit: 'AQI',
             level: airQualityAqi <= 50 ? 'good' : airQualityAqi <= 100 ? 'moderate' : 'poor',
             icon: 'wind',
+            color: '#3b82f6',
+            radiusKm: 5,
+            description: 'Monitoring radius for Air Quality Index (AQI). Measures PM2.5, PM10, O3, and other pollutants within this area.',
+            shape: 'ring',
           });
         }
 
@@ -312,123 +366,106 @@ export default function MapContainer() {
         const heatScore = Number(heatRiskRes?.data?.heatScore);
         if (isNumber(heatFeelsLike)) {
           transformedMetrics.push({
+            id: 'heat-risk',
             label: 'Heat Risk',
             value: heatFeelsLike,
             unit: '°C',
             level: isNumber(heatScore)
-              ? heatScore > 70
-                ? 'poor'
-                : heatScore > 50
-                  ? 'moderate'
-                  : 'good'
-              : heatFeelsLike > 35
-                ? 'poor'
-                : heatFeelsLike > 31
-                  ? 'moderate'
-                  : 'good',
+              ? heatScore > 70 ? 'poor' : heatScore > 50 ? 'moderate' : 'good'
+              : heatFeelsLike > 35 ? 'poor' : heatFeelsLike > 31 ? 'moderate' : 'good',
             icon: 'flame',
+            color: '#f97316',
+            radiusKm: 3,
+            description: 'Heat risk zone based on apparent temperature (feels-like). Covers urban heat island effects within this radius.',
+            shape: 'ring',
           });
         }
 
         const floodScore = Number(disasterRiskRes?.data?.floodScore);
         if (isNumber(floodScore)) {
           transformedMetrics.push({
-            label: 'Flood Risk',
-            value: floodScore,
-            unit: '%',
+            id: 'flood-risk',
+            label: 'Flood Risk', value: floodScore, unit: '%',
             level: floodScore > 70 ? 'poor' : floodScore > 50 ? 'moderate' : 'good',
             icon: 'droplets',
+            color: '#ef4444',
+            radiusKm: 5,
+            description: 'Flood risk assessment from ThinkHazard database. Covers flood-prone areas around your location.',
+            shape: 'ring',
           });
         }
 
         const noiseLevel = Number(noiseRes?.data?.estimatedNoiseLevel);
         if (isNumber(noiseLevel)) {
           transformedMetrics.push({
-            label: 'Noise',
-            value: noiseLevel,
-            unit: 'dB',
+            id: 'noise',
+            label: 'Noise Level', value: noiseLevel, unit: 'dB',
             level: noiseLevel > 70 ? 'poor' : noiseLevel > 60 ? 'moderate' : 'good',
             icon: 'volume',
+            color: '#8b5cf6',
+            radiusKm: 2,
+            description: 'Noise estimation zone based on major road density analysis. Shows predicted noise levels in dB.',
+            shape: 'ring',
           });
         }
 
+        // ── Green spaces ──
         const greenSpacesRaw =
           greenSpaceRes?.data?.greenAreas ?? greenSpaceRes?.data?.greenSpace?.parkData ?? [];
         const transformedGreenSpaces: GreenSpace[] = Array.isArray(greenSpacesRaw)
-          ? greenSpacesRaw.map((space: any, index: number) => {
-              const parsedLatitude = Number(space?.latitude);
-              const parsedLongitude = Number(space?.longitude);
-              const parsedDistance = Number(space?.distanceKm ?? space?.distance);
-
-              return {
-                id: String(space?.id ?? `${space?.name ?? 'green-space'}-${index}`),
-                name: String(space?.name ?? 'Unknown Green Space'),
-                distance: isNumber(parsedDistance) ? parsedDistance : 0,
-                status: typeof space?.status === 'string' ? space.status : 'Unknown',
-                tags: Array.isArray(space?.tags)
-                  ? space.tags.filter((tag: unknown) => typeof tag === 'string')
-                  : [],
-                latitude: isNumber(parsedLatitude) ? parsedLatitude : undefined,
-                longitude: isNumber(parsedLongitude) ? parsedLongitude : undefined,
-              };
-            })
+          ? greenSpacesRaw.map((space: any, index: number) => ({
+              id: String(space?.id ?? `${space?.name ?? 'green-space'}-${index}`),
+              name: String(space?.name ?? 'Unknown Green Space'),
+              distance: isNumber(Number(space?.distanceKm ?? space?.distance))
+                ? Number(space?.distanceKm ?? space?.distance) : 0,
+              status: typeof space?.status === 'string' ? space.status : 'Unknown',
+              tags: Array.isArray(space?.tags)
+                ? space.tags.filter((tag: unknown) => typeof tag === 'string') : [],
+              latitude: isNumber(Number(space?.latitude)) ? Number(space?.latitude) : undefined,
+              longitude: isNumber(Number(space?.longitude)) ? Number(space?.longitude) : undefined,
+            }))
           : [];
 
+        // ── Alerts ──
         const transformedAlerts: Alert[] = insightRes?.data
-          ? [
-              {
-                id: insightRes.data.snapshotId ?? insightRes.data.title,
-                type: insightRes.data.severity === 'high' ? 'warning' : 'info',
-                title: insightRes.data.title,
-                description: insightRes.data.message,
-                icon: insightRes.data.severity === 'high' ? 'alert' : 'trending-up',
-              },
-            ]
+          ? [{
+              id: insightRes.data.snapshotId ?? insightRes.data.title,
+              type: insightRes.data.severity === 'high' ? 'warning' : 'info',
+              title: insightRes.data.title,
+              description: insightRes.data.message,
+              icon: insightRes.data.severity === 'high' ? 'alert' : 'trending-up',
+            }]
           : [];
 
+        // ── Recommendations ──
         const recommendationItems = recommendationRes?.data?.items ?? [];
         const transformedRecommendations: Recommendation[] = Array.isArray(recommendationItems)
           ? recommendationItems.map((rec: any, index: number) => {
-              const severity = Number(rec?.severity);
-              const safeSeverity = isNumber(severity) ? severity : 0;
+              const severity = isNumber(Number(rec?.severity)) ? Number(rec?.severity) : 0;
               return {
                 id: String(rec?.id ?? `recommendation-${index}`),
                 message: String(rec?.message ?? ''),
-                severity: safeSeverity,
-                recommendationType:
-                  typeof rec?.recommendationType === 'string' ? rec.recommendationType : undefined,
-                icon: safeSeverity >= 2 ? 'alert' : safeSeverity === 1 ? 'info' : 'check',
+                severity,
+                recommendationType: typeof rec?.recommendationType === 'string' ? rec.recommendationType : undefined,
+                icon: severity >= 2 ? 'alert' : severity === 1 ? 'info' : 'check',
               };
             })
           : [];
 
-        const historyItems = Array.isArray(snapshotHistoryRes?.data)
-          ? [...snapshotHistoryRes.data]
-          : [];
-
-        historyItems.sort(
-          (a, b) => new Date(a.snapshotTime).getTime() - new Date(b.snapshotTime).getTime()
-        );
+        // ── Score history ──
+        const historyItems = Array.isArray(snapshotHistoryRes?.data) ? [...snapshotHistoryRes.data] : [];
+        historyItems.sort((a, b) => new Date(a.snapshotTime).getTime() - new Date(b.snapshotTime).getTime());
 
         const transformedScoreHistory: ScoreHistory[] = historyItems.map((item, index) => {
-          const score = Number(item.environmentalScore);
-          const safeScore = isNumber(score) ? score : 0;
-
-          if (index === 0) {
-            return {
-              date: formatSnapshotLabel(item.snapshotTime),
-              score: safeScore,
-              change: 0,
-            };
-          }
-
-          const prevScoreValue = Number(historyItems[index - 1]?.environmentalScore);
-          const prevScore = isNumber(prevScoreValue) ? prevScoreValue : safeScore;
-
+          const score = isNumber(Number(item.environmentalScore)) ? Number(item.environmentalScore) : 0;
+          const prevScore = index > 0
+            ? (isNumber(Number(historyItems[index - 1]?.environmentalScore))
+              ? Number(historyItems[index - 1]?.environmentalScore) : score)
+            : score;
           return {
             date: formatSnapshotLabel(item.snapshotTime),
-            score: safeScore,
-            change: safeScore - prevScore,
+            score,
+            change: index === 0 ? 0 : score - prevScore,
           };
         });
 
@@ -439,131 +476,97 @@ export default function MapContainer() {
             ? transformedScoreHistory[transformedScoreHistory.length - 1].score
             : 0;
 
-        dispatch(
-          setMapData({
-            location: locationRef.current,
-            latitude,
-            longitude,
-            environmentalScore: currentScore,
-            metrics: transformedMetrics,
-            alerts: transformedAlerts,
-            recommendations: transformedRecommendations,
-            greenSpaces: transformedGreenSpaces,
-            scoreHistory: transformedScoreHistory,
-            searchQuery: '',
-          })
-        );
+        setMapData((prev) => ({
+          ...prev,
+          environmentalScore: currentScore,
+          metrics: transformedMetrics,
+          alerts: transformedAlerts,
+          recommendations: transformedRecommendations,
+          greenSpaces: transformedGreenSpaces,
+          scoreHistory: transformedScoreHistory,
+        }));
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Failed to load map data';
-        dispatch(setError(errorMsg));
+        setError(err instanceof Error ? err.message : 'Failed to load map data');
       } finally {
-        dispatch(setLoading(false));
+        setLoading(false);
       }
     };
 
     void fetchAllData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, latitude, longitude]);
+  }, [locationPhase, mapData.latitude, mapData.longitude]);
 
-  // ══ EVENT HANDLERS ══
-  const handleLocationSearch = useCallback(
-    async (query: string) => {
-      if (!query.trim()) return;
-
-      try {
-        dispatch(setLoading(true));
-
-        // Search locations from API
-        const searchRes = await LocationApi.Search(query);
-
-        if (searchRes.data && searchRes.data.length > 0) {
-          const foundLocation = searchRes.data[0] as SearchLocation;
-
-          const resolveRes = await LocationApi.Resolve({
-            latitude: foundLocation.latitude,
-            longitude: foundLocation.longitude,
-            city: foundLocation.city,
-            state: foundLocation.state,
-            country: foundLocation.country,
-            radius: 10,
-          });
-
-          if (resolveRes.data) {
-            dispatch(
-              setLocation({
-                location: `${foundLocation.city}, ${foundLocation.state}`,
-                latitude: foundLocation.latitude,
-                longitude: foundLocation.longitude,
-              })
-            );
-
-            dispatch(clearError());
-            setIsCurrentLocationDetected(false);
-          }
-        } else {
-          dispatch(setError(`Location "${query}" not found. Please try another search.`));
-        }
-      } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Failed to update location';
-        dispatch(setError(errorMsg));
-      } finally {
-        dispatch(setLoading(false));
+  // ══ LOCATION SEARCH ══
+  const handleLocationSearch = useCallback(async (query: string) => {
+    if (!query.trim()) return;
+    try {
+      setLoading(true);
+      const searchRes = await LocationApi.Search(query);
+      if (searchRes.data && searchRes.data.length > 0) {
+        const found = searchRes.data[0] as SearchLocation;
+        await LocationApi.Resolve({
+          latitude: found.latitude,
+          longitude: found.longitude,
+          city: found.city,
+          state: found.state,
+          country: found.country,
+          radius: 10,
+        });
+        // Reset fetch flag so data re-fetches for new location
+        hasFetchedData.current = false;
+        setMapData((prev) => ({
+          ...prev,
+          location: `${found.city}, ${found.state}`,
+          latitude: found.latitude,
+          longitude: found.longitude,
+        }));
+        setLocationPhase('resolved');
+        setIsCurrentLocationDetected(false);
+        setError(null);
+      } else {
+        setError(`Location "${query}" not found. Please try another search.`);
       }
-    },
-    [dispatch]
-  );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update location');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const handleGreenSpaceClick = useCallback((spaceId: string) => {
     console.log('Green space clicked:', spaceId);
   }, []);
 
-  // ══ UTILITY FUNCTION - Map icon names to Lucide components ══
+  // ══ ICON MAPPER ══
   const getIconComponent = (iconName?: string) => {
     switch (iconName) {
-      case 'wind':
-        return <Wind size={20} />;
-      case 'flame':
-        return <Flame size={20} />;
-      case 'droplets':
-        return <Droplets size={20} />;
-      case 'volume':
-        return <Volume2 size={20} />;
-      case 'alert':
-        return <AlertCircle size={20} />;
-      case 'trending-up':
-        return <TrendingUp size={20} />;
-      default:
-        return <CheckCircle size={20} />;
+      case 'wind': return <Wind size={20} />;
+      case 'flame': return <Flame size={20} />;
+      case 'droplets': return <Droplets size={20} />;
+      case 'volume': return <Volume2 size={20} />;
+      case 'alert': return <AlertCircle size={20} />;
+      case 'trending-up': return <TrendingUp size={20} />;
+      default: return <CheckCircle size={20} />;
     }
   };
 
-  // ══ TRANSFORM REDUX DATA TO COMPONENT PROPS ══
-  const transformedMetrics = metrics.map((metric) => ({
-    ...metric,
-    icon: getIconComponent(metric.icon),
-  }));
+  const transformedMetrics = mapData.metrics.map((m) => ({ ...m, icon: getIconComponent(m.icon) }));
+  const transformedAlerts = mapData.alerts.map((a) => ({ ...a, icon: getIconComponent(a.icon) }));
 
-  const transformedAlerts = alerts.map((alert) => ({
-    ...alert,
-    icon: getIconComponent(alert.icon),
-  }));
-
-  // ══ RENDER ══
   return (
     <SidebarLayout onSearch={handleLocationSearch}>
-      <main className="w-full min-h-screen overflow-hidden">
+      <main className="w-full min-h-screen overflow-x-hidden">
         <MapScreenSection
           state={{
-            location,
-            latitude,
-            longitude,
-            environmentalScore,
+            location: mapData.location,
+            latitude: mapData.latitude,
+            longitude: mapData.longitude,
+            environmentalScore: mapData.environmentalScore,
             metrics: transformedMetrics,
             alerts: transformedAlerts,
-            recommendations,
-            greenSpaces,
-            scoreHistory,
-            loading: loading || detectingLocation,
+            recommendations: mapData.recommendations,
+            greenSpaces: mapData.greenSpaces,
+            scoreHistory: mapData.scoreHistory,
+            loading,
             error,
             isCurrentLocationDetected,
             detectedLocation,
@@ -573,6 +576,7 @@ export default function MapContainer() {
             onGreenSpaceClick: handleGreenSpaceClick,
           }}
         />
+        
       </main>
     </SidebarLayout>
   );

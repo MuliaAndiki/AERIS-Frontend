@@ -1,5 +1,5 @@
 import ProfileContainer from './_container/profile';
 
-export default function Profile() {
+export default function ProfilePage() {
   return <ProfileContainer />;
 }

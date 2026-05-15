@@ -1,9 +1,14 @@
 export interface EnvironmentalMetric {
+  id: string;
   label: string;
   value: number;
   unit: string;
   level: 'good' | 'moderate' | 'poor' | 'unhealthy';
-  icon: React.ReactNode;
+  icon: React.ReactNode | string;
+  color?: string;
+  radiusKm?: number;
+  description?: string;
+  shape?: 'dot' | 'ring';
 }
 
 export interface Alert {

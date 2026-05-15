@@ -5,8 +5,7 @@ import { useState } from 'react';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { themeConfig } from '@/configs/theme.config';
-import { AppSidebar } from '@/core/components/app-sidebar';
-import { Button } from '@/components/ui/button';
+
 import Link from 'next/link';
 import { useApi } from '@/hooks/useApi/props.api';
 import ThemeToggle from '../components/theme-toggle';
@@ -57,12 +56,7 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
               </div>
 
               <div className="flex items-center gap-3">
-                <button
-                  className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors"
-                  style={{ backgroundColor: theme.background }}
-                >
-                  <Layers size={18} style={{ color: theme.primary.background }} />
-                </button>
+               
 
                 <Link href={'/user/map/profile'} className="">
                   <div
@@ -73,7 +67,7 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
                   </div>
                 </Link>
 
-                <ThemeToggle />
+               
               </div>
             </div>
 

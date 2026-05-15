@@ -23,7 +23,7 @@ export const InsightsPanel: React.FC<{
   onGreenSpaceClick,
 }) => (
   <div
-    className="hidden lg:flex flex-col w-80 p-6 overflow-y-auto border-l gap-6"
+    className="flex flex-col w-full h-full p-6 overflow-y-auto border-l gap-6"
     style={{ backgroundColor: 'white', borderLeftColor: theme.border }}
   >
     {/* Active Alerts */}
