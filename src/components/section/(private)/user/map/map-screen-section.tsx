@@ -60,15 +60,15 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
   // Show loading state with dynamic messages
   const [loadingStep, setLoadingStep] = useState(0);
   const loadingMessages = [
-    "Establishing secure connection...",
-    "Detecting geographical coordinates...",
-    "Fetching Air Quality Index (AQI)...",
-    "Analyzing urban heat islands...",
-    "Estimating noise pollution levels...",
-    "Querying flood risk from ThinkHazard...",
-    "Locating nearby green spaces...",
-    "Calculating global environmental score...",
-    "Generating AI-powered insights..."
+    'Establishing secure connection...',
+    'Detecting geographical coordinates...',
+    'Fetching Air Quality Index (AQI)...',
+    'Analyzing urban heat islands...',
+    'Estimating noise pollution levels...',
+    'Querying flood risk from ThinkHazard...',
+    'Locating nearby green spaces...',
+    'Calculating global environmental score...',
+    'Generating AI-powered insights...',
   ];
 
   React.useEffect(() => {
@@ -84,27 +84,41 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
     return (
       <section
         className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden"
-        style={{ backgroundColor: theme.background }}
+        style={{ backgroundColor: theme.foreground }}
       >
         {/* Background glow */}
         <div className="absolute inset-0">
-          <div className="absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ background: `radial-gradient(circle, ${theme.primary.background}, transparent)` }} />
+          <div
+            className="absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{
+              background: `radial-gradient(circle, ${theme.primary.background}, transparent)`,
+            }}
+          />
         </div>
 
         <div className="text-center z-10 max-w-sm w-full px-6">
           {/* Animated rings */}
           <div className="relative w-24 h-24 mx-auto mb-8 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-2 border-dashed opacity-20 animate-[spin_8s_linear_infinite]" style={{ borderColor: theme.primary.background }} />
-            <div className="absolute inset-2 rounded-full border-2 border-dotted opacity-40 animate-[spin_4s_linear_infinite_reverse]" style={{ borderColor: theme.success.background }} />
-            <div className="absolute inset-4 rounded-full border-t-2 border-r-2 opacity-80 animate-spin" style={{ borderColor: theme.primary.background }} />
-            
+            <div
+              className="absolute inset-0 rounded-full border-2 border-dashed opacity-20 animate-[spin_8s_linear_infinite]"
+              style={{ borderColor: theme.primary.background }}
+            />
+            <div
+              className="absolute inset-2 rounded-full border-2 border-dotted opacity-40 animate-[spin_4s_linear_infinite_reverse]"
+              style={{ borderColor: theme.success.background }}
+            />
+            <div
+              className="absolute inset-4 rounded-full border-t-2 border-r-2 opacity-80 animate-spin"
+              style={{ borderColor: theme.primary.background }}
+            />
+
             <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#248277] to-[#67B99A] animate-pulse shadow-[0_0_20px_rgba(36,130,119,0.5)]">
               <div className="w-3 h-3 bg-white rounded-full" />
             </div>
           </div>
 
           <h3 className="text-lg font-bold text-white mb-2 tracking-wide">Syncing Environment</h3>
-          
+
           {/* Cycling text */}
           <div className="h-6 overflow-hidden relative mb-6">
             {loadingMessages.map((msg, idx) => (
@@ -114,7 +128,12 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
                 style={{
                   color: theme.muted.foreground,
                   opacity: loadingStep === idx ? 1 : 0,
-                  transform: loadingStep === idx ? 'translateY(0)' : loadingStep < idx ? 'translateY(-100%)' : 'translateY(100%)',
+                  transform:
+                    loadingStep === idx
+                      ? 'translateY(0)'
+                      : loadingStep < idx
+                        ? 'translateY(-100%)'
+                        : 'translateY(100%)',
                 }}
               >
                 {msg}
@@ -124,11 +143,11 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
 
           {/* Progress bar */}
           <div className="w-full h-1.5 rounded-full overflow-hidden bg-white/5">
-            <div 
+            <div
               className="h-full rounded-full transition-all duration-1000 ease-in-out"
-              style={{ 
+              style={{
                 width: `${((loadingStep + 1) / loadingMessages.length) * 100}%`,
-                background: 'linear-gradient(90deg, #248277, #67B99A)' 
+                background: 'linear-gradient(90deg, #248277, #67B99A)',
               }}
             />
           </div>
@@ -145,10 +164,10 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
       {/* ══ MAIN CONTENT ══ */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Environmental Summary Panel - Toggleable on Mobile, Sidebar on Desktop */}
-        <div 
+        <div
           className={cn(
-            "h-full transition-all duration-300 lg:static lg:w-80 lg:block border-r",
-            activeMobileTab === 'summary' ? "fixed inset-0 z-40 block bg-white" : "hidden lg:block"
+            'h-full transition-all duration-300 lg:static lg:w-80 lg:block border-r',
+            activeMobileTab === 'summary' ? 'fixed inset-0 z-40 block bg-white' : 'hidden lg:block'
           )}
         >
           <EnvironmentalSummaryPanel
@@ -166,10 +185,12 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
         </div>
 
         {/* Map Container - Main view on Desktop, Toggleable on Mobile */}
-        <div className={cn(
-          "flex-1 h-full relative flex flex-col",
-          activeMobileTab === 'map' ? "block" : "hidden lg:block"
-        )}>
+        <div
+          className={cn(
+            'flex-1 h-full relative flex flex-col',
+            activeMobileTab === 'map' ? 'block' : 'hidden lg:block'
+          )}
+        >
           <MapContainer
             theme={theme}
             greenSpaces={greenSpaces}
@@ -183,10 +204,10 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
         </div>
 
         {/* Insights Panel - Toggleable on Mobile, Sidebar on Desktop */}
-        <div 
+        <div
           className={cn(
-            "h-full transition-all duration-300 lg:static lg:w-80 lg:block border-l",
-            activeMobileTab === 'insights' ? "fixed inset-0 z-40 block bg-white" : "hidden lg:block"
+            'h-full transition-all duration-300 lg:static lg:w-80 lg:block border-l',
+            activeMobileTab === 'insights' ? 'fixed inset-0 z-40 block bg-white' : 'hidden lg:block'
           )}
         >
           <InsightsPanel
@@ -214,7 +235,11 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             {activeMobileTab === 'summary' && <MapIcon size={20} />}
             {activeMobileTab === 'insights' && <Info size={20} />}
             <span className="text-[9px] font-bold uppercase tracking-tighter">
-              {activeMobileTab === 'map' ? 'Stats' : activeMobileTab === 'summary' ? 'Map' : 'Summary'}
+              {activeMobileTab === 'map'
+                ? 'Stats'
+                : activeMobileTab === 'summary'
+                  ? 'Map'
+                  : 'Summary'}
             </span>
           </Button>
         </div>
