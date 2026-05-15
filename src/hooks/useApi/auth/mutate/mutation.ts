@@ -7,7 +7,6 @@ import {
 } from '@/configs/cookies.config';
 import { useAppNameSpace } from '@/hooks/useAppNameSpace';
 import Api from '@/services/props.service';
-import { logout, setCurrentUser } from '@/stores/authSlice/authSlice';
 import {
   PickForgotPassword,
   PickLogin,
@@ -17,7 +16,6 @@ import {
   PickVerify,
 } from '@/types/schema/auth.schema';
 import { cacheKey } from '@/utils/cache';
-import { resetMapData } from '@/stores/mapSlice/mapSlice';
 
 const LOGIN_GEO_STORAGE_KEY = 'aeris:login-geolocation';
 
@@ -74,14 +72,12 @@ export function useLogin() {
         });
       }
 
-      ns.dispatch(
-        setCurrentUser({
-          user: {
-            token: token ?? '',
-            role: role ?? 'USER',
-          },
-        } as any)
-      );
+      ns.authStore.setCurrentUser({
+        user: {
+          token: token ?? '',
+          role: role ?? 'USER',
+        },
+      } as any);
 
       ns.queryClient.setQueryData(cacheKey.auth.session(), res);
 
@@ -164,8 +160,7 @@ export function useLogout() {
       await ns.queryClient.cancelQueries({ queryKey: cacheKey.auth.session() });
       const previousSession = ns.queryClient.getQueryData(cacheKey.auth.session());
 
-      ns.dispatch(logout());
-      ns.dispatch(resetMapData());
+      ns.authStore.logout();
       deleteCookie(APP_SESSION_COOKIE_KEY, { path: '/' });
       deleteCookie('user_role', { path: '/' });
 
@@ -182,8 +177,7 @@ export function useLogout() {
         message: ns.t('alerts.auth.logout.failed'),
         icon: 'error',
         onVoid: () => {
-          ns.dispatch(logout());
-          ns.dispatch(resetMapData());
+          ns.authStore.logout();
         },
       });
     },

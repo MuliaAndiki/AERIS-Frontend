@@ -9,12 +9,26 @@ import {
 } from '@/components/ui/map';
 import { themeConfig } from '@/configs/theme.config';
 import { GreenSpace } from '@/types/partial/maps';
-import { Badge, TreePine, Info } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Badge, TreePine, Info, Wind, Flame, Droplets, Volume2, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
+import { useRef, useState, useCallback } from 'react';
 import {
   EnvironmentalBufferZone,
   GreenSpaceBufferZones,
 } from '@/components/partial/maps/BufferZoneLayer';
+
+/* ─── Legend environment definitions ─── */
+interface EnvironmentLegendItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  color: string;
+  radiusKm: number;
+  description: string;
+  shape?: 'dot' | 'ring';
+  visible: boolean;
+}
+
+
 
 export const MapContainer: React.FC<{
   theme: typeof themeConfig.light;
@@ -23,6 +37,7 @@ export const MapContainer: React.FC<{
   location?: string;
   latitude?: number;
   longitude?: number;
+  metrics?: any[];
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onGreenSpaceClick?: (spaceId: string) => void;
@@ -33,6 +48,7 @@ export const MapContainer: React.FC<{
   location,
   latitude,
   longitude,
+  metrics = [],
   onGreenSpaceClick,
 }) => {
   const mapRef = useRef<MapRef>(null);
@@ -43,6 +59,34 @@ export const MapContainer: React.FC<{
     label: string;
     description: string;
   } | null>(null);
+  const [hiddenLegendIds, setHiddenLegendIds] = useState<Set<string>>(new Set());
+  const [legendExpanded, setLegendExpanded] = useState(true);
+  const [activeLegendPopup, setActiveLegendPopup] = useState<string | null>(null);
+
+  // Build legend items dynamically from API metrics
+  const legendItems: EnvironmentLegendItem[] = metrics.map((m) => ({
+    id: m.id,
+    label: m.label,
+    icon: m.icon,
+    color: m.color || theme.primary.background,
+    radiusKm: m.radiusKm || 5,
+    description: m.description || `Monitoring radius for ${m.label}.`,
+    shape: m.shape as 'dot' | 'ring' || 'ring',
+    visible: !hiddenLegendIds.has(m.id),
+  }));
+
+  if (greenSpaces.length > 0) {
+    legendItems.push({
+      id: 'green-space',
+      label: 'Green Space',
+      icon: <TreePine size={12} />,
+      color: '#22c55e',
+      radiusKm: 0.3,
+      description: 'Green space influence zone. Parks and nature areas contributing to better air quality and lower noise.',
+      shape: 'dot',
+      visible: !hiddenLegendIds.has('green-space'),
+    });
+  }
 
   const hasUserCoordinates =
     typeof latitude === 'number' &&
@@ -53,8 +97,24 @@ export const MapContainer: React.FC<{
   const mapLng = hasUserCoordinates ? longitude : 0;
   const mapLat = hasUserCoordinates ? latitude : 0;
 
+  const toggleLegendVisibility = useCallback((itemId: string) => {
+    setHiddenLegendIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleLegendPopup = useCallback((itemId: string) => {
+    setActiveLegendPopup((prev) => (prev === itemId ? null : itemId));
+  }, []);
+
   return (
-    <div className="flex-1 relative flex flex-col">
+    <div className="flex-1 h-full relative flex flex-col">
       <Map
         ref={mapRef}
         center={[mapLng, mapLat]}
@@ -228,39 +288,150 @@ export const MapContainer: React.FC<{
         />
       </Map>
 
-      {/* Layer Legend */}
+      {/* ══ ENVIRONMENT LEGEND ══ */}
       <div className="absolute top-6 left-6 z-10 pointer-events-auto">
         <div
-          className="bg-white rounded-lg p-4 shadow-lg space-y-2"
-          style={{ border: `1px solid ${theme.border}` }}
+          className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300"
+          style={{
+            border: `1px solid ${theme.border}`,
+            width: legendExpanded ? 280 : 180,
+          }}
         >
-          <p className="text-[11px] font-bold" style={{ color: theme.primary.background }}>
-            LAYER LEGEND
-          </p>
-          <div className="space-y-2">
-            {[
-              { color: theme.primary.background, label: 'Your location' },
-              { color: '#3b82f660', label: 'Monitoring radius', shape: 'ring' as const },
-              { color: theme.success.background, label: 'Green space' },
-              { color: '#22c55e40', label: 'Green space zone', shape: 'ring' as const },
-              { color: theme.warning.background, label: 'Heat risk zone' },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2">
+          {/* Legend Header */}
+          <button
+            onClick={() => setLegendExpanded((prev) => !prev)}
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: `${theme.primary.background}15` }}
+              >
+                <Info size={12} style={{ color: theme.primary.background }} />
+              </div>
+              <p className="text-[11px] font-bold tracking-wider uppercase" style={{ color: theme.primary.background }}>
+                Environment Legend
+              </p>
+            </div>
+            {legendExpanded ? (
+              <ChevronUp size={14} style={{ color: theme.muted.foreground }} />
+            ) : (
+              <ChevronDown size={14} style={{ color: theme.muted.foreground }} />
+            )}
+          </button>
+
+          {/* Legend Items */}
+          {legendExpanded && (
+            <div className="px-3 pb-3 space-y-1">
+              {/* Your Location indicator */}
+              <div className="flex items-center gap-3 px-2 py-1.5">
                 <div
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor:
-                      (item as any).shape === 'ring' ? `${item.color}30` : item.color,
-                    border:
-                      (item as any).shape === 'ring' ? `1.5px dashed ${item.color}` : 'none',
-                  }}
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: theme.primary.background }}
                 />
-                <p className="text-[10px]" style={{ color: theme.foreground }}>
-                  {item.label}
+                <p className="text-[10px] font-medium flex-1" style={{ color: theme.foreground }}>
+                  Your Location
                 </p>
               </div>
-            ))}
-          </div>
+
+              {/* Divider */}
+              <div className="h-px mx-2" style={{ backgroundColor: theme.border }} />
+
+              {/* Environment layers */}
+              {legendItems.map((item) => (
+                <div key={item.id} className="relative">
+                  <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group">
+                    {/* Color indicator */}
+                    <div
+                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      style={{
+                        backgroundColor: item.shape === 'ring' ? `${item.color}20` : item.color,
+                        border: item.shape === 'ring' ? `1.5px dashed ${item.color}` : 'none',
+                      }}
+                    />
+
+                    {/* Icon + Label */}
+                    <button
+                      onClick={() => toggleLegendPopup(item.id)}
+                      className="flex items-center gap-1.5 flex-1 text-left"
+                    >
+                      <span style={{ color: item.color }}>{item.icon}</span>
+                      <span className="text-[10px] font-medium" style={{ color: theme.foreground }}>
+                        {item.label}
+                      </span>
+                    </button>
+
+                    {/* Radius badge */}
+                    <span
+                      className="text-[8px] font-bold px-1.5 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor: `${item.color}15`,
+                        color: item.color,
+                      }}
+                    >
+                      {item.radiusKm >= 1 ? `${item.radiusKm}km` : `${item.radiusKm * 1000}m`}
+                    </span>
+
+                    {/* Visibility toggle */}
+                    <button
+                      onClick={() => toggleLegendVisibility(item.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                    >
+                      {item.visible ? (
+                        <Eye size={10} style={{ color: theme.muted.foreground }} />
+                      ) : (
+                        <EyeOff size={10} style={{ color: theme.muted.foreground }} />
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Popup information for this environment */}
+                  {activeLegendPopup === item.id && (
+                    <div
+                      className="mx-2 mt-1 mb-2 p-3 rounded-lg border animate-in fade-in slide-in-from-top-1 duration-200"
+                      style={{
+                        backgroundColor: `${item.color}08`,
+                        borderColor: `${item.color}20`,
+                      }}
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span style={{ color: item.color }}>{item.icon}</span>
+                        <h5 className="text-[10px] font-bold" style={{ color: item.color }}>
+                          {item.label}
+                        </h5>
+                      </div>
+                      <p className="text-[9px] leading-relaxed mb-2" style={{ color: theme.muted.foreground }}>
+                        {item.description}
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{
+                              backgroundColor: item.shape === 'ring' ? `${item.color}30` : item.color,
+                              border: item.shape === 'ring' ? `1px dashed ${item.color}` : 'none',
+                            }}
+                          />
+                          <span className="text-[8px] font-medium" style={{ color: theme.muted.foreground }}>
+                            Radius: {item.radiusKm >= 1 ? `${item.radiusKm} km` : `${item.radiusKm * 1000} m`}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: item.visible ? '#22c55e' : '#ef4444' }}
+                          />
+                          <span className="text-[8px] font-medium" style={{ color: theme.muted.foreground }}>
+                            {item.visible ? 'Active' : 'Hidden'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

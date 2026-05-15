@@ -1,9 +1,5 @@
 'use client';
 
-import { store, persistor } from '@/stores/store';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-// import { Toaster } from '@/components/ui/sonner';
 import { AlertProvider } from '@/hooks/useAlert/costum-alert';
 import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -11,13 +7,13 @@ import { ThemeProvider } from '@/core/providers/theme.provider';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { composeProviders } from './composeProvinders';
 import { AuthProvider } from '@/core/providers/auth.provider';
+import { AuthStoreProvider } from '@/stores/auth.provider';
 import { PWAUpdatePrompt } from '@/components/pwa/PWAUpdatePrompt';
 import NextTopLoader from 'nextjs-toploader';
 
 const Providers = composeProviders([
   ({ children }) => <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>,
-  ({ children }) => <Provider store={store}>{children}</Provider>,
-  ({ children }) => <PersistGate persistor={persistor}>{children}</PersistGate>,
+  AuthStoreProvider,
   AuthProvider,
   ThemeProvider,
   AlertProvider,
@@ -41,7 +37,6 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       {children}
       <PWAUpdatePrompt />
       <ReactQueryDevtools initialIsOpen={false} />
-      {/* <Toaster position="top-center" richColors duration={900} /> */}
     </Providers>
   );
 }
