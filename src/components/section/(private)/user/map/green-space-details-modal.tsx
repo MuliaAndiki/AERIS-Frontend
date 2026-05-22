@@ -139,25 +139,6 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
             </p>
           )}
 
-          {/* Rating */}
-          {details.averageRating && (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <Star
-                  size={14}
-                  fill={theme.warning.background}
-                  style={{ color: theme.warning.background }}
-                />
-                <span style={{ color: theme.foreground }} className="text-sm font-semibold">
-                  {details.averageRating}
-                </span>
-              </div>
-              <span style={{ color: theme.muted.foreground }} className="text-xs">
-                ({details.reviewCount} reviews)
-              </span>
-            </div>
-          )}
-
           {/* Operating Hours */}
           <div
             className="flex items-start gap-3 p-3 rounded-lg"
@@ -215,41 +196,6 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
               </div>
             </div>
           )}
-
-          {/* Features */}
-          <div>
-            <p style={{ color: theme.foreground }} className="text-[12px] font-semibold mb-2">
-              Features
-            </p>
-            <div className="space-y-2">
-              {details.accessibility && (
-                <div className="flex items-center gap-2 text-xs">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: theme.success.background }}
-                  />
-                  <span style={{ color: theme.muted.foreground }}>Wheelchair accessible</span>
-                </div>
-              )}
-              {details.parkingAvailable && (
-                <div className="flex items-center gap-2 text-xs">
-                  <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: theme.success.background }}
-                  />
-                  <span style={{ color: theme.muted.foreground }}>Parking available</span>
-                </div>
-              )}
-              {details.capacity && (
-                <div className="flex items-center gap-2 text-xs">
-                  <Users size={12} style={{ color: theme.muted.foreground }} />
-                  <span style={{ color: theme.muted.foreground }}>
-                    Capacity: {details.capacity} people
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* Tags */}
           {details.tags && details.tags.length > 0 && (

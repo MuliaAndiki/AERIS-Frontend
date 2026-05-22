@@ -9,6 +9,8 @@ export interface EnvironmentalMetric {
   radiusKm?: number;
   description?: string;
   shape?: 'dot' | 'ring';
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Alert {

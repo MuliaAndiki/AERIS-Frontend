@@ -9,11 +9,24 @@ import {
 } from '@/components/ui/map';
 import { themeConfig } from '@/configs/theme.config';
 import { GreenSpace } from '@/types/partial/maps';
-import { Badge, TreePine, Info, Wind, Flame, Droplets, Volume2, ChevronDown, ChevronUp, Eye, EyeOff } from 'lucide-react';
+import {
+  Badge,
+  TreePine,
+  Info,
+  Wind,
+  Flame,
+  Droplets,
+  Volume2,
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import { useRef, useState, useCallback } from 'react';
 import {
   EnvironmentalBufferZone,
   GreenSpaceBufferZones,
+  BufferZoneLayer,
 } from '@/components/partial/maps/BufferZoneLayer';
 
 /* ─── Legend environment definitions ─── */
@@ -28,8 +41,6 @@ interface EnvironmentLegendItem {
   visible: boolean;
 }
 
-
-
 export const MapContainer: React.FC<{
   theme: typeof themeConfig.light;
   greenSpaces: GreenSpace[];
@@ -41,6 +52,7 @@ export const MapContainer: React.FC<{
   onZoomIn?: () => void;
   onZoomOut?: () => void;
   onGreenSpaceClick?: (spaceId: string) => void;
+  onMetricClick?: (metricId: string) => void;
 }> = ({
   theme,
   greenSpaces,
@@ -50,6 +62,7 @@ export const MapContainer: React.FC<{
   longitude,
   metrics = [],
   onGreenSpaceClick,
+  onMetricClick,
 }) => {
   const mapRef = useRef<MapRef>(null);
   const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
@@ -71,7 +84,7 @@ export const MapContainer: React.FC<{
     color: m.color || theme.primary.background,
     radiusKm: m.radiusKm || 5,
     description: m.description || `Monitoring radius for ${m.label}.`,
-    shape: m.shape as 'dot' | 'ring' || 'ring',
+    shape: (m.shape as 'dot' | 'ring') || 'ring',
     visible: !hiddenLegendIds.has(m.id),
   }));
 
@@ -82,11 +95,36 @@ export const MapContainer: React.FC<{
       icon: <TreePine size={12} />,
       color: '#22c55e',
       radiusKm: 0.3,
-      description: 'Green space influence zone. Parks and nature areas contributing to better air quality and lower noise.',
+      description:
+        'Green space influence zone. Parks and nature areas contributing to better air quality and lower noise.',
       shape: 'dot',
       visible: !hiddenLegendIds.has('green-space'),
     });
   }
+
+  const metricZones = metrics
+    .filter(
+      (metric) =>
+        typeof metric.latitude === 'number' &&
+        Number.isFinite(metric.latitude) &&
+        typeof metric.longitude === 'number' &&
+        Number.isFinite(metric.longitude) &&
+        typeof metric.radiusKm === 'number' &&
+        Number.isFinite(metric.radiusKm) &&
+        metric.radiusKm > 0
+    )
+    .map((metric) => ({
+      id: `metric-${metric.id}`,
+      longitude: metric.longitude,
+      latitude: metric.latitude,
+      radiusKm: metric.radiusKm,
+      fillColor: metric.color || theme.primary.background,
+      fillOpacity: 0.16,
+      strokeColor: metric.color || theme.primary.background,
+      strokeWidth: 2,
+      strokeOpacity: 0.7,
+      label: metric.label,
+    }));
 
   const hasUserCoordinates =
     typeof latitude === 'number' &&
@@ -151,10 +189,27 @@ export const MapContainer: React.FC<{
               longitude: lngLat.lng,
               latitude: lngLat.lat,
               label: zone.label || 'Green Space Zone',
-              description: 'This area is protected/influenced by local green space presence, contributing to better air quality and lower noise.',
+              description:
+                'This area is protected/influenced by local green space presence, contributing to better air quality and lower noise.',
             });
           }}
         />
+
+        {metricZones.length > 0 && (
+          <BufferZoneLayer
+            zones={metricZones}
+            onZoneClick={(zone) => {
+              const metricId = zone.id.replace(/^metric-/, '');
+              onMetricClick?.(metricId);
+              setSelectedZone({
+                longitude: zone.longitude,
+                latitude: zone.latitude,
+                label: zone.label || 'Metric Zone',
+                description: `This area represents the ${zone.label?.toLowerCase() || 'selected metric'} influence zone with a radius of ${zone.radiusKm} km.`,
+              });
+            }}
+          />
+        )}
 
         {/* ══ POPUPS ══ */}
         {selectedZone && (
@@ -309,7 +364,10 @@ export const MapContainer: React.FC<{
               >
                 <Info size={12} style={{ color: theme.primary.background }} />
               </div>
-              <p className="text-[11px] font-bold tracking-wider uppercase" style={{ color: theme.primary.background }}>
+              <p
+                className="text-[11px] font-bold tracking-wider uppercase"
+                style={{ color: theme.primary.background }}
+              >
                 Environment Legend
               </p>
             </div>
@@ -326,7 +384,7 @@ export const MapContainer: React.FC<{
               {/* Your Location indicator */}
               <div className="flex items-center gap-3 px-2 py-1.5">
                 <div
-                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: theme.primary.background }}
                 />
                 <p className="text-[10px] font-medium flex-1" style={{ color: theme.foreground }}>
@@ -343,7 +401,7 @@ export const MapContainer: React.FC<{
                   <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors group">
                     {/* Color indicator */}
                     <div
-                      className="w-3 h-3 rounded-full flex-shrink-0"
+                      className="w-3 h-3 rounded-full shrink-0"
                       style={{
                         backgroundColor: item.shape === 'ring' ? `${item.color}20` : item.color,
                         border: item.shape === 'ring' ? `1.5px dashed ${item.color}` : 'none',
@@ -400,7 +458,10 @@ export const MapContainer: React.FC<{
                           {item.label}
                         </h5>
                       </div>
-                      <p className="text-[9px] leading-relaxed mb-2" style={{ color: theme.muted.foreground }}>
+                      <p
+                        className="text-[9px] leading-relaxed mb-2"
+                        style={{ color: theme.muted.foreground }}
+                      >
                         {item.description}
                       </p>
                       <div className="flex items-center gap-3">
@@ -408,12 +469,19 @@ export const MapContainer: React.FC<{
                           <div
                             className="w-2 h-2 rounded-full"
                             style={{
-                              backgroundColor: item.shape === 'ring' ? `${item.color}30` : item.color,
+                              backgroundColor:
+                                item.shape === 'ring' ? `${item.color}30` : item.color,
                               border: item.shape === 'ring' ? `1px dashed ${item.color}` : 'none',
                             }}
                           />
-                          <span className="text-[8px] font-medium" style={{ color: theme.muted.foreground }}>
-                            Radius: {item.radiusKm >= 1 ? `${item.radiusKm} km` : `${item.radiusKm * 1000} m`}
+                          <span
+                            className="text-[8px] font-medium"
+                            style={{ color: theme.muted.foreground }}
+                          >
+                            Radius:{' '}
+                            {item.radiusKm >= 1
+                              ? `${item.radiusKm} km`
+                              : `${item.radiusKm * 1000} m`}
                           </span>
                         </div>
                         <div className="flex items-center gap-1">
@@ -421,7 +489,10 @@ export const MapContainer: React.FC<{
                             className="w-2 h-2 rounded-full"
                             style={{ backgroundColor: item.visible ? '#22c55e' : '#ef4444' }}
                           />
-                          <span className="text-[8px] font-medium" style={{ color: theme.muted.foreground }}>
+                          <span
+                            className="text-[8px] font-medium"
+                            style={{ color: theme.muted.foreground }}
+                          >
                             {item.visible ? 'Active' : 'Hidden'}
                           </span>
                         </div>
