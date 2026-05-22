@@ -6,6 +6,8 @@ export interface EnvironmentalMetric {
   unit: string;
   level: 'good' | 'moderate' | 'poor' | 'unhealthy';
   icon?: string; // Store icon name instead of React component
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface Alert {

@@ -26,5 +26,6 @@ export interface MapScreenSectionProps {
   service?: {
     onAlertClick?: (alertId: string) => void;
     onGreenSpaceClick?: (spaceId: string) => void;
+    onMetricClick?: (metricId: string) => void;
   };
 }

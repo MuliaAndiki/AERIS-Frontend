@@ -18,11 +18,18 @@ import {
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useApi } from '@/hooks/useApi/props.api';
 
 export default function ProfileContainer() {
   const router = useRouter();
   const { data: meData, isLoading, isError } = useGetMe();
   const user = meData?.data;
+  const service = useApi();
+  const logoutMutate = service.auth.mutation.logout();
+
+  const handleLogout = () => {
+    logoutMutate.mutate();
+  };
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '—';
@@ -50,7 +57,7 @@ export default function ProfileContainer() {
             />
           </div>
 
-          <div className="relative max-w-4xl mx-auto px-6 py-8">
+          <div className="relative max-w-4xl mx-auto px-6 space-y-2 py-8">
             {/* Back button */}
             <button
               onClick={() => router.back()}
@@ -295,6 +302,13 @@ export default function ProfileContainer() {
                     </div>
                   </div>
                 )}
+                <Button
+                  className="w-full font-semibold"
+                  onClick={() => handleLogout()}
+                  disabled={logoutMutate.isPending}
+                >
+                  Keluar
+                </Button>
               </>
             )}
           </div>
