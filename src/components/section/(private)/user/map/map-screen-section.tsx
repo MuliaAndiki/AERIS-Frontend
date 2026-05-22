@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { themeConfig } from '@/configs/theme.config';
 
 import GreenSpaceDetailsModal from './green-space-details-modal';
+import EnvironmentMetricDetailsModal from './environment-metric-details-modal';
 import { MapScreenSectionProps } from '@/types/ui/maps';
 import { EnvironmentalSummaryPanel } from '@/components/partial/maps/EnvironmentalSummaryPanel';
 import { MapContainer } from '@/components/partial/maps/MapsController';
@@ -32,11 +33,17 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
   } = state;
 
   // Destructure service handlers
-  const { onAlertClick = () => {}, onGreenSpaceClick = () => {} } = service;
+  const {
+    onAlertClick = () => {},
+    onGreenSpaceClick = () => {},
+    onMetricClick = () => {},
+  } = service;
 
   // ══ LOCAL STATE ══
   const [selectedGreenSpaceId, setSelectedGreenSpaceId] = useState<string | null>(null);
   const [isGreenSpaceModalOpen, setIsGreenSpaceModalOpen] = useState(false);
+  const [selectedMetricId, setSelectedMetricId] = useState<string | null>(null);
+  const [isMetricModalOpen, setIsMetricModalOpen] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState<'map' | 'summary' | 'insights'>('map');
 
   // Handle green space click
@@ -46,6 +53,15 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
       setSelectedGreenSpaceId(spaceId);
       setIsGreenSpaceModalOpen(true);
       onGreenSpaceClick?.(spaceId);
+    }
+  };
+
+  const handleMetricClick = (metricId: string) => {
+    const metric = metrics.find((item) => item.id === metricId);
+    if (metric) {
+      setSelectedMetricId(metricId);
+      setIsMetricModalOpen(true);
+      onMetricClick?.(metricId);
     }
   };
 
@@ -82,18 +98,10 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
 
   if (loading) {
     return (
-      <section
-        className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden"
-        style={{ backgroundColor: theme.foreground }}
-      >
+      <section className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden">
         {/* Background glow */}
         <div className="absolute inset-0">
-          <div
-            className="absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            style={{
-              background: `radial-gradient(circle, ${theme.primary.background}, transparent)`,
-            }}
-          />
+          <div className="absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
         </div>
 
         <div className="text-center z-10 max-w-sm w-full px-6">
@@ -111,10 +119,6 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
               className="absolute inset-4 rounded-full border-t-2 border-r-2 opacity-80 animate-spin"
               style={{ borderColor: theme.primary.background }}
             />
-
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-[#248277] to-[#67B99A] animate-pulse shadow-[0_0_20px_rgba(36,130,119,0.5)]">
-              <div className="w-3 h-3 bg-white rounded-full" />
-            </div>
           </div>
 
           <h3 className="text-lg font-bold text-white mb-2 tracking-wide">Syncing Environment</h3>
@@ -200,6 +204,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             longitude={longitude}
             metrics={metrics}
             onGreenSpaceClick={handleGreenSpaceClick}
+            onMetricClick={handleMetricClick}
           />
         </div>
 
@@ -258,6 +263,17 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             }
             latitude={greenSpaces.find((s) => s.id === selectedGreenSpaceId)?.latitude}
             longitude={greenSpaces.find((s) => s.id === selectedGreenSpaceId)?.longitude}
+          />
+        )}
+
+        {selectedMetricId && (
+          <EnvironmentMetricDetailsModal
+            isOpen={isMetricModalOpen}
+            onClose={() => {
+              setIsMetricModalOpen(false);
+              setSelectedMetricId(null);
+            }}
+            metric={metrics.find((item) => item.id === selectedMetricId)}
           />
         )}
       </div>

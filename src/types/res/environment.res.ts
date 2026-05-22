@@ -21,11 +21,15 @@ export interface EnvironmentWeatherData {
 }
 
 export interface EnvironmentDisasterRiskData {
+  latitude: number;
+  longitude: number;
   floodScore: number;
   heatScore: number;
 }
 
 export interface EnvironmentHeatRiskData {
+  latitude: number;
+  longitude: number;
   state: string;
   city: string;
   country: string;
@@ -36,6 +40,8 @@ export interface EnvironmentHeatRiskData {
 }
 
 export interface EnvironmentNoiseData {
+  latitude: number;
+  longitude: number;
   state: string;
   city: string;
   country: string;

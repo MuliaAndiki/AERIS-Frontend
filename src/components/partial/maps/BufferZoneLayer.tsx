@@ -37,7 +37,7 @@ function createCirclePolygon(
   centerLng: number,
   centerLat: number,
   radiusKm: number,
-  segments: number = 64,
+  segments: number = 64
 ): GeoJSON.Feature<GeoJSON.Polygon> {
   const coords: [number, number][] = [];
   const earthRadiusKm = 6371;
@@ -50,21 +50,17 @@ function createCirclePolygon(
     const d = radiusKm / earthRadiusKm;
 
     const newLatRad = Math.asin(
-      Math.sin(latRad) * Math.cos(d) +
-        Math.cos(latRad) * Math.sin(d) * Math.cos(angle),
+      Math.sin(latRad) * Math.cos(d) + Math.cos(latRad) * Math.sin(d) * Math.cos(angle)
     );
 
     const newLngRad =
       lngRad +
       Math.atan2(
         Math.sin(angle) * Math.sin(d) * Math.cos(latRad),
-        Math.cos(d) - Math.sin(latRad) * Math.sin(newLatRad),
+        Math.cos(d) - Math.sin(latRad) * Math.sin(newLatRad)
       );
 
-    coords.push([
-      (newLngRad * 180) / Math.PI,
-      (newLatRad * 180) / Math.PI,
-    ]);
+    coords.push([(newLngRad * 180) / Math.PI, (newLatRad * 180) / Math.PI]);
   }
 
   return {
@@ -115,38 +111,11 @@ interface BufferZoneLayerProps {
  */
 export function BufferZoneLayer({ zones, onZoneClick }: BufferZoneLayerProps) {
   const { map, isLoaded } = useMap();
-  const addedLayersRef = useRef<Set<string>>(new Set());
-
-  const cleanup = useCallback(() => {
-    if (!map) return;
-
-    addedLayersRef.current.forEach((id) => {
-      const fillLayerId = `buffer-fill-${id}`;
-      const strokeLayerId = `buffer-stroke-${id}`;
-      const sourceId = `buffer-source-${id}`;
-
-      try {
-        if (map.getLayer(fillLayerId)) {
-          map.off('click', fillLayerId, () => {});
-          map.off('mouseenter', fillLayerId, () => {});
-          map.off('mouseleave', fillLayerId, () => {});
-          map.removeLayer(fillLayerId);
-        }
-        if (map.getLayer(strokeLayerId)) map.removeLayer(strokeLayerId);
-        if (map.getSource(sourceId)) map.removeSource(sourceId);
-      } catch {
-        // Layer/source may already be removed
-      }
-    });
-
-    addedLayersRef.current.clear();
-  }, [map]);
 
   useEffect(() => {
     if (!map || !isLoaded) return;
 
     // Clean up old layers first
-    cleanup();
 
     // Add each zone
     zones.forEach((zone) => {
@@ -162,11 +131,7 @@ export function BufferZoneLayer({ zones, onZoneClick }: BufferZoneLayerProps) {
       const fillLayerId = `buffer-fill-${zone.id}`;
       const strokeLayerId = `buffer-stroke-${zone.id}`;
 
-      const circleGeoJson = createCirclePolygon(
-        zone.longitude,
-        zone.latitude,
-        zone.radiusKm,
-      );
+      const circleGeoJson = createCirclePolygon(zone.longitude, zone.latitude, zone.radiusKm);
 
       try {
         // Add GeoJSON source
@@ -214,17 +179,11 @@ export function BufferZoneLayer({ zones, onZoneClick }: BufferZoneLayerProps) {
         map.on('mouseleave', fillLayerId, () => {
           map.getCanvas().style.cursor = '';
         });
-
-        addedLayersRef.current.add(zone.id);
       } catch (err) {
         console.error(`[BufferZoneLayer] Failed to add zone ${zone.id}:`, err);
       }
     });
-
-    return () => {
-      cleanup();
-    };
-  }, [map, isLoaded, zones, cleanup, onZoneClick]);
+  }, [map, isLoaded, zones, onZoneClick]);
 
   return null;
 }
@@ -305,7 +264,7 @@ export function GreenSpaceBufferZones({
         typeof gs.latitude === 'number' &&
         Number.isFinite(gs.latitude) &&
         typeof gs.longitude === 'number' &&
-        Number.isFinite(gs.longitude),
+        Number.isFinite(gs.longitude)
     )
     .map((gs) => ({
       id: `green-${gs.id}`,

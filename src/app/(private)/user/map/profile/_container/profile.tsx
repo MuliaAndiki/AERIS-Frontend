@@ -302,15 +302,15 @@ export default function ProfileContainer() {
                     </div>
                   </div>
                 )}
+                <Button
+                  className="w-full font-semibold"
+                  onClick={() => handleLogout()}
+                  disabled={logoutMutate.isPending}
+                >
+                  Keluar
+                </Button>
               </>
             )}
-            <Button
-              className="w-full"
-              onClick={() => handleLogout()}
-              disabled={logoutMutate.isPending}
-            >
-              Keluar
-            </Button>
           </div>
         </div>
       </main>

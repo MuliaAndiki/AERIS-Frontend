@@ -27,6 +27,8 @@ interface EnvironmentalMetric {
   radiusKm?: number;
   description?: string;
   shape?: 'dot' | 'ring';
+  latitude?: number;
+  longitude?: number;
 }
 
 interface Alert {
@@ -136,9 +138,11 @@ function requestBrowserGeolocation(): Promise<{ latitude: number; longitude: num
               latitude: pos.coords.latitude,
               longitude: pos.coords.longitude,
               capturedAt: new Date().toISOString(),
-            }),
+            })
           );
-        } catch { /* noop */ }
+        } catch {
+          /* noop */
+        }
         resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
       },
       (err) => {
@@ -146,7 +150,7 @@ function requestBrowserGeolocation(): Promise<{ latitude: number; longitude: num
         console.warn('[Map] Browser geolocation denied/failed:', err.message);
         resolve(null);
       },
-      { enableHighAccuracy: true, timeout: GEO_TIMEOUT_MS, maximumAge: 30000 },
+      { enableHighAccuracy: true, timeout: GEO_TIMEOUT_MS, maximumAge: 30000 }
     );
   });
 }
@@ -174,7 +178,9 @@ export default function MapContainer() {
   const [error, setError] = useState<string | null>(null);
 
   // ══ LOCATION STATE ══
-  const [locationPhase, setLocationPhase] = useState<'detecting' | 'resolved' | 'failed'>('detecting');
+  const [locationPhase, setLocationPhase] = useState<'detecting' | 'resolved' | 'failed'>(
+    'detecting'
+  );
   const [detectedLocation, setDetectedLocation] = useState<{
     lat: number;
     lon: number;
@@ -333,8 +339,15 @@ export default function MapContainer() {
         results.forEach((result, index) => {
           if (result.status === 'rejected') {
             const apiNames = [
-              'AirQuality', 'HeatRisk', 'Noise', 'DisasterRisk', 'GreenSpace',
-              'Score', 'Insight', 'Recommendation', 'SnapshotHistory',
+              'AirQuality',
+              'HeatRisk',
+              'Noise',
+              'DisasterRisk',
+              'GreenSpace',
+              'Score',
+              'Insight',
+              'Recommendation',
+              'SnapshotHistory',
             ];
             console.warn(`[Map] ${apiNames[index]} API failed:`, result.reason);
           }
@@ -357,7 +370,8 @@ export default function MapContainer() {
             icon: 'wind',
             color: '#3b82f6',
             radiusKm: 5,
-            description: 'Monitoring radius for Air Quality Index (AQI). Measures PM2.5, PM10, O3, and other pollutants within this area.',
+            description:
+              'Monitoring radius for Air Quality Index (AQI). Measures PM2.5, PM10, O3, and other pollutants within this area.',
             shape: 'ring',
           });
         }
@@ -371,13 +385,24 @@ export default function MapContainer() {
             value: heatFeelsLike,
             unit: '°C',
             level: isNumber(heatScore)
-              ? heatScore > 70 ? 'poor' : heatScore > 50 ? 'moderate' : 'good'
-              : heatFeelsLike > 35 ? 'poor' : heatFeelsLike > 31 ? 'moderate' : 'good',
+              ? heatScore > 70
+                ? 'poor'
+                : heatScore > 50
+                  ? 'moderate'
+                  : 'good'
+              : heatFeelsLike > 35
+                ? 'poor'
+                : heatFeelsLike > 31
+                  ? 'moderate'
+                  : 'good',
             icon: 'flame',
             color: '#f97316',
             radiusKm: 3,
-            description: 'Heat risk zone based on apparent temperature (feels-like). Covers urban heat island effects within this radius.',
+            description:
+              'Heat risk zone based on apparent temperature (feels-like). Covers urban heat island effects within this radius.',
             shape: 'ring',
+            latitude: mapData.latitude,
+            longitude: mapData.longitude,
           });
         }
 
@@ -385,13 +410,18 @@ export default function MapContainer() {
         if (isNumber(floodScore)) {
           transformedMetrics.push({
             id: 'flood-risk',
-            label: 'Flood Risk', value: floodScore, unit: '%',
+            label: 'Flood Risk',
+            value: floodScore,
+            unit: '%',
             level: floodScore > 70 ? 'poor' : floodScore > 50 ? 'moderate' : 'good',
             icon: 'droplets',
             color: '#ef4444',
             radiusKm: 5,
-            description: 'Flood risk assessment from ThinkHazard database. Covers flood-prone areas around your location.',
+            description:
+              'Flood risk assessment from ThinkHazard database. Covers flood-prone areas around your location.',
             shape: 'ring',
+            latitude: mapData.latitude,
+            longitude: mapData.longitude,
           });
         }
 
@@ -399,13 +429,18 @@ export default function MapContainer() {
         if (isNumber(noiseLevel)) {
           transformedMetrics.push({
             id: 'noise',
-            label: 'Noise Level', value: noiseLevel, unit: 'dB',
+            label: 'Noise Level',
+            value: noiseLevel,
+            unit: 'dB',
             level: noiseLevel > 70 ? 'poor' : noiseLevel > 60 ? 'moderate' : 'good',
             icon: 'volume',
             color: '#8b5cf6',
             radiusKm: 2,
-            description: 'Noise estimation zone based on major road density analysis. Shows predicted noise levels in dB.',
+            description:
+              'Noise estimation zone based on major road density analysis. Shows predicted noise levels in dB.',
             shape: 'ring',
+            latitude: mapData.latitude,
+            longitude: mapData.longitude,
           });
         }
 
@@ -417,10 +452,12 @@ export default function MapContainer() {
               id: String(space?.id ?? `${space?.name ?? 'green-space'}-${index}`),
               name: String(space?.name ?? 'Unknown Green Space'),
               distance: isNumber(Number(space?.distanceKm ?? space?.distance))
-                ? Number(space?.distanceKm ?? space?.distance) : 0,
+                ? Number(space?.distanceKm ?? space?.distance)
+                : 0,
               status: typeof space?.status === 'string' ? space.status : 'Unknown',
               tags: Array.isArray(space?.tags)
-                ? space.tags.filter((tag: unknown) => typeof tag === 'string') : [],
+                ? space.tags.filter((tag: unknown) => typeof tag === 'string')
+                : [],
               latitude: isNumber(Number(space?.latitude)) ? Number(space?.latitude) : undefined,
               longitude: isNumber(Number(space?.longitude)) ? Number(space?.longitude) : undefined,
             }))
@@ -428,13 +465,15 @@ export default function MapContainer() {
 
         // ── Alerts ──
         const transformedAlerts: Alert[] = insightRes?.data
-          ? [{
-              id: insightRes.data.snapshotId ?? insightRes.data.title,
-              type: insightRes.data.severity === 'high' ? 'warning' : 'info',
-              title: insightRes.data.title,
-              description: insightRes.data.message,
-              icon: insightRes.data.severity === 'high' ? 'alert' : 'trending-up',
-            }]
+          ? [
+              {
+                id: insightRes.data.snapshotId ?? insightRes.data.title,
+                type: insightRes.data.severity === 'high' ? 'warning' : 'info',
+                title: insightRes.data.title,
+                description: insightRes.data.message,
+                icon: insightRes.data.severity === 'high' ? 'alert' : 'trending-up',
+              },
+            ]
           : [];
 
         // ── Recommendations ──
@@ -446,22 +485,31 @@ export default function MapContainer() {
                 id: String(rec?.id ?? `recommendation-${index}`),
                 message: String(rec?.message ?? ''),
                 severity,
-                recommendationType: typeof rec?.recommendationType === 'string' ? rec.recommendationType : undefined,
+                recommendationType:
+                  typeof rec?.recommendationType === 'string' ? rec.recommendationType : undefined,
                 icon: severity >= 2 ? 'alert' : severity === 1 ? 'info' : 'check',
               };
             })
           : [];
 
         // ── Score history ──
-        const historyItems = Array.isArray(snapshotHistoryRes?.data) ? [...snapshotHistoryRes.data] : [];
-        historyItems.sort((a, b) => new Date(a.snapshotTime).getTime() - new Date(b.snapshotTime).getTime());
+        const historyItems = Array.isArray(snapshotHistoryRes?.data)
+          ? [...snapshotHistoryRes.data]
+          : [];
+        historyItems.sort(
+          (a, b) => new Date(a.snapshotTime).getTime() - new Date(b.snapshotTime).getTime()
+        );
 
         const transformedScoreHistory: ScoreHistory[] = historyItems.map((item, index) => {
-          const score = isNumber(Number(item.environmentalScore)) ? Number(item.environmentalScore) : 0;
-          const prevScore = index > 0
-            ? (isNumber(Number(historyItems[index - 1]?.environmentalScore))
-              ? Number(historyItems[index - 1]?.environmentalScore) : score)
-            : score;
+          const score = isNumber(Number(item.environmentalScore))
+            ? Number(item.environmentalScore)
+            : 0;
+          const prevScore =
+            index > 0
+              ? isNumber(Number(historyItems[index - 1]?.environmentalScore))
+                ? Number(historyItems[index - 1]?.environmentalScore)
+                : score
+              : score;
           return {
             date: formatSnapshotLabel(item.snapshotTime),
             score,
@@ -539,13 +587,20 @@ export default function MapContainer() {
   // ══ ICON MAPPER ══
   const getIconComponent = (iconName?: string) => {
     switch (iconName) {
-      case 'wind': return <Wind size={20} />;
-      case 'flame': return <Flame size={20} />;
-      case 'droplets': return <Droplets size={20} />;
-      case 'volume': return <Volume2 size={20} />;
-      case 'alert': return <AlertCircle size={20} />;
-      case 'trending-up': return <TrendingUp size={20} />;
-      default: return <CheckCircle size={20} />;
+      case 'wind':
+        return <Wind size={20} />;
+      case 'flame':
+        return <Flame size={20} />;
+      case 'droplets':
+        return <Droplets size={20} />;
+      case 'volume':
+        return <Volume2 size={20} />;
+      case 'alert':
+        return <AlertCircle size={20} />;
+      case 'trending-up':
+        return <TrendingUp size={20} />;
+      default:
+        return <CheckCircle size={20} />;
     }
   };
 
@@ -576,7 +631,6 @@ export default function MapContainer() {
             onGreenSpaceClick: handleGreenSpaceClick,
           }}
         />
-        
       </main>
     </SidebarLayout>
   );

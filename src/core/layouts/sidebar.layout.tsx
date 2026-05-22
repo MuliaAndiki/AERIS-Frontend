@@ -1,14 +1,12 @@
 'use client';
 
-import { Layers, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useState } from 'react';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { themeConfig } from '@/configs/theme.config';
 
 import Link from 'next/link';
-import { useApi } from '@/hooks/useApi/props.api';
-import ThemeToggle from '../components/theme-toggle';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -16,10 +14,6 @@ interface AppLayoutProps {
 }
 
 export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
-  const service = useApi();
-
-  const logoutMutate = service.auth.mutation.logout();
-
   const [localSearchQuery, setLocalSearchQuery] = useState('');
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -44,7 +38,7 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
               </div>
 
               <div className="flex-1 max-w-md flex items-center gap-2 px-3 py-2 rounded-lg border">
-                <Search size={16} className="bg-muted-foreground" />
+                <Search size={16} className="text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search location (press Enter)..."
@@ -56,8 +50,6 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
               </div>
 
               <div className="flex items-center gap-3">
-               
-
                 <Link href={'/user/map/profile'} className="">
                   <div
                     className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
@@ -66,8 +58,6 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
                     MA
                   </div>
                 </Link>
-
-               
               </div>
             </div>
 
