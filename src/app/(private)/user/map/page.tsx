@@ -1,5 +1,5 @@
-import MapContainer from './_container/map';
+import { MapPageClient } from './map-page-client';
 
 export default function MapPage() {
-  return <MapContainer />;
+  return <MapPageClient />;
 }

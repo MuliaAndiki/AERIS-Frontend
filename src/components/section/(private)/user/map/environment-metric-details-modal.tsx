@@ -136,7 +136,7 @@ const EnvironmentMetricDetailsModal: React.FC<EnvironmentMetricDetailsModalProps
           <div className="flex gap-2 pt-2">
             <Button
               variant="outline"
-              className="flex-1 text-xs"
+              className="min-h-10 flex-1 text-sm sm:text-xs"
               onClick={() => {
                 if (!isNumber(metric.latitude) || !isNumber(metric.longitude)) return;
                 window.open(
@@ -152,7 +152,7 @@ const EnvironmentMetricDetailsModal: React.FC<EnvironmentMetricDetailsModalProps
               View on Map
             </Button>
             <Button
-              className="flex-1 text-xs"
+              className="min-h-10 flex-1 text-sm sm:text-xs"
               onClick={onClose}
               style={{
                 backgroundColor: theme.primary.background,
