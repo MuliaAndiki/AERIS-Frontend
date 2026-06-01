@@ -609,7 +609,7 @@ export default function MapContainer() {
 
   return (
     <SidebarLayout onSearch={handleLocationSearch}>
-      <main className="w-full min-h-screen overflow-x-hidden">
+      <main className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden">
         <MapScreenSection
           state={{
             location: mapData.location,

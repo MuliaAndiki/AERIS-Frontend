@@ -26,44 +26,55 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
 
   return (
     <SidebarProvider defaultOpen>
-      <div className="flex min-h-screen w-full">
-        <SidebarInset>
-          <div className="flex h-full flex-col w-full">
-            <div className="flex items-center justify-between px-6 py-4 border-b gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                  A
+      <div className="flex min-h-dvh w-full">
+        <SidebarInset className="min-h-0">
+          <div className="flex h-dvh min-h-0 w-full flex-col">
+            <header className="flex shrink-0 flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6 sm:py-4">
+              <div className="flex items-center justify-between gap-2 sm:justify-start">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-full text-sm font-bold text-white">
+                    A
+                  </div>
+                  <span className="text-xs font-bold tracking-widest sm:text-[13px]">AERIS</span>
                 </div>
-                <span className="text-[13px] font-bold tracking-widest">AERIS</span>
-              </div>
-
-              <div className="flex-1 max-w-md flex items-center gap-2 px-3 py-2 rounded-lg border">
-                <Search size={16} className="text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search location (press Enter)..."
-                  value={localSearchQuery}
-                  onChange={(e) => setLocalSearchQuery(e.target.value)}
-                  onKeyDown={handleSearchKeyDown}
-                  className="flex-1 outline-none text-[13px]"
-                />
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Link href={'/user/map/profile'} className="">
+                <Link href="/user/map/profile" className="sm:hidden">
                   <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                    className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"
                     style={{ backgroundColor: theme.secondary.background }}
                   >
                     MA
                   </div>
                 </Link>
               </div>
-            </div>
 
-            {/* Content */}
-            <div className="flex-1 overflow-hidden w-full">
-              <div className=" h-full container max-w-full w-full ">{children}</div>
+              <div className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border px-3 py-2 sm:max-w-md">
+                <Search size={16} className="shrink-0 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Cari lokasi (Enter)..."
+                  value={localSearchQuery}
+                  onChange={(e) => setLocalSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="min-w-0 flex-1 text-sm outline-none sm:text-[13px]"
+                />
+              </div>
+
+              <div className="hidden items-center gap-3 sm:flex">
+                <Link href="/user/map/profile">
+                  <div
+                    className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"
+                    style={{ backgroundColor: theme.secondary.background }}
+                  >
+                    MA
+                  </div>
+                </Link>
+              </div>
+            </header>
+
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden w-full">
+              <div className="flex h-full min-h-0 w-full max-w-full flex-1 flex-col">
+                {children}
+              </div>
             </div>
           </div>
         </SidebarInset>

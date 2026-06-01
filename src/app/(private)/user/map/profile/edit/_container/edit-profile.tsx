@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useGetMe, useEditProfile } from '@/hooks/useApi/user';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
 import {
@@ -76,7 +77,7 @@ export default function EditProfileContainer() {
 
   return (
     <SidebarLayout>
-      <main className="w-full min-h-screen bg-gradient-to-br from-[#080F0C] via-[#0d1a14] to-[#080F0C] text-white">
+      <main className="w-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-[#080F0C] via-[#0d1a14] to-[#080F0C] pb-safe text-white">
         <div className="relative overflow-hidden">
           {/* Background */}
           <div className="absolute inset-0">
@@ -86,7 +87,7 @@ export default function EditProfileContainer() {
             />
           </div>
 
-          <div className="relative max-w-2xl mx-auto px-6 py-8">
+          <div className="relative mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-8">
             {/* Back */}
             <button
               onClick={() => router.back()}
@@ -109,13 +110,20 @@ export default function EditProfileContainer() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Avatar preview */}
-                <div className="flex items-center gap-5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
                   <div
-                    className="w-20 h-20 rounded-2xl flex items-center justify-center text-2xl font-bold overflow-hidden relative group"
+                    className="relative mx-auto size-20 shrink-0 overflow-hidden rounded-2xl flex items-center justify-center text-2xl font-bold group sm:mx-0"
                     style={{ background: 'linear-gradient(135deg, #248277, #67B99A)' }}
                   >
                     {form.avaUrl ? (
-                      <img src={form.avaUrl} alt="Avatar" className="w-full h-full object-cover" />
+                      <Image
+                        src={form.avaUrl}
+                        alt="Avatar"
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                        unoptimized={!form.avaUrl.includes('res.cloudinary.com')}
+                      />
                     ) : (
                       <span className="text-white/90">
                         {form.fullName?.charAt(0)?.toUpperCase() || 'U'}

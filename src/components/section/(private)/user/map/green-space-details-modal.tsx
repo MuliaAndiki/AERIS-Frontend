@@ -245,7 +245,7 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
           <div className="flex gap-2 pt-2">
             <Button
               variant="outline"
-              className="flex-1 text-xs"
+              className="min-h-10 flex-1 text-sm sm:text-xs"
               onClick={() => {
                 if (!isNumber(details.latitude) || !isNumber(details.longitude)) return;
                 const mapUrl = `https://www.google.com/maps/search/${details.latitude},${details.longitude}`;
@@ -259,7 +259,7 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
               View on Map
             </Button>
             <Button
-              className="flex-1 text-xs"
+              className="min-h-10 flex-1 text-sm sm:text-xs"
               onClick={onClose}
               style={{
                 backgroundColor: theme.primary.background,

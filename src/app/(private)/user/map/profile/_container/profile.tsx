@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useGetMe } from '@/hooks/useApi/user';
 import { useAuthStore } from '@/stores/auth.store';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
@@ -42,7 +43,7 @@ export default function ProfileContainer() {
 
   return (
     <SidebarLayout>
-      <main className="w-full min-h-screen bg-gradient-to-br from-[#080F0C] via-[#0d1a14] to-[#080F0C] text-white">
+      <main className="w-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-[#080F0C] via-[#0d1a14] to-[#080F0C] text-white pb-safe">
         {/* Header */}
         <div className="relative overflow-hidden">
           {/* Background gradient */}
@@ -57,7 +58,7 @@ export default function ProfileContainer() {
             />
           </div>
 
-          <div className="relative max-w-4xl mx-auto px-6 space-y-2 py-8">
+          <div className="relative mx-auto max-w-4xl space-y-2 px-4 py-6 sm:px-6 sm:py-8">
             {/* Back button */}
             <button
               onClick={() => router.back()}
@@ -112,19 +113,22 @@ export default function ProfileContainer() {
                   </div>
 
                   {/* Avatar & Name */}
-                  <div className="px-8 pb-8">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-5 -mt-12">
+                  <div className="px-4 pb-6 sm:px-8 sm:pb-8">
+                    <div className="flex flex-col gap-4 -mt-12 sm:flex-row sm:items-end sm:gap-5">
                       {/* Avatar */}
                       <div className="relative">
                         <div
-                          className="w-24 h-24 rounded-2xl border-4 border-[#0d1a14] flex items-center justify-center text-3xl font-bold overflow-hidden"
+                          className="relative w-24 h-24 rounded-2xl border-4 border-[#0d1a14] flex items-center justify-center text-3xl font-bold overflow-hidden"
                           style={{ background: 'linear-gradient(135deg, #248277, #67B99A)' }}
                         >
                           {user.avaUrl ? (
-                            <img
+                            <Image
                               src={user.avaUrl}
                               alt={user.fullName}
-                              className="w-full h-full object-cover"
+                              fill
+                              className="object-cover"
+                              sizes="96px"
+                              unoptimized={!user.avaUrl.includes('res.cloudinary.com')}
                             />
                           ) : (
                             <span className="text-white/90">
@@ -164,9 +168,9 @@ export default function ProfileContainer() {
                       </div>
 
                       {/* Edit button */}
-                      <Link href="/user/map/profile/edit">
+                      <Link href="/user/map/profile/edit" className="w-full sm:w-auto">
                         <Button
-                          className="h-10 px-5 rounded-xl text-[13px] font-semibold text-[#080F0C] hover:scale-105 transition-all"
+                          className="h-11 w-full px-5 rounded-xl text-sm font-semibold text-[#080F0C] hover:scale-105 transition-all sm:h-10 sm:w-auto sm:text-[13px]"
                           style={{
                             background: 'linear-gradient(135deg, #67B99A, #248277)',
                             boxShadow: '0 8px 24px rgba(36,130,119,0.25)',

@@ -33,7 +33,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
   detectedLocation,
 }) => (
   <div
-    className="flex flex-col w-full h-full p-6 overflow-y-auto border-r gap-6"
+    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-r p-4 sm:gap-6 sm:p-6 lg:pb-6 pb-20"
     style={{ backgroundColor: 'white', borderRightColor: theme.border }}
   >
     {/* Location Header */}
@@ -42,12 +42,12 @@ export const EnvironmentalSummaryPanel: React.FC<{
         <MapPin size={16} style={{ color: theme.primary.background, marginTop: 2 }} />
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-[14px] font-bold" style={{ color: theme.primary.background }}>
+            <h3 className="text-sm font-bold sm:text-[14px]" style={{ color: theme.primary.background }}>
               {location || 'Location not set'}
             </h3>
             {isCurrentLocation && (
               <Badge
-                className="text-[10px] px-2 py-0.5"
+                className="text-xs px-2 py-0.5"
                 style={{
                   backgroundColor: `${theme.success.background}30`,
                   color: theme.success.background,
@@ -57,7 +57,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
               </Badge>
             )}
           </div>
-          <p className="text-[11px]" style={{ color: theme.muted.foreground }}>
+          <p className="text-xs sm:text-[11px]" style={{ color: theme.muted.foreground }}>
             {location || 'Location not set'} • Updated just now
           </p>
         </div>
@@ -87,7 +87,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
             {score > 0 ? score : '--'}
           </span>
           {score > 0 && (
-            <span className="text-[9px]" style={{ color: theme.muted.foreground }}>
+            <span className="text-xs" style={{ color: theme.muted.foreground }}>
               /100
             </span>
           )}
@@ -127,7 +127,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
       >
         Environmental Metrics
       </h4>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         {/* nanti fix */}
         {metrics.map((metric: any, idx: number) => (
           <div key={idx}>
