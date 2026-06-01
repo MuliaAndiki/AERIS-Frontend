@@ -27,7 +27,7 @@ import {
   MarkerContent,
   MarkerPopup,
 } from '@/components/ui/map';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { GreenSpace } from '@/types/partial/maps';
 
 /* ─── Legend environment definitions ─── */
@@ -43,7 +43,6 @@ interface EnvironmentLegendItem {
 }
 
 export const MapContainer: React.FC<{
-  theme: typeof themeConfig.light;
   greenSpaces: GreenSpace[];
   environmentalScore?: number;
   location?: string;
@@ -55,7 +54,6 @@ export const MapContainer: React.FC<{
   onGreenSpaceClick?: (spaceId: string) => void;
   onMetricClick?: (metricId: string) => void;
 }> = ({
-  theme,
   greenSpaces,
   environmentalScore = 0,
   location,

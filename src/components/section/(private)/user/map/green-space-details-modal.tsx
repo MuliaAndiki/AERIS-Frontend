@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import EnvironmentApi from '@/services/env/env.service';
 
 export interface GreenSpaceDetail {
@@ -48,7 +48,6 @@ const GreenSpaceDetailsModal: React.FC<GreenSpaceDetailsModalProps> = ({
   latitude,
   longitude,
 }) => {
-  const theme = themeConfig.light;
   const [details, setDetails] = useState<GreenSpaceDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

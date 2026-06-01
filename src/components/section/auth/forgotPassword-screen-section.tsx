@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { ForgotPasswordForm } from '@/types/form/auth';
 
 const cormorant = Cormorant_Garamond({
@@ -40,7 +40,6 @@ type ForgotMethod = 'email' | 'phone';
 const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, service }) => {
   const [forgotMethod, setForgotMethod] = useState<ForgotMethod>('email');
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const theme = themeConfig.light;
 
   return (
     <section

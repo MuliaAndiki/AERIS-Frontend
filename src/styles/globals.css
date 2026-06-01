@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -54,130 +52,58 @@
   overflow-x: hidden;
   --radius: 0.625rem;
 
-  /* Base colors from theme */
-  --background: #f5eaff;
-  --foreground: #000000;
+  /* AERIS — primary #3F862A, teks & elemen netral hitam/abu */
+  --background: #ffffff;
+  --foreground: #171717;
 
-  /* Card */
   --card: #ffffff;
-  --card-foreground: #911dec;
+  --card-foreground: #171717;
 
-  /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #911dec;
+  --popover-foreground: #171717;
 
-  /* Primary */
-  --primary: #911dec;
-  --primary-foreground: #f5eaff;
+  --primary: #3f862a;
+  --primary-foreground: #ffffff;
 
-  /* Secondary */
-  --secondary: #f5eaff;
-  --secondary-foreground: #911dec;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #171717;
 
-  /* Muted */
-  --muted: #f5eaff;
-  --muted-foreground: rgba(145, 29, 236, 0.6);
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
 
-  /* Accent */
-  --accent: #f5eaff;
-  --accent-foreground: #911dec;
+  --accent: #52a042;
+  --accent-foreground: #ffffff;
 
-  /* Destructive */
-  --destructive: #fa0c00;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
 
-  /* Border & Input */
-  --border: rgba(145, 29, 236, 0.2);
-  --input: rgba(145, 29, 236, 0.2);
-  --ring: rgba(145, 29, 236, 0.3);
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: rgba(63, 134, 42, 0.45);
 
-  /* Status Colors */
-  --warning: #feca13;
-  --warning-foreground: #feca1322;
-  --success: #28de25;
-  --success-foreground: #28de2522;
-  --info: #04b4fc;
-  --info-foreground: #04b4fc22;
+  --warning: #ca8a04;
+  --warning-foreground: #171717;
 
-  /* Chart Colors */
-  --chart-1: #911dec;
-  --chart-2: #04b4fc;
-  --chart-3: #28de25;
-  --chart-4: #feca13;
-  --chart-5: #fa0c00;
+  --success: #3f862a;
+  --success-foreground: #ffffff;
 
-  /* Sidebar */
+  --info: #2563eb;
+  --info-foreground: #ffffff;
+
+  --chart-1: #3f862a;
+  --chart-2: #52a042;
+  --chart-3: #2563eb;
+  --chart-4: #ca8a04;
+  --chart-5: #dc2626;
+
   --sidebar: #ffffff;
-  --sidebar-foreground: #911dec;
-  --sidebar-primary: #911dec;
-  --sidebar-primary-foreground: #f5eaff;
-  --sidebar-accent: #f5eaff;
-  --sidebar-accent-foreground: #911dec;
-  --sidebar-border: rgba(145, 29, 236, 0.2);
-  --sidebar-ring: rgba(145, 29, 236, 0.3);
-}
-
-.dark {
-  --background: #1a1a1a;
-  --foreground: #f5eaff;
-
-  /* Card */
-  --card: #2a2a2a;
-  --card-foreground: #f5eaff;
-
-  /* Popover */
-  --popover: #2a2a2a;
-  --popover-foreground: #f5eaff;
-
-  /* Primary */
-  --primary: #911dec;
-  --primary-foreground: #f5eaff;
-
-  /* Secondary */
-  --secondary: #2a2a2a;
-  --secondary-foreground: #f5eaff;
-
-  /* Muted */
-  --muted: #2a2a2a;
-  --muted-foreground: rgba(245, 234, 255, 0.6);
-
-  /* Accent */
-  --accent: #2a2a2a;
-  --accent-foreground: #f5eaff;
-
-  /* Destructive */
-  --destructive: #fa0c00;
-  --destructive-foreground: #f5eaff;
-
-  /* Border & Input */
-  --border: rgba(245, 234, 255, 0.1);
-  --input: rgba(245, 234, 255, 0.15);
-  --ring: rgba(245, 234, 255, 0.3);
-
-  /* Status Colors */
-  --warning: #feca13;
-  --warning-foreground: #feca1322;
-  --success: #28de25;
-  --success-foreground: #28de2522;
-  --info: #04b4fc;
-  --info-foreground: #04b4fc22;
-
-  /* Chart Colors */
-  --chart-1: #911dec;
-  --chart-2: #04b4fc;
-  --chart-3: #28de25;
-  --chart-4: #feca13;
-  --chart-5: #fa0c00;
-
-  /* Sidebar */
-  --sidebar: #2a2a2a;
-  --sidebar-foreground: #f5eaff;
-  --sidebar-primary: #911dec;
-  --sidebar-primary-foreground: #f5eaff;
-  --sidebar-accent: #2a2a2a;
-  --sidebar-accent-foreground: #f5eaff;
-  --sidebar-border: rgba(245, 234, 255, 0.1);
-  --sidebar-ring: rgba(245, 234, 255, 0.3);
+  --sidebar-foreground: #171717;
+  --sidebar-primary: #3f862a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #171717;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: rgba(63, 134, 42, 0.45);
 }
 
 @layer base {
@@ -312,7 +238,7 @@ input[type='number'] {
 }
 
 .gradient-primary {
-  background: linear-gradient(135deg, #453bcf 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #3f862a 0%, #52a042 100%);
 }
 
 .gradient-secondary {
@@ -336,7 +262,7 @@ input[type='number'] {
 }
 
 .text-gradient-primary {
-  background: linear-gradient(135deg, #453bcf, #6366f1);
+  background: linear-gradient(135deg, #3f862a, #52a042);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -429,7 +355,7 @@ input[type='number'] {
   animation: shimmer-slide 1.8s ease-in-out infinite;
 }
 
-/* Map environment loading — AERIS green palette (#248277, #67B99A) */
+/* Map environment loading — primary #3F862A */
 .pb-safe {
   padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
 }
@@ -446,11 +372,11 @@ input[type='number'] {
 .map-env-shimmer {
   background: linear-gradient(
     90deg,
-    #d8efe5 0%,
-    #a8e0c8 35%,
-    #67b99a 50%,
-    #a8e0c8 65%,
-    #d8efe5 100%
+    var(--muted) 0%,
+    color-mix(in srgb, var(--accent) 55%, white) 35%,
+    var(--accent) 50%,
+    color-mix(in srgb, var(--accent) 55%, white) 65%,
+    var(--muted) 100%
   );
   background-size: 200% 100%;
   animation: shimmer-slide 1.8s ease-in-out infinite;
