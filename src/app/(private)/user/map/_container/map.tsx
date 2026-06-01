@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertCircle, CheckCircle, Droplets, Flame, TrendingUp, Volume2, Wind } from 'lucide-react';
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useRef,useState } from 'react';
 
 import MapScreenSection from '@/components/section/(private)/user/map/map-screen-section';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
@@ -12,7 +12,6 @@ import RecommendationApi from '@/services/recommendation/recommendation.service'
 import ScoringApi from '@/services/scoring/scoring.service';
 import SnapshotApi from '@/services/snapshot/snapshot.service';
 import { useAuthStore } from '@/stores/auth.store';
-
 import { SearchLocation } from '@/types/res/location.res';
 
 /* ─── Types ─── */

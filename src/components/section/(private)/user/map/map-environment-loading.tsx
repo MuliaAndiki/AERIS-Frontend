@@ -1,9 +1,10 @@
 'use client';
 
-import { cn } from '@/utils/classname';
-import { themeConfig } from '@/configs/theme.config';
 import { Check, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+import { themeConfig } from '@/configs/theme.config';
+import { cn } from '@/utils/classname';
 
 /** Map / profile green palette */
 const GREEN = {

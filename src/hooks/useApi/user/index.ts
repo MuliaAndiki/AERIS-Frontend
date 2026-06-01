@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
 import UserApi, { type EditProfilePayload } from '@/services/user/user.service';
 import { cacheKey } from '@/utils/cache';
 

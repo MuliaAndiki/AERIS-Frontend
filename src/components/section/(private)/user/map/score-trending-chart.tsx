@@ -2,14 +2,15 @@
 
 import React, { useMemo } from 'react';
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
+
 import { themeConfig } from '@/configs/theme.config';
 
 export interface ScoreHistoryData {

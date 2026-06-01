@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-import { usePWAInstall } from "@/hooks/usePWAInstall";
-import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 
 interface PWAInstallDialogProps {
   trigger: React.ReactNode;

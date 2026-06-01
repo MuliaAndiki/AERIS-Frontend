@@ -1,3 +1,5 @@
+import { Badge, MapPin } from 'lucide-react';
+
 import { themeConfig } from '@/configs/theme.config';
 import {
   Alert,
@@ -7,7 +9,6 @@ import {
   ScoreHistory,
 } from '@/types/partial/maps';
 import { getMetricColor } from '@/utils/metricColors';
-import { Badge, MapPin } from 'lucide-react';
 
 export const EnvironmentalSummaryPanel: React.FC<{
   theme: typeof themeConfig.light;

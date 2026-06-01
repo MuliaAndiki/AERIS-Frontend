@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Language, languages, LANGUAGE_STORAGE_KEY, defaultLanguage } from "@/configs/i18n.config";
+
+import { defaultLanguage,Language, LANGUAGE_STORAGE_KEY, languages } from "@/configs/i18n.config";
 
 export const useLanguage = () => {
     const [currentLanguage, setCurrentLanguage] = useState<Language>(() => {

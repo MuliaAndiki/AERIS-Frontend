@@ -1,13 +1,14 @@
+import { ArrowLeft,Mail, Phone } from 'lucide-react';
+import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mail, Phone, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
-import { Cormorant_Garamond, Outfit } from 'next/font/google';
-import { ForgotPasswordForm } from '@/types/form/auth';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { themeConfig } from '@/configs/theme.config';
+import { ForgotPasswordForm } from '@/types/form/auth';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],

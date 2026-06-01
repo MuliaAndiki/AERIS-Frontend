@@ -1,15 +1,16 @@
-import { Map as MapIcon, BarChart3, Info, X } from 'lucide-react';
+import { BarChart3, Info, Map as MapIcon, X } from 'lucide-react';
 import { useState } from 'react';
-import { cn } from '@/utils/classname';
+
+import { EnvironmentalSummaryPanel } from '@/components/partial/maps/EnvironmentalSummaryPanel';
+import { InsightsPanel } from '@/components/partial/maps/InsightsPanel';
+import { MapContainer } from '@/components/partial/maps/MapsController';
 import { Button } from '@/components/ui/button';
 import { themeConfig } from '@/configs/theme.config';
-
-import GreenSpaceDetailsModal from './green-space-details-modal';
-import EnvironmentMetricDetailsModal from './environment-metric-details-modal';
 import { MapScreenSectionProps } from '@/types/ui/maps';
-import { EnvironmentalSummaryPanel } from '@/components/partial/maps/EnvironmentalSummaryPanel';
-import { MapContainer } from '@/components/partial/maps/MapsController';
-import { InsightsPanel } from '@/components/partial/maps/InsightsPanel';
+import { cn } from '@/utils/classname';
+
+import EnvironmentMetricDetailsModal from './environment-metric-details-modal';
+import GreenSpaceDetailsModal from './green-space-details-modal';
 import { MapEnvironmentLoading } from './map-environment-loading';
 
 type MobileTab = 'map' | 'summary' | 'insights';

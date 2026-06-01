@@ -1,12 +1,3 @@
-import AxiosClient from '@/utils/axios.client';
-import {
-  PickForgotPassword,
-  PickLogin,
-  PickRegister,
-  PickResetPassword,
-  PickSendOtp,
-  PickVerify,
-} from '@/types/schema/auth.schema';
 import {
   ForgotResponse,
   LoginResponse,
@@ -16,6 +7,15 @@ import {
   ResetPasswordResponse,
   VerifyOtpResponse,
 } from '@/types/res/auth.res';
+import {
+  PickForgotPassword,
+  PickLogin,
+  PickRegister,
+  PickResetPassword,
+  PickSendOtp,
+  PickVerify,
+} from '@/types/schema/auth.schema';
+import AxiosClient from '@/utils/axios.client';
 
 class AuthApi {
   async Login(payload: PickLogin): Promise<LoginResponse> {

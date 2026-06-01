@@ -1,6 +1,6 @@
-import AxiosClient from '@/utils/axios.client';
-import type { ApiResponse } from '@/types/res/base.res';
 import type { AuthUser } from '@/types/res/auth.res';
+import type { ApiResponse } from '@/types/res/base.res';
+import AxiosClient from '@/utils/axios.client';
 
 export interface UserProfile extends AuthUser {
   latestLocation: {

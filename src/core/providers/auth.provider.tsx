@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
-import { useAuthStore } from '@/stores/auth.store';
-import { usePathname, useRouter } from 'next/navigation';
 import { getCookie } from 'cookies-next';
+import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
+
 import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
+import { useAuthStore } from '@/stores/auth.store';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
