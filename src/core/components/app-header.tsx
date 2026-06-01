@@ -11,10 +11,9 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
-import { navigationMenuConfig } from '@/configs/app.config';
+import { appConfig, navigationMenuConfig } from '@/configs/app.config';
 import { cn } from '@/utils/classname';
 
-// import UserDropdown from './user.dropdown';
 import LanguageDropdown from './language.dropdown';
 import NotificationDropdown from './notification.dropdown';
 
@@ -23,11 +22,7 @@ export default function AppHeader() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 0);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -37,22 +32,34 @@ export default function AppHeader() {
   return (
     <nav
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm p-6 border-b transition-all duration-200',
+        'fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm px-6 md:px-12 lg:px-20 py-4 border-b transition-all duration-200',
         isScrolled ? 'border-b-border shadow-md' : 'border-b-transparent'
       )}
     >
       <div className="flex items-center justify-between max-w-7xl mx-auto">
-        <div className="flex items-center gap-4">
-          {/* Company Logo */}
-          <Link href="/">
-            <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
+        {/* Left — logo + nav */}
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src={appConfig.logo}
+              alt={appConfig.name}
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
+            <span className="text-sm font-bold tracking-widest text-foreground hidden sm:block">
+              {appConfig.name}
+            </span>
           </Link>
 
           <NavigationMenu>
             <NavigationMenuList>
               {navigationMenuConfig?.items?.map((item) => (
                 <NavigationMenuItem key={item.title}>
-                  <NavigationMenuLink href={item.href} className={navigationMenuTriggerStyle()}>
+                  <NavigationMenuLink
+                    href={item.href}
+                    className={navigationMenuTriggerStyle()}
+                  >
                     {item.title}
                   </NavigationMenuLink>
                 </NavigationMenuItem>
@@ -61,10 +68,16 @@ export default function AppHeader() {
           </NavigationMenu>
         </div>
 
-        <div className="flex items-center gap-4">
-          <LanguageDropdown />
+        {/* Right — actions */}
+        <div className="flex items-center gap-3">
+          {/* <LanguageDropdown /> */}
           <NotificationDropdown />
-          {/* <UserDropdown /> */}
+          <Link
+            href="/login"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-lg gradient-primary text-primary-foreground text-sm font-semibold hover-lift shadow-enhanced transition-all"
+          >
+            Masuk
+          </Link>
         </div>
       </div>
     </nav>

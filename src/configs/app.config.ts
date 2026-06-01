@@ -36,35 +36,35 @@ interface AppConfig {
 }
 
 export const appConfig: AppConfig = {
-  name: 'App',
-  description: 'App',
+  name: 'AERIS',
+  description: 'Platform pemantauan kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
   logo: '/images/logo.png',
   metadata: {
-    title: 'App',
-    description: 'App',
-    keywords: ['App'],
-    author: 'App',
-    image: 'App',
+    title: 'AERIS — Luminous Intelligence Platform',
+    description: 'Pahami lingkunganmu dengan AERIS. Pantau kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
+    keywords: ['kualitas udara', 'lingkungan', 'AQI', 'pemantauan', 'AERIS', 'smart city'],
+    author: 'AERIS Team',
+    image: '/images/og-image.png',
   },
   social_media: {
     twitter: {
-      url: 'https://twitter.com/app',
+      url: 'https://twitter.com/aeris_id',
       icon: 'hugeicons:new-twitter-rectangle',
     },
     instagram: {
-      url: 'https://instagram.com/app',
+      url: 'https://instagram.com/aeris_id',
       icon: 'basil:instagram-outline',
     },
     linkedin: {
-      url: 'https://linkedin.com/app',
+      url: 'https://linkedin.com/company/aeris-id',
       icon: 'tabler:brand-linkedin',
     },
     youtube: {
-      url: 'https://youtube.com/app',
+      url: 'https://youtube.com/@aeris_id',
       icon: 'mingcute:youtube-line',
     },
     tiktok: {
-      url: 'https://tiktok.com/app',
+      url: 'https://tiktok.com/@aeris_id',
       icon: 'hugeicons:tiktok',
     },
   },
@@ -83,14 +83,19 @@ interface NavigationMenuConfig {
 export const navigationMenuConfig: NavigationMenuConfig = {
   items: [
     {
-      title: 'Home',
+      title: 'Beranda',
       href: '/',
-      description: 'Home',
+      description: 'Halaman utama AERIS',
     },
     {
-      title: 'Kelas',
-      href: '/kelas',
-      description: 'Kelas',
+      title: 'Fitur',
+      href: '/#features',
+      description: 'Fitur pemantauan lingkungan',
+    },
+    {
+      title: 'Peta',
+      href: '/#map',
+      description: 'Jelajahi kanvas atmosfer',
     },
   ],
 };
