@@ -1,9 +1,10 @@
-import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import { ArrowRight, RefreshCw, ShieldCheck } from 'lucide-react';
+import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import { useRef } from 'react';
-import { OtpForm } from '@/types/form/auth';
+
 import { Button } from '@/components/ui/button';
 import { themeConfig } from '@/configs/theme.config';
+import { OtpForm } from '@/types/form/auth';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],

@@ -1,9 +1,10 @@
 'use client';
 
+import { FormEvent, useState } from 'react';
+
 import RegisterSection from '@/components/section/auth/register-screen-section';
 import { useApi } from '@/hooks/useApi/props.api';
 import { RegisterForm } from '@/types/form/auth';
-import { FormEvent, useState } from 'react';
 
 const RegisterContainer = () => {
   const service = useApi();

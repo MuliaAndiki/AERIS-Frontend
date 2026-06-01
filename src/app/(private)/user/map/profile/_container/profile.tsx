@@ -1,9 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-import { useGetMe } from '@/hooks/useApi/user';
-import { useAuthStore } from '@/stores/auth.store';
-import { SidebarLayout } from '@/core/layouts/sidebar.layout';
 import {
   ArrowLeft,
   CalendarDays,
@@ -16,10 +12,15 @@ import {
   Shield,
   User,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
+import { Button } from '@/components/ui/button';
+import { SidebarLayout } from '@/core/layouts/sidebar.layout';
 import { useApi } from '@/hooks/useApi/props.api';
+import { useGetMe } from '@/hooks/useApi/user';
+import { useAuthStore } from '@/stores/auth.store';
 
 export default function ProfileContainer() {
   const router = useRouter();

@@ -6,8 +6,8 @@ import {
 import {
   useAirQuality,
   useDisasterRisk,
-  useGreenSpaceDetail,
   useGreenSpace,
+  useGreenSpaceDetail,
   useGreenSpaceReviews,
   useHeatRisk,
   useNoise,

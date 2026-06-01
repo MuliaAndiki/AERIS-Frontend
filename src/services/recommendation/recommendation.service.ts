@@ -1,10 +1,10 @@
-import AxiosClient from '@/utils/axios.client';
 import {
   RecommendationDailyResponse,
   RecommendationListResponse,
   RecommendationQuery,
   RecommendationRefreshCacheResponse,
 } from '@/types/res/recommendation.res';
+import AxiosClient from '@/utils/axios.client';
 
 class RecommendationApi {
   async List(query?: RecommendationQuery): Promise<RecommendationListResponse> {

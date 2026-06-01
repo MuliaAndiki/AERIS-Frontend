@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+
 import type { ScoreHistoryData } from './score-trending-chart';
 
 const ScoreTrendingChart = dynamic(() => import('./score-trending-chart'), {

@@ -1,10 +1,11 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
+import { FormEvent, useMemo, useState } from 'react';
+
 import OtpSection from '@/components/section/general/otp-screen-section';
 import { useApi } from '@/hooks/useApi/props.api';
 import { OtpForm } from '@/types/form/auth';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FormEvent, useMemo, useState } from 'react';
 
 const OtpContainer = () => {
   const service = useApi();

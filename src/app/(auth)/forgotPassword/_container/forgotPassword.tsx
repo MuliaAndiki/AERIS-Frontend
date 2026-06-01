@@ -1,9 +1,10 @@
 'use client';
 
+import { FormEvent, useState } from 'react';
+
 import ForgotPasswordSection from '@/components/section/auth/forgotPassword-screen-section';
 import { useApi } from '@/hooks/useApi/props.api';
 import { ForgotPasswordForm } from '@/types/form/auth';
-import { FormEvent, useState } from 'react';
 
 const ForgotPasswordContainer = () => {
   const service = useApi();

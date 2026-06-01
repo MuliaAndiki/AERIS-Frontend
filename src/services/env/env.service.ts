@@ -1,12 +1,11 @@
-import AxiosClient from '@/utils/axios.client';
 import {
   EnvironmentAirQualityResponse,
   EnvironmentCreateReviewPayload,
   EnvironmentDisasterRiskResponse,
   EnvironmentGreenAreaDetailResponse,
-  EnvironmentGreenReviewFilter,
   EnvironmentGreenReviewCreateResponse,
   EnvironmentGreenReviewDeleteResponse,
+  EnvironmentGreenReviewFilter,
   EnvironmentGreenReviewListResponse,
   EnvironmentGreenReviewModerateResponse,
   EnvironmentGreenReviewSort,
@@ -21,6 +20,7 @@ import {
   EnvironmentUpdateReviewPayload,
   EnvironmentWeatherResponse,
 } from '@/types/res/environment.res';
+import AxiosClient from '@/utils/axios.client';
 
 class EnvironmentApi {
   async AirQuality(): Promise<EnvironmentAirQualityResponse> {
