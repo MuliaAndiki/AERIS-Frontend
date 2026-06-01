@@ -381,3 +381,81 @@ input[type='number'] {
 .dark .hover-lift:hover {
   box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
 }
+
+@keyframes shimmer-slide {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes api-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes scan-line {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(400%);
+    opacity: 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--muted) 80%, transparent) 0%,
+    color-mix(in srgb, var(--primary) 12%, white) 50%,
+    color-mix(in srgb, var(--muted) 80%, transparent) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 1.8s ease-in-out infinite;
+}
+
+/* Map environment loading — AERIS green palette (#248277, #67B99A) */
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+}
+
+.pt-safe {
+  padding-top: max(0px, env(safe-area-inset-top, 0px));
+}
+
+.px-safe {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+.map-env-shimmer {
+  background: linear-gradient(
+    90deg,
+    #d8efe5 0%,
+    #a8e0c8 35%,
+    #67b99a 50%,
+    #a8e0c8 65%,
+    #d8efe5 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer-slide 1.8s ease-in-out infinite;
+}
+
+.api-scan-line {
+  animation: scan-line 2.4s ease-in-out infinite;
+}

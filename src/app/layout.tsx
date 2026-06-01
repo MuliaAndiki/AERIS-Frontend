@@ -3,20 +3,35 @@ import '@/styles/globals.css';
 import { metadata, siteConfig } from './metadata';
 import { AppProviders } from './providers';
 import NextTopLoader from 'nextjs-toploader';
+import { Poppins, Instrument_Sans, Instrument_Serif } from 'next/font/google';
+
 export { metadata };
+
+const poppins = Poppins({
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+});
+
+const instrumentSans = Instrument_Sans({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-instrument-sans',
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: ['400'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-instrument-serif',
+});
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="antialiased">
+    <html lang="en" className={`${poppins.variable} ${instrumentSans.variable} ${instrumentSerif.variable}`}>
+      <body className={`${poppins.className} antialiased`}>
         <NextTopLoader
           color="#c269da"
           initialPosition={0.08}

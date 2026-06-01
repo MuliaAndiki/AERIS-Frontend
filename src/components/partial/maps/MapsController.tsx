@@ -152,7 +152,7 @@ export const MapContainer: React.FC<{
   }, []);
 
   return (
-    <div className="flex-1 h-full relative flex flex-col">
+    <div className="relative flex h-full min-h-0 flex-1 flex-col pb-16 lg:pb-0">
       <Map
         ref={mapRef}
         center={[mapLng, mapLat]}
@@ -344,18 +344,18 @@ export const MapContainer: React.FC<{
       </Map>
 
       {/* ══ ENVIRONMENT LEGEND ══ */}
-      <div className="absolute top-6 left-6 z-10 pointer-events-auto">
+      <div className="pointer-events-auto absolute left-2 right-14 top-14 z-10 sm:left-4 sm:right-auto sm:top-4 md:left-6 md:top-6">
         <div
-          className="bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300"
+          className="w-full max-w-[min(100%,280px)] overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 sm:max-w-[280px]"
           style={{
             border: `1px solid ${theme.border}`,
-            width: legendExpanded ? 280 : 180,
+            width: undefined,
           }}
         >
           {/* Legend Header */}
           <button
             onClick={() => setLegendExpanded((prev) => !prev)}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors"
+            className="flex w-full items-center justify-between px-3 py-2.5 transition-colors hover:bg-gray-50 sm:px-4 sm:py-3"
           >
             <div className="flex items-center gap-2">
               <div
@@ -365,10 +365,10 @@ export const MapContainer: React.FC<{
                 <Info size={12} style={{ color: theme.primary.background }} />
               </div>
               <p
-                className="text-[11px] font-bold tracking-wider uppercase"
+                className="text-xs font-bold uppercase tracking-wider sm:text-[11px]"
                 style={{ color: theme.primary.background }}
               >
-                Environment Legend
+                <span className="hidden sm:inline">Environment </span>Legend
               </p>
             </div>
             {legendExpanded ? (
@@ -387,7 +387,7 @@ export const MapContainer: React.FC<{
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: theme.primary.background }}
                 />
-                <p className="text-[10px] font-medium flex-1" style={{ color: theme.foreground }}>
+                <p className="flex-1 text-xs font-medium sm:text-[10px]" style={{ color: theme.foreground }}>
                   Your Location
                 </p>
               </div>
@@ -414,14 +414,14 @@ export const MapContainer: React.FC<{
                       className="flex items-center gap-1.5 flex-1 text-left"
                     >
                       <span style={{ color: item.color }}>{item.icon}</span>
-                      <span className="text-[10px] font-medium" style={{ color: theme.foreground }}>
+                      <span className="text-xs font-medium sm:text-[10px]" style={{ color: theme.foreground }}>
                         {item.label}
                       </span>
                     </button>
 
                     {/* Radius badge */}
                     <span
-                      className="text-[8px] font-bold px-1.5 py-0.5 rounded-full"
+                      className="rounded-full px-1.5 py-0.5 text-[10px] font-bold sm:text-[8px]"
                       style={{
                         backgroundColor: `${item.color}15`,
                         color: item.color,
@@ -430,10 +430,12 @@ export const MapContainer: React.FC<{
                       {item.radiusKm >= 1 ? `${item.radiusKm}km` : `${item.radiusKm * 1000}m`}
                     </span>
 
-                    {/* Visibility toggle */}
+                    {/* Visibility toggle — always visible on touch devices */}
                     <button
+                      type="button"
                       onClick={() => toggleLegendVisibility(item.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
+                      className="p-1 opacity-100 transition-opacity sm:p-0.5 sm:opacity-0 sm:group-hover:opacity-100"
+                      aria-label={item.visible ? 'Sembunyikan layer' : 'Tampilkan layer'}
                     >
                       {item.visible ? (
                         <Eye size={10} style={{ color: theme.muted.foreground }} />
