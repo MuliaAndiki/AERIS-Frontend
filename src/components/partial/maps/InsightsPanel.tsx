@@ -1,9 +1,10 @@
+import { AlertCircle, Badge, CheckCircle, TrendingUp } from 'lucide-react';
+
 import ScoreTrendingChart, {
   ScoreHistoryData,
 } from '@/components/section/(private)/user/map/score-trending-chart-lazy';
 import { themeConfig } from '@/configs/theme.config';
 import { Alert, GreenSpace, Recommendation, ScoreHistory } from '@/types/partial/maps';
-import { AlertCircle, Badge, CheckCircle, TrendingUp } from 'lucide-react';
 
 export const InsightsPanel: React.FC<{
   theme: typeof themeConfig.light;

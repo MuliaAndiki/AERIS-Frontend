@@ -1,4 +1,3 @@
-import AxiosClient from '@/utils/axios.client';
 import {
   ScoreDetailResponse,
   ScorePreviewBody,
@@ -7,6 +6,7 @@ import {
   ScoreRefreshCacheResponse,
   ScoreSummaryResponse,
 } from '@/types/res/scoring.res';
+import AxiosClient from '@/utils/axios.client';
 
 class ScoringApi {
   async Score(query?: ScoreQuery): Promise<ScoreSummaryResponse> {

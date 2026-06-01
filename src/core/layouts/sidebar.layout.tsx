@@ -1,12 +1,11 @@
 'use client';
 
 import { Search } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { themeConfig } from '@/configs/theme.config';
-
-import Link from 'next/link';
 
 interface AppLayoutProps {
   children: React.ReactNode;

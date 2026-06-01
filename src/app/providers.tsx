@@ -1,14 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AuthProvider } from '@/core/providers/auth.provider';
+import { LenisProvider } from '@/core/providers/lenis.provinder';
+import { ThemeProvider } from '@/core/providers/theme.provider';
 import { AlertProvider } from '@/hooks/useAlert/costum-alert';
 import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
-import { ThemeProvider } from '@/core/providers/theme.provider';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { composeProviders } from './composeProvinders';
-import { AuthProvider } from '@/core/providers/auth.provider';
 import { AuthStoreProvider } from '@/stores/auth.provider';
-import dynamic from 'next/dynamic';
-import { LenisProvider } from '@/core/providers/lenis.provinder';
+
+import { composeProviders } from './composeProvinders';
 
 const PWAUpdatePrompt = dynamic(
   () => import('@/components/pwa/PWAUpdatePrompt').then((m) => m.PWAUpdatePrompt),

@@ -1,9 +1,10 @@
 import '@/styles/globals.css';
 
+import { Instrument_Sans, Instrument_Serif,Poppins } from 'next/font/google';
+import NextTopLoader from 'nextjs-toploader';
+
 import { metadata, siteConfig } from './metadata';
 import { AppProviders } from './providers';
-import NextTopLoader from 'nextjs-toploader';
-import { Poppins, Instrument_Sans, Instrument_Serif } from 'next/font/google';
 
 export { metadata };
 

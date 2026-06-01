@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { AuthStoreContext, type AuthState } from '@/stores/auth.store';
+
+import { type AuthState,AuthStoreContext } from '@/stores/auth.store';
 import type { userSchema } from '@/types/api';
 
 const AUTH_STORAGE_KEY = 'aeris:auth-user';

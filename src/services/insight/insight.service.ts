@@ -1,10 +1,10 @@
-import AxiosClient from '@/utils/axios.client';
 import {
   InsightDailyResponse,
   InsightListResponse,
   InsightQuery,
   InsightRefreshCacheResponse,
 } from '@/types/res/insight.res';
+import AxiosClient from '@/utils/axios.client';
 
 class InsightApi {
   async List(query?: InsightQuery): Promise<InsightListResponse> {

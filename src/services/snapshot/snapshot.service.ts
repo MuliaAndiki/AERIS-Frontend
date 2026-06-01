@@ -1,13 +1,13 @@
-import AxiosClient from '@/utils/axios.client';
 import {
   GenerateSnapshotBody,
   SnapshotCurrentResponse,
   SnapshotDetailResponse,
+  SnapshotGenerateResponse,
   SnapshotHistoryResponse,
   SnapshotQuery,
   SnapshotRefreshCacheResponse,
-  SnapshotGenerateResponse,
 } from '@/types/res/snapshot.res';
+import AxiosClient from '@/utils/axios.client';
 
 class SnapshotApi {
   async Current(query?: Pick<SnapshotQuery, 'locationId'>): Promise<SnapshotCurrentResponse> {

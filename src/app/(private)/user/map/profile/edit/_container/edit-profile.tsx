@@ -1,8 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-import { useGetMe, useEditProfile } from '@/hooks/useApi/user';
-import { SidebarLayout } from '@/core/layouts/sidebar.layout';
 import {
   ArrowLeft,
   Camera,
@@ -15,9 +12,13 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { SidebarLayout } from '@/core/layouts/sidebar.layout';
+import { useEditProfile,useGetMe } from '@/hooks/useApi/user';
 
 export default function EditProfileContainer() {
   const router = useRouter();

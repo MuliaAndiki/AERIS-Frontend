@@ -1,33 +1,34 @@
 import {
-  MapControls,
+  Badge,
+  ChevronDown,
+  ChevronUp,
+  Droplets,
+  Eye,
+  EyeOff,
+  Flame,
+  Info,
+  TreePine,
+  Volume2,
+  Wind,
+} from 'lucide-react';
+import { useCallback,useRef, useState } from 'react';
+
+import {
+  BufferZoneLayer,
+  EnvironmentalBufferZone,
+  GreenSpaceBufferZones,
+} from '@/components/partial/maps/BufferZoneLayer';
+import {
   Map,
+  MapControls,
   MapMarker,
+  MapPopup,
   MapRef,
   MarkerContent,
   MarkerPopup,
-  MapPopup,
 } from '@/components/ui/map';
 import { themeConfig } from '@/configs/theme.config';
 import { GreenSpace } from '@/types/partial/maps';
-import {
-  Badge,
-  TreePine,
-  Info,
-  Wind,
-  Flame,
-  Droplets,
-  Volume2,
-  ChevronDown,
-  ChevronUp,
-  Eye,
-  EyeOff,
-} from 'lucide-react';
-import { useRef, useState, useCallback } from 'react';
-import {
-  EnvironmentalBufferZone,
-  GreenSpaceBufferZones,
-  BufferZoneLayer,
-} from '@/components/partial/maps/BufferZoneLayer';
 
 /* ─── Legend environment definitions ─── */
 interface EnvironmentLegendItem {
