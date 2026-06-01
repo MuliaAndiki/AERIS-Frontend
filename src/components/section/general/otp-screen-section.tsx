@@ -3,7 +3,7 @@ import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import { useRef } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { OtpForm } from '@/types/form/auth';
 
 const cormorant = Cormorant_Garamond({
@@ -38,7 +38,6 @@ interface OtpSectionProps {
 const OTP_LENGTH = 6;
 
 const OtpSection: React.FC<OtpSectionProps> = ({ state, service }) => {
-  const theme = themeConfig.light;
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const digits = state.formOtp.otp.split('').slice(0, OTP_LENGTH);

@@ -3,18 +3,7 @@
 import { Check, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { themeConfig } from '@/configs/theme.config';
 import { cn } from '@/utils/classname';
-
-/** Map / profile green palette */
-const GREEN = {
-  dark: themeConfig.light.primary.background,
-  light: themeConfig.light.accent.background,
-  muted: themeConfig.light.muted.background,
-  bg: themeConfig.light.background,
-  text: themeConfig.light.foreground,
-  textMuted: themeConfig.light.muted.foreground,
-} as const;
 
 const API_LOAD_STEPS = [
   { id: 'location', label: 'Location', endpoint: '/api/location' },
@@ -44,50 +33,30 @@ function ApiStepRow({
     <div
       className={cn(
         'relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-500',
-        status === 'active' && 'bg-white/80 shadow-sm',
+        status === 'active' && 'bg-card shadow-sm ring-1 ring-primary/15',
         status === 'pending' && 'opacity-40',
       )}
-      style={
-        status === 'active'
-          ? { boxShadow: `0 0 0 1px color-mix(in srgb, ${GREEN.dark} 18%, transparent)` }
-          : undefined
-      }
     >
       <div
         className={cn(
           'flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-300',
-          status === 'pending' && 'bg-[#D8EFE5]',
+          status === 'done' && 'bg-accent/20 text-primary',
+          status === 'active' && 'bg-primary/15 text-primary',
+          status === 'pending' && 'bg-muted',
         )}
-        style={
-          status === 'done'
-            ? { backgroundColor: `${GREEN.light}33`, color: GREEN.dark }
-            : status === 'active'
-              ? { backgroundColor: `${GREEN.dark}18`, color: GREEN.dark }
-              : undefined
-        }
       >
         {status === 'done' && <Check className="size-3.5" strokeWidth={2.5} />}
         {status === 'active' && <Loader2 className="size-3.5 animate-spin" />}
         {status === 'pending' && (
-          <span
-            className="size-1.5 rounded-full"
-            style={{ backgroundColor: `${GREEN.dark}40` }}
-          />
+          <span className="size-1.5 rounded-full bg-muted-foreground/30" />
         )}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-semibold truncate" style={{ color: GREEN.text }}>
-          {label}
-        </p>
-        <p className="font-mono text-[10px] truncate" style={{ color: GREEN.textMuted }}>
-          GET {endpoint}
-        </p>
+        <p className="truncate text-xs font-semibold text-foreground">{label}</p>
+        <p className="truncate font-mono text-[10px] text-muted-foreground">GET {endpoint}</p>
         {status === 'active' && (
-          <div
-            className="mt-2 h-0.5 w-full overflow-hidden rounded-full"
-            style={{ backgroundColor: `${GREEN.dark}15` }}
-          >
+          <div className="mt-2 h-0.5 w-full overflow-hidden rounded-full bg-primary/10">
             <div
               className="h-full w-1/3 rounded-full map-env-shimmer"
               style={{ animationDuration: '1.2s' }}
@@ -97,20 +66,12 @@ function ApiStepRow({
       </div>
 
       {status === 'active' && (
-        <span
-          className="text-[10px] font-medium tabular-nums animate-[api-pulse_1.5s_ease-in-out_infinite]"
-          style={{ color: GREEN.dark }}
-        >
+        <span className="animate-[api-pulse_1.5s_ease-in-out_infinite] text-[10px] font-medium tabular-nums text-primary">
           …
         </span>
       )}
       {status === 'done' && (
-        <span
-          className="text-[10px] font-medium tabular-nums"
-          style={{ color: GREEN.dark }}
-        >
-          200
-        </span>
+        <span className="text-[10px] font-medium tabular-nums text-primary">200</span>
       )}
     </div>
   );
@@ -132,27 +93,15 @@ export function MapEnvironmentLoading() {
 
   return (
     <section
-      className="relative flex h-full min-h-0 w-full flex-col overflow-hidden"
-      style={{ backgroundColor: GREEN.bg }}
+      className="relative flex h-full min-h-0 w-full flex-col overflow-hidden bg-background"
       aria-busy
       aria-label="Memuat data lingkungan"
     >
-      {/* Ambient gradient */}
-      <div
-        className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full opacity-25 blur-3xl"
-        style={{ background: GREEN.dark }}
-      />
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 h-80 w-80 rounded-full opacity-30 blur-3xl"
-        style={{ background: GREEN.light }}
-      />
+      <div className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-primary/25 opacity-25 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-80 w-80 rounded-full bg-accent/30 opacity-30 blur-3xl" />
 
       <div className="relative z-10 flex flex-1 flex-col lg:flex-row lg:overflow-hidden">
-        {/* Left panel skeleton */}
-        <div
-          className="hidden lg:flex lg:w-80 lg:flex-col lg:border-r lg:p-5 lg:gap-4 bg-white/50"
-          style={{ borderColor: `${GREEN.dark}25` }}
-        >
+        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-4 lg:border-r lg:border-border lg:bg-card/50 lg:p-5">
           <ShimmerBlock className="h-4 w-2/3" />
           <ShimmerBlock className="h-12 w-full rounded-2xl" />
           <div className="grid grid-cols-2 gap-2">
@@ -163,69 +112,35 @@ export function MapEnvironmentLoading() {
           <ShimmerBlock className="mt-auto h-24 w-full" />
         </div>
 
-        {/* Map area skeleton */}
-        <div className="relative flex flex-1 flex-col min-h-[40vh] lg:min-h-0">
-          <div
-            className="relative flex-1 overflow-hidden m-3 lg:m-4 rounded-2xl border shadow-inner"
-            style={{
-              backgroundColor: themeConfig.light.card.background,
-              borderColor: `${GREEN.light}80`,
-            }}
-          >
+        <div className="relative flex min-h-[40vh] flex-1 flex-col lg:min-h-0">
+          <div className="relative m-3 flex-1 overflow-hidden rounded-2xl border border-accent/50 bg-card shadow-inner lg:m-4">
             <div
-              className="absolute inset-0 opacity-[0.4]"
+              className="absolute inset-0 opacity-40"
               style={{
                 backgroundImage: `
-                  linear-gradient(${GREEN.dark}22 1px, transparent 1px),
-                  linear-gradient(90deg, ${GREEN.dark}22 1px, transparent 1px)
+                  linear-gradient(color-mix(in srgb, var(--primary) 15%, transparent) 1px, transparent 1px),
+                  linear-gradient(90deg, color-mix(in srgb, var(--primary) 15%, transparent) 1px, transparent 1px)
                 `,
                 backgroundSize: '28px 28px',
               }}
             />
-            <div
-              className="absolute inset-x-0 top-0 h-1/3 api-scan-line pointer-events-none bg-gradient-to-b to-transparent"
-              style={{
-                backgroundImage: `linear-gradient(to bottom, ${GREEN.dark}30, ${GREEN.light}12, transparent)`,
-              }}
-            />
+            <div className="api-scan-line pointer-events-none absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-primary/25 via-accent/10 to-transparent" />
 
-            {/* Fake map markers */}
-            <div
-              className="absolute left-[22%] top-[38%] size-3 rounded-full map-env-shimmer ring-4 ring-white/80"
-              style={{ boxShadow: `0 0 12px ${GREEN.light}80` }}
-            />
-            <div
-              className="absolute left-[58%] top-[52%] size-2.5 rounded-full map-env-shimmer ring-4 ring-white/80 [animation-delay:200ms]"
-              style={{ boxShadow: `0 0 10px ${GREEN.light}60` }}
-            />
-            <div
-              className="absolute right-[28%] top-[30%] size-2 rounded-full map-env-shimmer ring-4 ring-white/80 [animation-delay:400ms]"
-              style={{ boxShadow: `0 0 8px ${GREEN.light}50` }}
-            />
+            <div className="absolute left-[22%] top-[38%] size-3 rounded-full map-env-shimmer shadow-[0_0_12px_color-mix(in_srgb,var(--accent)_50%,transparent)] ring-4 ring-white/80" />
+            <div className="absolute left-[58%] top-[52%] size-2.5 rounded-full map-env-shimmer shadow-[0_0_10px_color-mix(in_srgb,var(--accent)_40%,transparent)] ring-4 ring-white/80 [animation-delay:200ms]" />
+            <div className="absolute right-[28%] top-[30%] size-2 rounded-full map-env-shimmer shadow-[0_0_8px_color-mix(in_srgb,var(--accent)_35%,transparent)] ring-4 ring-white/80 [animation-delay:400ms]" />
 
-            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2 rounded-xl bg-white/90 px-3 py-2 shadow-lg backdrop-blur-md lg:hidden">
-              <Loader2
-                className="size-4 shrink-0 animate-spin"
-                style={{ color: GREEN.dark }}
-              />
-              <p className="text-xs font-medium" style={{ color: GREEN.text }}>
-                Mengambil data lingkungan…
-              </p>
-              <span
-                className="ml-auto text-[10px] font-semibold tabular-nums"
-                style={{ color: GREEN.dark }}
-              >
+            <div className="absolute bottom-4 left-4 right-4 flex items-center gap-2 rounded-xl bg-card/90 px-3 py-2 shadow-lg backdrop-blur-md lg:hidden">
+              <Loader2 className="size-4 shrink-0 animate-spin text-primary" />
+              <p className="text-xs font-medium text-foreground">Mengambil data lingkungan…</p>
+              <span className="ml-auto text-[10px] font-semibold tabular-nums text-primary">
                 {Math.round(progress)}%
               </span>
             </div>
           </div>
         </div>
 
-        {/* Right panel skeleton — desktop */}
-        <div
-          className="hidden lg:flex lg:w-80 lg:flex-col lg:border-l lg:p-5 lg:gap-3 bg-white/50"
-          style={{ borderColor: `${GREEN.dark}25` }}
-        >
+        <div className="hidden lg:flex lg:w-80 lg:flex-col lg:gap-3 lg:border-l lg:border-border lg:bg-card/50 lg:p-5">
           <ShimmerBlock className="h-4 w-1/2" />
           {Array.from({ length: 3 }).map((_, i) => (
             <ShimmerBlock key={i} className="h-14 w-full" />
@@ -233,46 +148,28 @@ export function MapEnvironmentLoading() {
         </div>
       </div>
 
-      {/* API fetch panel */}
-      <div
-        className="relative z-20 border-t bg-white/70 px-4 py-4 backdrop-blur-xl lg:px-8"
-        style={{ borderColor: `${GREEN.dark}20` }}
-      >
+      <div className="relative z-20 border-t border-border bg-card/70 px-4 py-4 backdrop-blur-xl lg:px-8">
         <div className="mx-auto flex max-w-2xl flex-col gap-3">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold" style={{ color: GREEN.text }}>
-                Sinkronisasi data
-              </p>
-              <p className="text-xs" style={{ color: GREEN.textMuted }}>
+              <p className="text-sm font-semibold text-foreground">Sinkronisasi data</p>
+              <p className="text-xs text-muted-foreground">
                 {API_LOAD_STEPS[activeStep]?.label ?? 'Menyelesaikan…'}
               </p>
             </div>
-            <span
-              className="rounded-full px-2.5 py-1 text-[11px] font-semibold tabular-nums"
-              style={{
-                backgroundColor: `${GREEN.dark}15`,
-                color: GREEN.dark,
-              }}
-            >
+            <span className="rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-semibold tabular-nums text-primary">
               {Math.round(progress)}%
             </span>
           </div>
 
-          <div
-            className="h-1 overflow-hidden rounded-full"
-            style={{ backgroundColor: `${GREEN.dark}12` }}
-          >
+          <div className="h-1 overflow-hidden rounded-full bg-primary/10">
             <div
-              className="h-full rounded-full transition-all duration-700 ease-out"
-              style={{
-                width: `${progress}%`,
-                background: `linear-gradient(90deg, ${GREEN.dark}, ${GREEN.light})`,
-              }}
+              className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-700 ease-out"
+              style={{ width: `${progress}%` }}
             />
           </div>
 
-          <div className="grid gap-1 sm:grid-cols-2 max-h-[min(28vh,220px)] overflow-y-auto pr-1">
+          <div className="grid max-h-[min(28vh,220px)] gap-1 overflow-y-auto pr-1 sm:grid-cols-2">
             {API_LOAD_STEPS.map((step, index) => (
               <ApiStepRow
                 key={step.id}

@@ -3,11 +3,10 @@ import { AlertCircle, Badge, CheckCircle, TrendingUp } from 'lucide-react';
 import ScoreTrendingChart, {
   ScoreHistoryData,
 } from '@/components/section/(private)/user/map/score-trending-chart-lazy';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { Alert, GreenSpace, Recommendation, ScoreHistory } from '@/types/partial/maps';
 
 export const InsightsPanel: React.FC<{
-  theme: typeof themeConfig.light;
   alerts: Alert[];
   recommendations: Recommendation[];
   greenSpaces: GreenSpace[];
@@ -15,7 +14,6 @@ export const InsightsPanel: React.FC<{
   onAlertClick?: (alertId: string) => void;
   onGreenSpaceClick?: (spaceId: string) => void;
 }> = ({
-  theme,
   alerts,
   recommendations,
   greenSpaces,
@@ -24,8 +22,7 @@ export const InsightsPanel: React.FC<{
   onGreenSpaceClick,
 }) => (
   <div
-    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-l p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6"
-    style={{ backgroundColor: 'white', borderLeftColor: theme.border }}
+    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-l border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6"
   >
     {/* Active Alerts */}
     <div>

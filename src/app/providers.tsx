@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AuthProvider } from '@/core/providers/auth.provider';
 import { LenisProvider } from '@/core/providers/lenis.provinder';
-import { ThemeProvider } from '@/core/providers/theme.provider';
 import { AlertProvider } from '@/hooks/useAlert/costum-alert';
 import { ReactQueryClientProvider } from '@/pkg/react-query/query-client.pkg';
 import { AuthStoreProvider } from '@/stores/auth.provider';
@@ -29,7 +28,6 @@ const Providers = composeProviders([
   ({ children }) => <SidebarProvider defaultOpen={false}>{children}</SidebarProvider>,
   AuthStoreProvider,
   AuthProvider,
-  ThemeProvider,
   AlertProvider,
   LenisProvider,
   ReactQueryClientProvider,

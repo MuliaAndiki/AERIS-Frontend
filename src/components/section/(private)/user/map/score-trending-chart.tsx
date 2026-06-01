@@ -11,7 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 
 export interface ScoreHistoryData {
   date: string;
@@ -42,7 +42,6 @@ const transformScoreHistory = (data: ScoreHistoryData[]) => {
 };
 
 const ScoreTrendingChart: React.FC<ScoreTrendingChartProps> = ({ data, height = 250 }) => {
-  const theme = themeConfig.light;
   const chartData = useMemo(() => {
     return transformScoreHistory(data);
   }, [data.length, data.map((item) => `${item.date}:${item.score}:${item.change}`).join('|')]);

@@ -51,11 +51,11 @@ export default function ProfileContainer() {
           <div className="absolute inset-0">
             <div
               className="absolute w-[600px] h-[600px] rounded-full blur-[200px] opacity-15 -top-40 -left-20"
-              style={{ background: 'radial-gradient(circle, #248277, transparent)' }}
+              style={{ background: 'radial-gradient(circle, var(--primary), transparent)' }}
             />
             <div
               className="absolute w-[400px] h-[400px] rounded-full blur-[160px] opacity-10 top-20 right-0"
-              style={{ background: 'radial-gradient(circle, #67B99A, transparent)' }}
+              style={{ background: 'radial-gradient(circle, var(--accent), transparent)' }}
             />
           </div>
 
@@ -102,7 +102,7 @@ export default function ProfileContainer() {
                   {/* Top banner */}
                   <div
                     className="h-32 relative"
-                    style={{ background: 'linear-gradient(135deg, #248277, #67B99A, #248277)' }}
+                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent), var(--primary))' }}
                   >
                     <div
                       className="absolute inset-0 opacity-20"
@@ -120,7 +120,7 @@ export default function ProfileContainer() {
                       <div className="relative">
                         <div
                           className="relative w-24 h-24 rounded-2xl border-4 border-[#0d1a14] flex items-center justify-center text-3xl font-bold overflow-hidden"
-                          style={{ background: 'linear-gradient(135deg, #248277, #67B99A)' }}
+                          style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
                         >
                           {user.avaUrl ? (
                             <Image
@@ -153,7 +153,7 @@ export default function ProfileContainer() {
                                 user.role === 'ADMIN'
                                   ? 'linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.05))'
                                   : 'linear-gradient(135deg, rgba(36,130,119,0.15), rgba(36,130,119,0.05))',
-                              color: user.role === 'ADMIN' ? '#ef4444' : '#67B99A',
+                              color: user.role === 'ADMIN' ? '#ef4444' : 'var(--accent)',
                               border: `1px solid ${user.role === 'ADMIN' ? 'rgba(239,68,68,0.2)' : 'rgba(103,185,154,0.2)'}`,
                             }}
                           >
@@ -173,7 +173,7 @@ export default function ProfileContainer() {
                         <Button
                           className="h-11 w-full px-5 rounded-xl text-sm font-semibold text-[#080F0C] hover:scale-105 transition-all sm:h-10 sm:w-auto sm:text-[13px]"
                           style={{
-                            background: 'linear-gradient(135deg, #67B99A, #248277)',
+                            background: 'linear-gradient(135deg, var(--accent), var(--primary))',
                             boxShadow: '0 8px 24px rgba(36,130,119,0.25)',
                           }}
                         >
@@ -213,8 +213,8 @@ export default function ProfileContainer() {
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                          <Phone size={15} className="text-purple-400" />
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-primary/10">
+                          <Phone size={15} className="text-primary" />
                         </div>
                         <div>
                           <p className="text-[10px] font-medium text-white/30 uppercase tracking-wider">

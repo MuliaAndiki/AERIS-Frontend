@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { ResetPasswordForm } from '@/types/form/auth';
 
 const cormorant = Cormorant_Garamond({
@@ -40,7 +40,6 @@ interface ResetSectionProps {
 
 const ResetSection: React.FC<ResetSectionProps> = ({ state, service }) => {
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  const theme = themeConfig.light;
 
   const isConfirmMismatch =
     state.formReset.confirmPassword.length > 0 &&
