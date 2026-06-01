@@ -1,11 +1,20 @@
 'use client';
-import Link from 'next/link';
+
+import HeroSection from '@/components/section/public/hero-section';
+import AboutSection from '@/components/section/public/about-section';
+import FeaturesSection from '@/components/section/public/features-section';
+import MapPreviewSection from '@/components/section/public/map-preview-section';
+import CtaSection from '@/components/section/public/cta-section';
+
 export default function ContainerHome() {
   return (
-    <main className="w-full min-h-screen flex justify-center items-center">
-      <Link className="text-2xl font-semibold" href={'/login'}>
-        Login
-      </Link>
+    <main className="w-full">
+      
+      <HeroSection />
+      <AboutSection />
+      <FeaturesSection />
+      <MapPreviewSection />
+      <CtaSection />
     </main>
   );
 }

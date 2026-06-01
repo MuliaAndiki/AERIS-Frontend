@@ -8,7 +8,6 @@ import {
   Mail,
   Phone,
   Save,
-  Shield,
   User,
   X,
 } from 'lucide-react';
@@ -18,7 +17,7 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';
-import { useEditProfile,useGetMe } from '@/hooks/useApi/user';
+import { useEditProfile, useGetMe } from '@/hooks/useApi/user';
 
 export default function EditProfileContainer() {
   const router = useRouter();
@@ -34,7 +33,6 @@ export default function EditProfileContainer() {
   });
   const [saved, setSaved] = useState(false);
 
-  // Populate form when data arrives
   useEffect(() => {
     if (user) {
       setForm({
@@ -78,44 +76,40 @@ export default function EditProfileContainer() {
 
   return (
     <SidebarLayout>
-      <main className="w-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-gradient-to-br from-[#080F0C] via-[#0d1a14] to-[#080F0C] pb-safe text-white">
+      <main className="w-full min-h-0 flex-1 overflow-x-hidden overflow-y-auto bg-background text-foreground pb-safe">
         <div className="relative overflow-hidden">
-          {/* Background */}
-          <div className="absolute inset-0">
-            <div
-              className="absolute w-[600px] h-[600px] rounded-full blur-[200px] opacity-15 -top-40 -left-20"
-              style={{ background: 'radial-gradient(circle, var(--primary), transparent)' }}
-            />
+          {/* Background blob */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute w-[500px] h-[500px] rounded-full blur-[180px] opacity-20 -top-40 -left-20 bg-primary" />
           </div>
 
           <div className="relative mx-auto max-w-2xl px-4 py-6 sm:px-6 sm:py-8">
             {/* Back */}
             <button
               onClick={() => router.back()}
-              className="flex items-center gap-2 text-white/40 hover:text-white/70 transition-colors mb-8 group"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8 group"
             >
               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-              <span className="text-[13px] font-medium">Back to Profile</span>
+              <span className="text-[13px] font-medium">Kembali ke Profil</span>
             </button>
 
             {/* Title */}
             <div className="mb-8">
-              <h1 className="text-2xl font-bold text-white/90">Edit Profile</h1>
-              <p className="text-[13px] text-white/35 mt-1">Update your personal information</p>
+              <h1 className="text-2xl font-bold text-foreground">Edit Profil</h1>
+              <p className="text-[13px] text-muted-foreground mt-1">
+                Perbarui informasi pribadimu
+              </p>
             </div>
 
             {isLoading ? (
               <div className="flex items-center justify-center py-24">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-400/60" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary/60" />
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Avatar preview */}
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
-                  <div
-                    className="relative mx-auto size-20 shrink-0 overflow-hidden rounded-2xl flex items-center justify-center text-2xl font-bold group sm:mx-0"
-                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-                  >
+                  <div className="relative mx-auto size-20 shrink-0 overflow-hidden rounded-2xl gradient-primary flex items-center justify-center text-2xl font-bold group sm:mx-0 shadow-enhanced">
                     {form.avaUrl ? (
                       <Image
                         src={form.avaUrl}
@@ -126,115 +120,101 @@ export default function EditProfileContainer() {
                         unoptimized={!form.avaUrl.includes('res.cloudinary.com')}
                       />
                     ) : (
-                      <span className="text-white/90">
+                      <span className="text-primary-foreground">
                         {form.fullName?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     )}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Camera size={20} className="text-white" />
+                    <div className="absolute inset-0 bg-foreground/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Camera size={20} className="text-background" />
                     </div>
                   </div>
+
                   <div className="flex-1">
-                    <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 block mb-2">
-                      Avatar URL
-                    </label>
-                    <input
+                    <FormLabel icon={<Camera size={12} className="text-muted-foreground" />}>
+                      URL Avatar
+                    </FormLabel>
+                    <FormInput
                       type="url"
                       value={form.avaUrl}
                       onChange={(e) => setForm((f) => ({ ...f, avaUrl: e.target.value }))}
                       placeholder="https://example.com/avatar.jpg"
-                      className="w-full h-10 px-4 rounded-xl bg-white/5 border border-white/10 text-[13px] text-white/80 placeholder:text-white/20 focus:border-emerald-500/40 focus:outline-none focus:ring-1 focus:ring-emerald-500/20 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Full Name */}
                 <div>
-                  <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 flex items-center gap-2 mb-2">
-                    <User size={12} className="text-emerald-400/60" />
-                    Full Name
-                  </label>
-                  <input
+                  <FormLabel icon={<User size={12} className="text-primary/60" />}>
+                    Nama Lengkap
+                  </FormLabel>
+                  <FormInput
                     type="text"
                     value={form.fullName}
                     onChange={(e) => setForm((f) => ({ ...f, fullName: e.target.value }))}
-                    placeholder="Your full name"
+                    placeholder="Nama lengkapmu"
                     required
-                    className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-[14px] text-white/90 placeholder:text-white/20 focus:border-emerald-500/40 focus:outline-none focus:ring-1 focus:ring-emerald-500/20 transition-all"
                   />
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 flex items-center gap-2 mb-2">
-                    <Mail size={12} className="text-blue-400/60" />
-                    Email Address
-                  </label>
-                  <input
+                  <FormLabel icon={<Mail size={12} className="text-info/60" />}>
+                    Alamat Email
+                  </FormLabel>
+                  <FormInput
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                    placeholder="you@example.com"
-                    className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-[14px] text-white/90 placeholder:text-white/20 focus:border-emerald-500/40 focus:outline-none focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                    placeholder="kamu@contoh.com"
                   />
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 flex items-center gap-2 mb-2">
-                    <Phone size={12} className="text-primary/60" />
-                    Phone Number
-                  </label>
-                  <input
+                  <FormLabel icon={<Phone size={12} className="text-primary/60" />}>
+                    Nomor Telepon
+                  </FormLabel>
+                  <FormInput
                     type="tel"
                     value={form.phone}
                     onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
                     placeholder="+628xxxxxxxxxx"
-                    className="w-full h-12 px-4 rounded-xl bg-white/5 border border-white/10 text-[14px] text-white/90 placeholder:text-white/20 focus:border-emerald-500/40 focus:outline-none focus:ring-1 focus:ring-emerald-500/20 transition-all"
                   />
                 </div>
 
-                {/* Error message */}
+                {/* Error */}
                 {editProfile.isError && (
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20">
-                    <X size={14} className="text-red-400" />
-                    <p className="text-[12px] text-red-300">
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-destructive/10 border border-destructive/20">
+                    <X size={14} className="text-destructive" />
+                    <p className="text-[12px] text-destructive">
                       {(editProfile.error as any)?.response?.data?.message ||
-                        'Failed to update profile'}
+                        'Gagal memperbarui profil'}
                     </p>
                   </div>
                 )}
 
-                {/* Success message */}
+                {/* Success */}
                 {saved && (
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 animate-in fade-in duration-300">
-                    <Check size={14} className="text-emerald-400" />
-                    <p className="text-[12px] text-emerald-300">Profile updated! Redirecting...</p>
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-success/10 border border-success/20 animate-in fade-in duration-300">
+                    <Check size={14} className="text-success" />
+                    <p className="text-[12px] text-success">Profil diperbarui! Mengalihkan...</p>
                   </div>
                 )}
 
                 {/* Actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                <div className="flex items-center justify-between pt-4 border-t border-border">
                   <Button
                     type="button"
                     variant="ghost"
-                    onClick={() => router.push('/user/profile')}
-                    className="h-11 px-6 rounded-xl text-[13px] text-white/50 hover:text-white/80 hover:bg-white/5"
+                    onClick={() => router.push('/user/map/profile')}
+                    className="h-11 px-6 rounded-xl text-[13px]"
                   >
-                    Cancel
+                    Batal
                   </Button>
                   <Button
                     type="submit"
                     disabled={!hasChanges || editProfile.isPending || saved}
-                    className="h-11 px-8 rounded-xl text-[13px] font-semibold text-[#080F0C] disabled:opacity-40 hover:scale-105 transition-all"
-                    style={{
-                      background:
-                        hasChanges && !saved
-                          ? 'linear-gradient(135deg, var(--accent), var(--primary))'
-                          : 'rgba(255,255,255,0.1)',
-                      boxShadow: hasChanges ? '0 8px 24px rgba(36,130,119,0.25)' : 'none',
-                      color: hasChanges && !saved ? '#080F0C' : 'rgba(255,255,255,0.3)',
-                    }}
+                    className="h-11 px-8 rounded-xl text-[13px] font-semibold"
                   >
                     {editProfile.isPending ? (
                       <Loader2 size={16} className="animate-spin mr-2" />
@@ -243,7 +223,7 @@ export default function EditProfileContainer() {
                     ) : (
                       <Save size={16} className="mr-2" />
                     )}
-                    {saved ? 'Saved!' : 'Save Changes'}
+                    {saved ? 'Tersimpan!' : 'Simpan Perubahan'}
                   </Button>
                 </div>
               </form>
@@ -252,5 +232,29 @@ export default function EditProfileContainer() {
         </div>
       </main>
     </SidebarLayout>
+  );
+}
+
+function FormLabel({
+  icon,
+  children,
+}: {
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground flex items-center gap-2 mb-2">
+      {icon}
+      {children}
+    </label>
+  );
+}
+
+function FormInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      {...props}
+      className="w-full h-12 px-4 rounded-xl bg-secondary border border-border text-[14px] text-foreground placeholder:text-muted-foreground/50 focus:border-primary/40 focus:outline-none focus:ring-1 focus:ring-ring transition-all"
+    />
   );
 }
