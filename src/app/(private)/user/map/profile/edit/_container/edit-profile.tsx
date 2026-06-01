@@ -84,7 +84,7 @@ export default function EditProfileContainer() {
           <div className="absolute inset-0">
             <div
               className="absolute w-[600px] h-[600px] rounded-full blur-[200px] opacity-15 -top-40 -left-20"
-              style={{ background: 'radial-gradient(circle, #248277, transparent)' }}
+              style={{ background: 'radial-gradient(circle, var(--primary), transparent)' }}
             />
           </div>
 
@@ -114,7 +114,7 @@ export default function EditProfileContainer() {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
                   <div
                     className="relative mx-auto size-20 shrink-0 overflow-hidden rounded-2xl flex items-center justify-center text-2xl font-bold group sm:mx-0"
-                    style={{ background: 'linear-gradient(135deg, #248277, #67B99A)' }}
+                    style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
                   >
                     {form.avaUrl ? (
                       <Image
@@ -182,7 +182,7 @@ export default function EditProfileContainer() {
                 {/* Phone */}
                 <div>
                   <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 flex items-center gap-2 mb-2">
-                    <Phone size={12} className="text-purple-400/60" />
+                    <Phone size={12} className="text-primary/60" />
                     Phone Number
                   </label>
                   <input
@@ -230,7 +230,7 @@ export default function EditProfileContainer() {
                     style={{
                       background:
                         hasChanges && !saved
-                          ? 'linear-gradient(135deg, #67B99A, #248277)'
+                          ? 'linear-gradient(135deg, var(--accent), var(--primary))'
                           : 'rgba(255,255,255,0.1)',
                       boxShadow: hasChanges ? '0 8px 24px rgba(36,130,119,0.25)' : 'none',
                       color: hasChanges && !saved ? '#080F0C' : 'rgba(255,255,255,0.3)',

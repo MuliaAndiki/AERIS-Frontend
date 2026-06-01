@@ -5,7 +5,6 @@ import { EnvironmentalSummaryPanel } from '@/components/partial/maps/Environment
 import { InsightsPanel } from '@/components/partial/maps/InsightsPanel';
 import { MapContainer } from '@/components/partial/maps/MapsController';
 import { Button } from '@/components/ui/button';
-import { themeConfig } from '@/configs/theme.config';
 import { MapScreenSectionProps } from '@/types/ui/maps';
 import { cn } from '@/utils/classname';
 
@@ -21,23 +20,10 @@ const MOBILE_TABS: { id: MobileTab; label: string; icon: typeof MapIcon }[] = [
   { id: 'insights', label: 'Insight', icon: Info },
 ];
 
-function MobilePanelHeader({
-  title,
-  onClose,
-  theme,
-}: {
-  title: string;
-  onClose: () => void;
-  theme: typeof themeConfig.light;
-}) {
+function MobilePanelHeader({ title, onClose }: { title: string; onClose: () => void }) {
   return (
-    <div
-      className="flex shrink-0 items-center justify-between border-b px-4 py-3 pt-safe lg:hidden"
-      style={{ borderColor: theme.border, backgroundColor: 'white' }}
-    >
-      <h2 className="text-sm font-bold" style={{ color: theme.primary.background }}>
-        {title}
-      </h2>
+    <div className="flex shrink-0 items-center justify-between border-b border-border bg-card px-4 py-3 pt-safe lg:hidden">
+      <h2 className="text-sm font-bold text-primary">{title}</h2>
       <Button
         type="button"
         variant="ghost"
@@ -53,8 +39,6 @@ function MobilePanelHeader({
 }
 
 const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service = {} }) => {
-  const theme = themeConfig.light;
-
   const {
     location,
     latitude,
@@ -66,7 +50,6 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
     greenSpaces = [],
     scoreHistory = [],
     loading = false,
-    error = null,
     isCurrentLocationDetected = true,
     detectedLocation = null,
   } = state;
@@ -106,29 +89,22 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
   }
 
   return (
-    <section
-      className="flex h-full min-h-0 w-full flex-col overflow-hidden"
-      style={{ backgroundColor: theme.background }}
-    >
+    <section className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-background">
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
-        {/* Summary — mobile overlay / desktop sidebar */}
         <div
           className={cn(
-            'flex h-full min-h-0 flex-col transition-all duration-300 lg:static lg:w-72 xl:w-80 lg:shrink-0 lg:border-r',
+            'flex h-full min-h-0 flex-col border-border transition-all duration-300 lg:static lg:w-72 lg:shrink-0 lg:border-r xl:w-80',
             activeMobileTab === 'summary'
-              ? 'fixed inset-0 z-40 flex bg-white'
+              ? 'fixed inset-0 z-40 flex border-r bg-card'
               : 'hidden lg:flex',
           )}
-          style={{ borderColor: theme.border }}
         >
           <MobilePanelHeader
             title="Ringkasan lingkungan"
             onClose={() => setActiveMobileTab('map')}
-            theme={theme}
           />
           <div className="min-h-0 flex-1 overflow-hidden">
             <EnvironmentalSummaryPanel
-              theme={theme}
               location={location}
               score={environmentalScore}
               metrics={metrics}
@@ -142,7 +118,6 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           </div>
         </div>
 
-        {/* Map */}
         <div
           className={cn(
             'relative flex min-h-0 min-w-0 flex-1 flex-col',
@@ -150,7 +125,6 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           )}
         >
           <MapContainer
-            theme={theme}
             greenSpaces={greenSpaces}
             environmentalScore={environmentalScore}
             location={location}
@@ -162,24 +136,20 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           />
         </div>
 
-        {/* Insights — mobile overlay / desktop sidebar */}
         <div
           className={cn(
-            'flex h-full min-h-0 flex-col transition-all duration-300 lg:static lg:w-72 xl:w-80 lg:shrink-0 lg:border-l',
+            'flex h-full min-h-0 flex-col border-border transition-all duration-300 lg:static lg:w-72 lg:shrink-0 lg:border-l xl:w-80',
             activeMobileTab === 'insights'
-              ? 'fixed inset-0 z-40 flex bg-white'
+              ? 'fixed inset-0 z-40 flex border-l bg-card'
               : 'hidden lg:flex',
           )}
-          style={{ borderColor: theme.border }}
         >
           <MobilePanelHeader
             title="Insight & rekomendasi"
             onClose={() => setActiveMobileTab('map')}
-            theme={theme}
           />
           <div className="min-h-0 flex-1 overflow-hidden">
             <InsightsPanel
-              theme={theme}
               alerts={alerts}
               recommendations={recommendations}
               greenSpaces={greenSpaces}
@@ -190,10 +160,8 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
           </div>
         </div>
 
-        {/* Mobile bottom navigation */}
         <nav
-          className="fixed inset-x-0 bottom-0 z-50 flex border-t bg-white/95 backdrop-blur-md pb-safe lg:hidden"
-          style={{ borderColor: theme.border }}
+          className="fixed inset-x-0 bottom-0 z-50 flex border-t border-border bg-card/95 backdrop-blur-md pb-safe lg:hidden"
           aria-label="Navigasi tampilan peta"
         >
           {MOBILE_TABS.map(({ id, label, icon: Icon }) => {
@@ -205,7 +173,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
                 onClick={() => setActiveMobileTab(id)}
                 className={cn(
                   'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 text-xs font-medium transition-colors',
-                  active ? 'text-[#248277]' : 'text-muted-foreground',
+                  active ? 'text-primary' : 'text-muted-foreground',
                 )}
                 aria-current={active ? 'page' : undefined}
               >

@@ -1,6 +1,6 @@
 import { Badge, MapPin } from 'lucide-react';
 
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import {
   Alert,
   EnvironmentalMetric,
@@ -11,7 +11,6 @@ import {
 import { getMetricColor } from '@/utils/metricColors';
 
 export const EnvironmentalSummaryPanel: React.FC<{
-  theme: typeof themeConfig.light;
   location?: string;
   score?: number;
   metrics: EnvironmentalMetric[];
@@ -22,7 +21,6 @@ export const EnvironmentalSummaryPanel: React.FC<{
   isCurrentLocation?: boolean;
   detectedLocation?: { lat: number; lon: number; city: string } | null;
 }> = ({
-  theme,
   location,
   score = 0,
   metrics,
@@ -34,8 +32,7 @@ export const EnvironmentalSummaryPanel: React.FC<{
   detectedLocation,
 }) => (
   <div
-    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-r p-4 sm:gap-6 sm:p-6 lg:pb-6 pb-20"
-    style={{ backgroundColor: 'white', borderRightColor: theme.border }}
+    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-r border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6"
   >
     {/* Location Header */}
     <div>

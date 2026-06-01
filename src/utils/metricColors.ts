@@ -1,16 +1,16 @@
-import { themeConfig } from '@/configs/theme.config';
+import { theme, type ThemeTokens } from '@/configs/theme.config';
 
-export const getMetricColor = (level: string, theme: typeof themeConfig.light): string => {
+export const getMetricColor = (level: string, t: ThemeTokens = theme): string => {
   switch (level) {
     case 'good':
-      return theme.success.background;
+      return t.success.background;
     case 'moderate':
-      return theme.warning.background;
+      return t.warning.background;
     case 'poor':
-      return theme.destructive.background;
+      return t.destructive.background;
     case 'unhealthy':
-      return '#7C2D12';
+      return '#7c2d12';
     default:
-      return theme.primary.background;
+      return t.primary.background;
   }
 };

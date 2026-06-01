@@ -1,5 +1,15 @@
+import { Suspense } from 'react';
+
 import ResetContainer from './_container/reset';
 
-export default function Reset() {
-  return <ResetContainer />;
+function ResetPageFallback() {
+  return <main className="min-h-screen w-full bg-background" aria-busy aria-label="Memuat halaman reset" />;
+}
+
+export default function ResetPage() {
+  return (
+    <Suspense fallback={<ResetPageFallback />}>
+      <ResetContainer />
+    </Suspense>
+  );
 }

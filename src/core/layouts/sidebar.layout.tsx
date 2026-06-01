@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { themeConfig } from '@/configs/theme.config';
-
 interface AppLayoutProps {
   children: React.ReactNode;
   onSearch?: (query: string) => void;
@@ -21,7 +19,6 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
     if (!query) return;
     onSearch?.(query);
   };
-  const theme = themeConfig.light;
 
   return (
     <SidebarProvider defaultOpen>
@@ -37,10 +34,7 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
                   <span className="text-xs font-bold tracking-widest sm:text-[13px]">AERIS</span>
                 </div>
                 <Link href="/user/map/profile" className="sm:hidden">
-                  <div
-                    className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ backgroundColor: theme.secondary.background }}
-                  >
+                  <div className="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground">
                     MA
                   </div>
                 </Link>
@@ -60,10 +54,7 @@ export function SidebarLayout({ children, onSearch }: AppLayoutProps) {
 
               <div className="hidden items-center gap-3 sm:flex">
                 <Link href="/user/map/profile">
-                  <div
-                    className="flex size-9 items-center justify-center rounded-full text-xs font-bold text-white"
-                    style={{ backgroundColor: theme.secondary.background }}
-                  >
+                  <div className="flex size-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-foreground">
                     MA
                   </div>
                 </Link>

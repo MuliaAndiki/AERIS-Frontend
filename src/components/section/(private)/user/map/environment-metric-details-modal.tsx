@@ -6,7 +6,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { themeConfig } from '@/configs/theme.config';
+import { theme } from '@/configs/theme.config';
 import { EnvironmentalMetric } from '@/types/partial/maps';
 
 function isNumber(value: unknown): value is number {
@@ -37,7 +37,6 @@ const EnvironmentMetricDetailsModal: React.FC<EnvironmentMetricDetailsModalProps
   onClose,
   metric,
 }) => {
-  const theme = themeConfig.light;
 
   if (!metric) {
     return null;

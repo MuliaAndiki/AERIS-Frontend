@@ -17,7 +17,6 @@ import { cn } from '@/utils/classname';
 // import UserDropdown from './user.dropdown';
 import LanguageDropdown from './language.dropdown';
 import NotificationDropdown from './notification.dropdown';
-import ThemeToggle from './theme-toggle';
 
 export default function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -63,7 +62,6 @@ export default function AppHeader() {
         </div>
 
         <div className="flex items-center gap-4">
-          <ThemeToggle />
           <LanguageDropdown />
           <NotificationDropdown />
           {/* <UserDropdown /> */}

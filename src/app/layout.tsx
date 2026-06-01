@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${poppins.variable} ${instrumentSans.variable} ${instrumentSerif.variable}`}>
       <body className={`${poppins.className} antialiased`}>
         <NextTopLoader
-          color="#c269da"
+          color="#3F862A"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}

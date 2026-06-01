@@ -1,138 +1,54 @@
-interface ColorConfig {
-  background: string;
-  foreground: string;
-}
-
-interface ThemeConfig {
-  light: {
-    background: string;
-    foreground: string;
-    card: ColorConfig;
-    popover: ColorConfig;
-    primary: ColorConfig;
-    secondary: ColorConfig;
-    muted: ColorConfig;
-    accent: ColorConfig;
-    destructive: ColorConfig;
-    warning: ColorConfig;
-    success: ColorConfig;
-    info: ColorConfig;
-    border: string;
-    input: string;
-    ring: string;
-  };
-  dark: {
-    background: string;
-    foreground: string;
-    card: ColorConfig;
-    popover: ColorConfig;
-    primary: ColorConfig;
-    secondary: ColorConfig;
-    muted: ColorConfig;
-    accent: ColorConfig;
-    destructive: ColorConfig;
-    warning: ColorConfig;
-    success: ColorConfig;
-    info: ColorConfig;
-    border: string;
-    input: string;
-    ring: string;
-  };
-}
-
-export const themeConfig: ThemeConfig = {
-  light: {
-    background: '#EAF7F2',
-    foreground: '#036666',
-    card: {
-      background: '#F7FCFA',
-      foreground: '#036666',
-    },
-    popover: {
-      background: '#F7FCFA',
-      foreground: '#036666',
-    },
-    primary: {
-      background: '#248277',
-      foreground: '#F7FCFA',
-    },
-    secondary: {
-      background: '#88D4AB',
-      foreground: '#036666',
-    },
-    muted: {
-      background: '#D8EFE5',
-      foreground: 'rgba(3, 102, 102, 0.65)',
-    },
-    accent: {
-      background: '#67B99A',
-      foreground: '#F7FCFA',
-    },
-    destructive: {
-      background: '#B95757',
-      foreground: '#F7FCFA',
-    },
-    warning: {
-      background: '#A7B96A',
-      foreground: '#113C34',
-    },
-    success: {
-      background: '#248277',
-      foreground: '#F7FCFA',
-    },
-    info: {
-      background: '#469D89',
-      foreground: '#F7FCFA',
-    },
-    border: 'rgba(3, 102, 102, 0.2)',
-    input: 'rgba(3, 102, 102, 0.2)',
-    ring: 'rgba(36, 130, 119, 0.35)',
+/**
+ * Semantic theme tokens. Color values are defined once in `globals.css` (:root).
+ * Use Tailwind classes (`bg-primary`, `text-muted-foreground`) in JSX when possible.
+ * Use this object only when a library needs inline colors (e.g. Recharts, SVG).
+ */
+export const theme = {
+  background: 'var(--background)',
+  foreground: 'var(--foreground)',
+  card: {
+    background: 'var(--card)',
+    foreground: 'var(--card-foreground)',
   },
-  dark: {
-    background: '#042F2F',
-    foreground: '#D8EFE5',
-    card: {
-      background: '#0A3F3F',
-      foreground: '#D8EFE5',
-    },
-    popover: {
-      background: '#0A3F3F',
-      foreground: '#D8EFE5',
-    },
-    primary: {
-      background: '#67B99A',
-      foreground: '#063A3A',
-    },
-    secondary: {
-      background: '#248277',
-      foreground: '#D8EFE5',
-    },
-    muted: {
-      background: '#0B4A4A',
-      foreground: 'rgba(216, 239, 229, 0.72)',
-    },
-    accent: {
-      background: '#469D89',
-      foreground: '#EAF7F2',
-    },
-    destructive: {
-      background: '#A84B58',
-      foreground: '#F7FCFA',
-    },
-    warning: {
-      background: '#7F9252',
-      foreground: '#EAF7F2',
-    },
-    success: {
-      background: '#67B99A',
-      foreground: '#063A3A',
-    },
-    info: {
-      background: '#469D89',
-      foreground: '#EAF7F2',
-    },
-    border: 'rgba(136, 212, 171, 0.2)',
-    input: 'rgba(136, 212, 171, 0.22)',
-    ring: 'rgba(103, 185, 154, 0.4)',
+  popover: {
+    background: 'var(--popover)',
+    foreground: 'var(--popover-foreground)',
   },
-};
+  primary: {
+    background: 'var(--primary)',
+    foreground: 'var(--primary-foreground)',
+  },
+  secondary: {
+    background: 'var(--secondary)',
+    foreground: 'var(--secondary-foreground)',
+  },
+  muted: {
+    background: 'var(--muted)',
+    foreground: 'var(--muted-foreground)',
+  },
+  accent: {
+    background: 'var(--accent)',
+    foreground: 'var(--accent-foreground)',
+  },
+  destructive: {
+    background: 'var(--destructive)',
+    foreground: 'var(--destructive-foreground)',
+  },
+  warning: {
+    background: 'var(--warning)',
+    foreground: 'var(--warning-foreground)',
+  },
+  success: {
+    background: 'var(--success)',
+    foreground: 'var(--success-foreground)',
+  },
+  info: {
+    background: 'var(--info)',
+    foreground: 'var(--info-foreground)',
+  },
+  border: 'var(--border)',
+  input: 'var(--input)',
+  ring: 'var(--ring)',
+} as const;
+
+export type ThemeTokens = typeof theme;
