@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import classnames from "classnames";
+import classnames from 'classnames';
 
-import { blankLayoutClasses } from "./classes.layout";
+import { blankLayoutClasses } from './classes.layout';
 
 type Props = {
-    children: React.ReactNode;
+  children: React.ReactNode;
 };
 
 const BlankLayout = (props: Props) => {
-    // Props
-    const { children } = props;
+  // Props
+  const { children } = props;
 
-    return <div className={classnames(blankLayoutClasses.root, "is-full bs-full")}>{children}</div>;
+  return <div className={classnames(blankLayoutClasses.root, 'is-full bs-full')}>{children}</div>;
 };
 
 export default BlankLayout;

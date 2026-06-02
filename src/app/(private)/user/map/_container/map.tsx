@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertCircle, CheckCircle, Droplets, Flame, TrendingUp, Volume2, Wind } from 'lucide-react';
-import { useCallback, useEffect, useRef,useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import MapScreenSection from '@/components/section/(private)/user/map/map-screen-section';
 import { SidebarLayout } from '@/core/layouts/sidebar.layout';

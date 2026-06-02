@@ -11,7 +11,7 @@ import {
   Volume2,
   Wind,
 } from 'lucide-react';
-import { useCallback,useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import {
   BufferZoneLayer,
@@ -386,7 +386,10 @@ export const MapContainer: React.FC<{
                   className="w-3 h-3 rounded-full shrink-0"
                   style={{ backgroundColor: theme.primary.background }}
                 />
-                <p className="flex-1 text-xs font-medium sm:text-[10px]" style={{ color: theme.foreground }}>
+                <p
+                  className="flex-1 text-xs font-medium sm:text-[10px]"
+                  style={{ color: theme.foreground }}
+                >
                   Your Location
                 </p>
               </div>
@@ -413,7 +416,10 @@ export const MapContainer: React.FC<{
                       className="flex items-center gap-1.5 flex-1 text-left"
                     >
                       <span style={{ color: item.color }}>{item.icon}</span>
-                      <span className="text-xs font-medium sm:text-[10px]" style={{ color: theme.foreground }}>
+                      <span
+                        className="text-xs font-medium sm:text-[10px]"
+                        style={{ color: theme.foreground }}
+                      >
                         {item.label}
                       </span>
                     </button>

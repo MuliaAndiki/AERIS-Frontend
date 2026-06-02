@@ -1,6 +1,6 @@
 'use client';
 
-import { CheckCircle2, BarChart3 } from 'lucide-react';
+import { BarChart3, CheckCircle2 } from 'lucide-react';
 
 const highlights = [
   'Proyeksi Temporal 4D',
@@ -10,10 +10,7 @@ const highlights = [
 
 export default function MapPreviewSection() {
   return (
-    <section
-      id="map"
-      className="w-full py-24 px-6 md:px-12 lg:px-20 bg-background"
-    >
+    <section id="map" className="w-full py-24 px-6 md:px-12 lg:px-20 bg-background">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left — content */}
         <div className="flex flex-col gap-6">
@@ -24,9 +21,9 @@ export default function MapPreviewSection() {
           </h2>
 
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-            Antarmuka Luminous Pavilion kami memungkinkan navigasi yang mulus
-            melalui dataset lingkungan yang berlapis-lapis. Beralih dengan mudah
-            antara aliran udara, distribusi termal, dan kesehatan vegetasi.
+            Antarmuka Luminous Pavilion kami memungkinkan navigasi yang mulus melalui dataset
+            lingkungan yang berlapis-lapis. Beralih dengan mudah antara aliran udara, distribusi
+            termal, dan kesehatan vegetasi.
           </p>
 
           <ul className="flex flex-col gap-3 mt-2">
@@ -64,8 +61,7 @@ export default function MapPreviewSection() {
                 ))}
               </div>
               <p className="text-[9px] text-muted-foreground leading-tight">
-                Vegetation density increased by 4.2% following green-roof
-                implementation
+                Vegetation density increased by 4.2% following green-roof implementation
               </p>
             </div>
           </div>

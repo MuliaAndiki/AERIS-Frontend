@@ -13,7 +13,7 @@ import { composeProviders } from './composeProvinders';
 
 const PWAUpdatePrompt = dynamic(
   () => import('@/components/pwa/PWAUpdatePrompt').then((m) => m.PWAUpdatePrompt),
-  { ssr: false },
+  { ssr: false }
 );
 
 const ReactQueryDevtoolsProduction = dynamic(
@@ -21,7 +21,7 @@ const ReactQueryDevtoolsProduction = dynamic(
     import('@tanstack/react-query-devtools').then((d) => ({
       default: d.ReactQueryDevtools,
     })),
-  { ssr: false },
+  { ssr: false }
 );
 
 const Providers = composeProviders([

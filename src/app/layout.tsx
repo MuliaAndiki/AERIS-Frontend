@@ -1,6 +1,6 @@
 import '@/styles/globals.css';
 
-import { Instrument_Sans, Instrument_Serif,Poppins } from 'next/font/google';
+import { Instrument_Sans, Instrument_Serif, Poppins } from 'next/font/google';
 import NextTopLoader from 'nextjs-toploader';
 
 import { metadata, siteConfig } from './metadata';
@@ -31,7 +31,10 @@ const instrumentSerif = Instrument_Serif({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${instrumentSans.variable} ${instrumentSerif.variable}`}>
+    <html
+      lang="en"
+      className={`${poppins.variable} ${instrumentSans.variable} ${instrumentSerif.variable}`}
+    >
       <body className={`${poppins.className} antialiased`}>
         <NextTopLoader
           color="#3F862A"
