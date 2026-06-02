@@ -1,14 +1,12 @@
 'use client';
 
-import { Wind, Thermometer, Droplets, Trees } from 'lucide-react';
+import { Droplets, Thermometer, Trees, Wind } from 'lucide-react';
 
 // Static opacities — avoids Math.random() hydration mismatch between SSR and client
 const MAP_GRID_OPACITIES = [
-  0.9, 0.4, 0.7, 0.3, 0.8, 0.5, 0.6, 0.9,
-  0.3, 0.8, 0.5, 0.7, 0.4, 0.9, 0.3, 0.6,
-  0.7, 0.5, 0.9, 0.4, 0.6, 0.8, 0.3, 0.7,
-  0.4, 0.9, 0.6, 0.3, 0.8, 0.5, 0.7, 0.4,
-  0.6, 0.3, 0.9, 0.5, 0.7, 0.4, 0.8, 0.6,
+  0.9, 0.4, 0.7, 0.3, 0.8, 0.5, 0.6, 0.9, 0.3, 0.8, 0.5, 0.7, 0.4, 0.9, 0.3, 0.6, 0.7, 0.5, 0.9,
+  0.4, 0.6, 0.8, 0.3, 0.7, 0.4, 0.9, 0.6, 0.3, 0.8, 0.5, 0.7, 0.4, 0.6, 0.3, 0.9, 0.5, 0.7, 0.4,
+  0.8, 0.6,
 ];
 
 const features = [
@@ -31,8 +29,7 @@ const features = [
   {
     icon: Droplets,
     title: 'Risiko Hidrology',
-    description:
-      'Analisis prediktif terhadap banjir dan permukaan air tanah.',
+    description: 'Analisis prediktif terhadap banjir dan permukaan air tanah.',
     variant: 'small' as const,
   },
   {
@@ -47,10 +44,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section
-      id="features"
-      className="w-full py-24 px-6 md:px-12 lg:px-20 bg-secondary/30"
-    >
+    <section id="features" className="w-full py-24 px-6 md:px-12 lg:px-20 bg-secondary/30">
       <div className="max-w-6xl mx-auto">
         {/* Heading */}
         <div className="text-center mb-14">
@@ -119,9 +113,7 @@ function FeatureCardLarge({
       </div>
       <div>
         <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {description}
-        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
       </div>
       {/* Map-like image placeholder */}
       <div className="mt-auto rounded-xl overflow-hidden aspect-video bg-gradient-to-br from-primary/20 via-accent/15 to-primary/5 relative">
@@ -129,11 +121,7 @@ function FeatureCardLarge({
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-8 gap-0.5 opacity-20">
             {MAP_GRID_OPACITIES.map((opacity, i) => (
-              <div
-                key={i}
-                className="w-4 h-4 rounded-sm bg-primary"
-                style={{ opacity }}
-              />
+              <div key={i} className="w-4 h-4 rounded-sm bg-primary" style={{ opacity }} />
             ))}
           </div>
         </div>
@@ -162,12 +150,8 @@ function FeatureCardSmall({
           <Icon className="w-4 h-4 text-primary-foreground" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-primary-foreground mb-1">
-            {title}
-          </h3>
-          <p className="text-xs text-primary-foreground/80 leading-relaxed">
-            {description}
-          </p>
+          <h3 className="text-sm font-bold text-primary-foreground mb-1">{title}</h3>
+          <p className="text-xs text-primary-foreground/80 leading-relaxed">{description}</p>
         </div>
       </div>
     );
@@ -180,21 +164,13 @@ function FeatureCardSmall({
           accent ? 'bg-info/10' : 'bg-primary/10'
         }`}
       >
-        <Icon
-          className={`w-4 h-4 ${accent ? 'text-info' : 'text-primary'}`}
-        />
+        <Icon className={`w-4 h-4 ${accent ? 'text-info' : 'text-primary'}`} />
       </div>
       <div>
-        <h3
-          className={`text-sm font-bold mb-1 ${
-            accent ? 'text-info' : 'text-foreground'
-          }`}
-        >
+        <h3 className={`text-sm font-bold mb-1 ${accent ? 'text-info' : 'text-foreground'}`}>
           {title}
         </h3>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          {description}
-        </p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ function ApiStepRow({
       className={cn(
         'relative flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-500',
         status === 'active' && 'bg-card shadow-sm ring-1 ring-primary/15',
-        status === 'pending' && 'opacity-40',
+        status === 'pending' && 'opacity-40'
       )}
     >
       <div
@@ -42,14 +42,12 @@ function ApiStepRow({
           'flex size-7 shrink-0 items-center justify-center rounded-full transition-all duration-300',
           status === 'done' && 'bg-accent/20 text-primary',
           status === 'active' && 'bg-primary/15 text-primary',
-          status === 'pending' && 'bg-muted',
+          status === 'pending' && 'bg-muted'
         )}
       >
         {status === 'done' && <Check className="size-3.5" strokeWidth={2.5} />}
         {status === 'active' && <Loader2 className="size-3.5 animate-spin" />}
-        {status === 'pending' && (
-          <span className="size-1.5 rounded-full bg-muted-foreground/30" />
-        )}
+        {status === 'pending' && <span className="size-1.5 rounded-full bg-muted-foreground/30" />}
       </div>
 
       <div className="min-w-0 flex-1">
@@ -82,9 +80,7 @@ export function MapEnvironmentLoading() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveStep((prev) =>
-        prev >= API_LOAD_STEPS.length - 1 ? prev : prev + 1,
-      );
+      setActiveStep((prev) => (prev >= API_LOAD_STEPS.length - 1 ? prev : prev + 1));
     }, 850);
     return () => clearInterval(interval);
   }, []);
@@ -175,13 +171,7 @@ export function MapEnvironmentLoading() {
                 key={step.id}
                 label={step.label}
                 endpoint={step.endpoint}
-                status={
-                  index < activeStep
-                    ? 'done'
-                    : index === activeStep
-                      ? 'active'
-                      : 'pending'
-                }
+                status={index < activeStep ? 'done' : index === activeStep ? 'active' : 'pending'}
               />
             ))}
           </div>

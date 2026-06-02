@@ -96,7 +96,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             'flex h-full min-h-0 flex-col border-border transition-all duration-300 lg:static lg:w-72 lg:shrink-0 lg:border-r xl:w-80',
             activeMobileTab === 'summary'
               ? 'fixed inset-0 z-40 flex border-r bg-card'
-              : 'hidden lg:flex',
+              : 'hidden lg:flex'
           )}
         >
           <MobilePanelHeader
@@ -121,7 +121,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
         <div
           className={cn(
             'relative flex min-h-0 min-w-0 flex-1 flex-col',
-            activeMobileTab === 'map' ? 'flex' : 'hidden lg:flex',
+            activeMobileTab === 'map' ? 'flex' : 'hidden lg:flex'
           )}
         >
           <MapContainer
@@ -141,7 +141,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
             'flex h-full min-h-0 flex-col border-border transition-all duration-300 lg:static lg:w-72 lg:shrink-0 lg:border-l xl:w-80',
             activeMobileTab === 'insights'
               ? 'fixed inset-0 z-40 flex border-l bg-card'
-              : 'hidden lg:flex',
+              : 'hidden lg:flex'
           )}
         >
           <MobilePanelHeader
@@ -173,7 +173,7 @@ const MapScreenSection: React.FC<MapScreenSectionProps> = ({ state = {}, service
                 onClick={() => setActiveMobileTab(id)}
                 className={cn(
                   'flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2 text-xs font-medium transition-colors',
-                  active ? 'text-primary' : 'text-muted-foreground',
+                  active ? 'text-primary' : 'text-muted-foreground'
                 )}
                 aria-current={active ? 'page' : undefined}
               >

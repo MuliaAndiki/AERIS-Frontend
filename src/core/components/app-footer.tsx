@@ -91,9 +91,7 @@ export default function AppFooter() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} {appConfig.name}. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground">
-            Luminous Intelligence Platform
-          </p>
+          <p className="text-xs text-muted-foreground">Luminous Intelligence Platform</p>
         </div>
       </div>
     </footer>

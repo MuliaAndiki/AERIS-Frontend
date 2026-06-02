@@ -15,8 +15,8 @@ export default function CtaSection() {
           Lingkunganmu?
         </h2>
         <p className="text-muted-foreground text-sm md:text-base max-w-md leading-relaxed">
-          Bergabunglah dengan ribuan pengguna yang sudah menggunakan AERIS untuk
-          membuat keputusan berbasis data lingkungan yang lebih baik.
+          Bergabunglah dengan ribuan pengguna yang sudah menggunakan AERIS untuk membuat keputusan
+          berbasis data lingkungan yang lebih baik.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mt-2">
           <Link

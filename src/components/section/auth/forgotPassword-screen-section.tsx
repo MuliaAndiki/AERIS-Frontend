@@ -1,4 +1,4 @@
-import { ArrowLeft,Mail, Phone } from 'lucide-react';
+import { ArrowLeft, Mail, Phone } from 'lucide-react';
 import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -176,7 +176,7 @@ const ForgotPasswordSection: React.FC<ForgotPasswordSectionProps> = ({ state, se
             className="text-[12.5px] tracking-[0.06em] mb-7"
             style={{ color: theme.muted.foreground }}
           >
-            We'll help you recover your account
+            We will help you recover your account
           </p>
 
           {/* Email / Phone toggle */}

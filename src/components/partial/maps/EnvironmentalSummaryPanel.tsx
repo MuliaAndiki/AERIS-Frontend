@@ -31,16 +31,17 @@ export const EnvironmentalSummaryPanel: React.FC<{
   isCurrentLocation = false,
   detectedLocation,
 }) => (
-  <div
-    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-r border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6"
-  >
+  <div className="flex h-full w-full flex-col gap-4 overflow-y-auto border-r border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6">
     {/* Location Header */}
     <div>
       <div className="flex items-start gap-2 mb-1">
         <MapPin size={16} style={{ color: theme.primary.background, marginTop: 2 }} />
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="text-sm font-bold sm:text-[14px]" style={{ color: theme.primary.background }}>
+            <h3
+              className="text-sm font-bold sm:text-[14px]"
+              style={{ color: theme.primary.background }}
+            >
               {location || 'Location not set'}
             </h3>
             {isCurrentLocation && (

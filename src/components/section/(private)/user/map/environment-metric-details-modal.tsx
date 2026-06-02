@@ -37,7 +37,6 @@ const EnvironmentMetricDetailsModal: React.FC<EnvironmentMetricDetailsModalProps
   onClose,
   metric,
 }) => {
-
   if (!metric) {
     return null;
   }
