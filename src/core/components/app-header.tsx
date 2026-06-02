@@ -56,10 +56,7 @@ export default function AppHeader() {
             <NavigationMenuList>
               {navigationMenuConfig?.items?.map((item) => (
                 <NavigationMenuItem key={item.title}>
-                  <NavigationMenuLink
-                    href={item.href}
-                    className={navigationMenuTriggerStyle()}
-                  >
+                  <NavigationMenuLink href={item.href} className={navigationMenuTriggerStyle()}>
                     {item.title}
                   </NavigationMenuLink>
                 </NavigationMenuItem>

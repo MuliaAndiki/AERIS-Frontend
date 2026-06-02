@@ -1,4 +1,4 @@
-import { ArrowRight,Eye, EyeOff, Mail, Phone } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import { Cormorant_Garamond, Outfit } from 'next/font/google';
 import Image from 'next/image';
 import Link from 'next/link';

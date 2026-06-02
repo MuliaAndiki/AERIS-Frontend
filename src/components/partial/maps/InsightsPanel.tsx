@@ -13,17 +13,8 @@ export const InsightsPanel: React.FC<{
   scoreHistory: ScoreHistory[];
   onAlertClick?: (alertId: string) => void;
   onGreenSpaceClick?: (spaceId: string) => void;
-}> = ({
-  alerts,
-  recommendations,
-  greenSpaces,
-  scoreHistory,
-  onAlertClick,
-  onGreenSpaceClick,
-}) => (
-  <div
-    className="flex h-full w-full flex-col gap-4 overflow-y-auto border-l border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6"
-  >
+}> = ({ alerts, recommendations, greenSpaces, scoreHistory, onAlertClick, onGreenSpaceClick }) => (
+  <div className="flex h-full w-full flex-col gap-4 overflow-y-auto border-l border-border bg-card p-4 pb-20 sm:gap-6 sm:p-6 lg:pb-6">
     {/* Active Alerts */}
     <div>
       <h4

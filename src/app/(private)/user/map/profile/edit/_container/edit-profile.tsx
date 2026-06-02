@@ -1,16 +1,6 @@
 'use client';
 
-import {
-  ArrowLeft,
-  Camera,
-  Check,
-  Loader2,
-  Mail,
-  Phone,
-  Save,
-  User,
-  X,
-} from 'lucide-react';
+import { ArrowLeft, Camera, Check, Loader2, Mail, Phone, Save, User, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -96,9 +86,7 @@ export default function EditProfileContainer() {
             {/* Title */}
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-foreground">Edit Profil</h1>
-              <p className="text-[13px] text-muted-foreground mt-1">
-                Perbarui informasi pribadimu
-              </p>
+              <p className="text-[13px] text-muted-foreground mt-1">Perbarui informasi pribadimu</p>
             </div>
 
             {isLoading ? (
@@ -235,13 +223,7 @@ export default function EditProfileContainer() {
   );
 }
 
-function FormLabel({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function FormLabel({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-muted-foreground flex items-center gap-2 mb-2">
       {icon}

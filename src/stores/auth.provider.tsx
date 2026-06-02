@@ -2,7 +2,7 @@
 
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { type AuthState,AuthStoreContext } from '@/stores/auth.store';
+import { type AuthState, AuthStoreContext } from '@/stores/auth.store';
 import type { userSchema } from '@/types/api';
 
 const AUTH_STORAGE_KEY = 'aeris:auth-user';
@@ -45,7 +45,7 @@ export function AuthStoreProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({ currentUser, setCurrentUser, logout }),
-    [currentUser, setCurrentUser, logout],
+    [currentUser, setCurrentUser, logout]
   );
 
   return <AuthStoreContext.Provider value={value}>{children}</AuthStoreContext.Provider>;

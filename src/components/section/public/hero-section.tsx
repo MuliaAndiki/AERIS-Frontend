@@ -1,7 +1,7 @@
 'use client';
 
+import { Leaf, TrendingUp, Wind } from 'lucide-react';
 import Link from 'next/link';
-import { Wind, Leaf, TrendingUp } from 'lucide-react';
 
 export default function HeroSection() {
   return (
@@ -30,8 +30,8 @@ export default function HeroSection() {
           </h1>
 
           <p className="text-muted-foreground text-base md:text-lg max-w-md leading-relaxed">
-            AERIS membantu kamu memantau kualitas udara, risiko panas, dan
-            kondisi lingkungan secara real-time.
+            AERIS membantu kamu memantau kualitas udara, risiko panas, dan kondisi lingkungan secara
+            real-time.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
@@ -96,21 +96,11 @@ export default function HeroSection() {
   );
 }
 
-function AqiRow({
-  label,
-  value,
-  positive,
-}: {
-  label: string;
-  value: string;
-  positive?: boolean;
-}) {
+function AqiRow({ label, value, positive }: { label: string; value: string; positive?: boolean }) {
   return (
     <div className="flex items-center justify-between py-2 border-t border-border/50">
       <span className="text-xs text-muted-foreground">{label}</span>
-      <span
-        className={`text-xs font-semibold ${positive ? 'text-primary' : 'text-destructive'}`}
-      >
+      <span className={`text-xs font-semibold ${positive ? 'text-primary' : 'text-destructive'}`}>
         {value}
       </span>
     </div>

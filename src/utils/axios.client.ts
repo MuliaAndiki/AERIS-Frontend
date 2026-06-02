@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { deleteCookie,getCookie } from 'cookies-next';
+import { deleteCookie, getCookie } from 'cookies-next';
 
 import { APP_SESSION_COOKIE_KEY } from '@/configs/cookies.config';
 

@@ -4,19 +4,14 @@ import { Building2 } from 'lucide-react';
 
 export default function AboutSection() {
   return (
-    <section
-      id="about"
-      className="w-full py-24 px-6 md:px-12 lg:px-20 bg-background"
-    >
+    <section id="about" className="w-full py-24 px-6 md:px-12 lg:px-20 bg-background">
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* Left — image placeholder */}
         <div className="relative rounded-2xl overflow-hidden shadow-enhanced hover-lift">
           <div className="aspect-[4/3] w-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center">
             <div className="flex flex-col items-center gap-4 text-primary/40">
               <Building2 className="w-24 h-24" />
-              <span className="text-sm font-medium tracking-wide">
-                Green Urban Architecture
-              </span>
+              <span className="text-sm font-medium tracking-wide">Green Urban Architecture</span>
             </div>
           </div>
           {/* Decorative overlay */}
@@ -34,11 +29,10 @@ export default function AboutSection() {
           </h2>
 
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
-            AERIS lahir dari satu visi utama: menjembatani kesenjangan antara
-            data iklim yang abstrak dan informasi lokal yang dapat ditindaklanjuti.
-            Kami percaya bahwa dengan membuat hal-hal yang tak terlihat menjadi
-            terlihat—baik itu partikel mikroskopis maupun perbedaan suhu—kami
-            dapat memberdayakan masyarakat untuk membangun masa depan yang lebih
+            AERIS lahir dari satu visi utama: menjembatani kesenjangan antara data iklim yang
+            abstrak dan informasi lokal yang dapat ditindaklanjuti. Kami percaya bahwa dengan
+            membuat hal-hal yang tak terlihat menjadi terlihat—baik itu partikel mikroskopis maupun
+            perbedaan suhu—kami dapat memberdayakan masyarakat untuk membangun masa depan yang lebih
             tangguh.
           </p>
 

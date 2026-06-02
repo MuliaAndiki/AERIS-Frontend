@@ -27,8 +27,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       pathname?.startsWith('/register') ||
       pathname?.startsWith('/home') ||
       pathname?.startsWith('/forgotPassword') ||
-      pathname?.startsWith('/reset') || pathname?.startsWith('/otp');
-
+      pathname?.startsWith('/reset') ||
+      pathname?.startsWith('/otp');
 
     const isAuthenticated = Boolean(currentUser?.user?.token);
 

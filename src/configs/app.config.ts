@@ -37,11 +37,13 @@ interface AppConfig {
 
 export const appConfig: AppConfig = {
   name: 'AERIS',
-  description: 'Platform pemantauan kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
+  description:
+    'Platform pemantauan kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
   logo: '/images/logo.png',
   metadata: {
     title: 'AERIS — Luminous Intelligence Platform',
-    description: 'Pahami lingkunganmu dengan AERIS. Pantau kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
+    description:
+      'Pahami lingkunganmu dengan AERIS. Pantau kualitas udara, risiko panas, dan kondisi lingkungan secara real-time.',
     keywords: ['kualitas udara', 'lingkungan', 'AQI', 'pemantauan', 'AERIS', 'smart city'],
     author: 'AERIS Team',
     image: '/images/og-image.png',

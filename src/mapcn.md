@@ -9,18 +9,15 @@ The library features theme-aware styling that automatically adapts to light/dark
 The core `Map` component renders an interactive MapLibre map with automatic theme detection, controlled/uncontrolled viewport support, and custom styling capabilities.
 
 ```tsx
-import { useState } from "react";
-import { Map, type MapViewport, type MapRef } from "@/registry/map";
-import { useRef } from "react";
+import { useState } from 'react';
+import { Map, type MapViewport, type MapRef } from '@/registry/map';
+import { useRef } from 'react';
 
 // Basic uncontrolled map
 function BasicMap() {
   return (
     <div className="h-[400px] w-full">
-      <Map
-        center={[-74.006, 40.7128]}
-        zoom={12}
-      />
+      <Map center={[-74.006, 40.7128]} zoom={12} />
     </div>
   );
 }
@@ -36,14 +33,10 @@ function ControlledMap() {
 
   return (
     <div className="h-[400px] w-full">
-      <Map
-        viewport={viewport}
-        onViewportChange={setViewport}
-      />
+      <Map viewport={viewport} onViewportChange={setViewport} />
       <div>
-        Lng: {viewport.center[0].toFixed(3)},
-        Lat: {viewport.center[1].toFixed(3)},
-        Zoom: {viewport.zoom.toFixed(1)}
+        Lng: {viewport.center[0].toFixed(3)}, Lat: {viewport.center[1].toFixed(3)}, Zoom:{' '}
+        {viewport.zoom.toFixed(1)}
       </div>
     </div>
   );
@@ -68,10 +61,10 @@ function CustomStyledMap() {
         center={[-74.006, 40.7128]}
         zoom={10}
         styles={{
-          light: "https://tiles.openfreemap.org/styles/bright",
-          dark: "https://tiles.openfreemap.org/styles/liberty",
+          light: 'https://tiles.openfreemap.org/styles/bright',
+          dark: 'https://tiles.openfreemap.org/styles/liberty',
         }}
-        projection={{ type: "globe" }}
+        projection={{ type: 'globe' }}
         theme="dark"
       />
       <button onClick={flyToLocation}>Fly to London</button>
@@ -85,13 +78,9 @@ function CustomStyledMap() {
 The `MapMarker` component places interactive markers on the map with support for custom content, drag events, and click handlers. `MarkerContent` renders the visual appearance of the marker.
 
 ```tsx
-import { useState } from "react";
-import {
-  Map,
-  MapMarker,
-  MarkerContent
-} from "@/registry/map";
-import { MapPin } from "lucide-react";
+import { useState } from 'react';
+import { Map, MapMarker, MarkerContent } from '@/registry/map';
+import { MapPin } from 'lucide-react';
 
 function MarkersDemo() {
   const [markerPosition, setMarkerPosition] = useState({
@@ -100,9 +89,9 @@ function MarkersDemo() {
   });
 
   const locations = [
-    { id: 1, name: "Empire State Building", lng: -73.9857, lat: 40.7484 },
-    { id: 2, name: "Central Park", lng: -73.9654, lat: 40.7829 },
-    { id: 3, name: "Times Square", lng: -73.9855, lat: 40.758 },
+    { id: 1, name: 'Empire State Building', lng: -73.9857, lat: 40.7484 },
+    { id: 2, name: 'Central Park', lng: -73.9654, lat: 40.7829 },
+    { id: 3, name: 'Times Square', lng: -73.9855, lat: 40.758 },
   ];
 
   return (
@@ -128,9 +117,9 @@ function MarkersDemo() {
           draggable
           longitude={markerPosition.lng}
           latitude={markerPosition.lat}
-          onDragStart={(lngLat) => console.log("Drag started", lngLat)}
+          onDragStart={(lngLat) => console.log('Drag started', lngLat)}
           onDrag={(lngLat) => setMarkerPosition({ lng: lngLat.lng, lat: lngLat.lat })}
-          onDragEnd={(lngLat) => console.log("Drag ended", lngLat)}
+          onDragEnd={(lngLat) => console.log('Drag ended', lngLat)}
           offset={[0, -14]}
           rotation={45}
         >
@@ -155,26 +144,26 @@ import {
   MarkerContent,
   MarkerPopup,
   MarkerTooltip,
-  MarkerLabel
-} from "@/registry/map";
+  MarkerLabel,
+} from '@/registry/map';
 
 function PopupsAndTooltipsDemo() {
   const places = [
     {
       id: 1,
-      name: "The Met",
-      category: "Museum",
+      name: 'The Met',
+      category: 'Museum',
       rating: 4.8,
-      hours: "10:00 AM - 5:00 PM",
+      hours: '10:00 AM - 5:00 PM',
       lng: -73.9632,
       lat: 40.7794,
     },
     {
       id: 2,
-      name: "Brooklyn Bridge",
-      category: "Landmark",
+      name: 'Brooklyn Bridge',
+      category: 'Landmark',
       rating: 4.9,
-      hours: "Open 24 hours",
+      hours: 'Open 24 hours',
       lng: -73.9969,
       lat: 40.7061,
     },
@@ -197,15 +186,9 @@ function PopupsAndTooltipsDemo() {
             </MarkerTooltip>
 
             {/* Click popup with custom styling */}
-            <MarkerPopup
-              className="w-64 p-0"
-              closeButton
-              offset={16}
-            >
+            <MarkerPopup className="w-64 p-0" closeButton offset={16}>
               <div className="p-4 space-y-2">
-                <p className="text-xs text-muted-foreground uppercase">
-                  {place.category}
-                </p>
+                <p className="text-xs text-muted-foreground uppercase">{place.category}</p>
                 <h3 className="font-semibold">{place.name}</h3>
                 <div className="flex items-center gap-2 text-sm">
                   <span>Rating: {place.rating}</span>
@@ -226,8 +209,8 @@ function PopupsAndTooltipsDemo() {
 `MapPopup` renders a popup at any coordinates, independent of markers. Useful for showing information on map click or programmatically.
 
 ```tsx
-import { useState } from "react";
-import { Map, MapPopup } from "@/registry/map";
+import { useState } from 'react';
+import { Map, MapPopup } from '@/registry/map';
 
 function StandalonePopupDemo() {
   const [popup, setPopup] = useState<{
@@ -237,7 +220,7 @@ function StandalonePopupDemo() {
   } | null>({
     lng: -74.006,
     lat: 40.7128,
-    content: "New York City - Population: 8.3 million",
+    content: 'New York City - Population: 8.3 million',
   });
 
   return (
@@ -271,11 +254,13 @@ function StandalonePopupDemo() {
       {!popup && (
         <button
           className="absolute bottom-4 left-4 z-10 px-4 py-2 bg-primary text-white rounded"
-          onClick={() => setPopup({
-            lng: -74.006,
-            lat: 40.7128,
-            content: "New York City - Population: 8.3 million",
-          })}
+          onClick={() =>
+            setPopup({
+              lng: -74.006,
+              lat: 40.7128,
+              content: 'New York City - Population: 8.3 million',
+            })
+          }
         >
           Show Popup
         </button>
@@ -290,27 +275,21 @@ function StandalonePopupDemo() {
 The `MapRoute` component draws lines and paths on the map, perfect for displaying routes, boundaries, or connections between points.
 
 ```tsx
-import {
-  Map,
-  MapRoute,
-  MapMarker,
-  MarkerContent,
-  MarkerTooltip
-} from "@/registry/map";
+import { Map, MapRoute, MapMarker, MarkerContent, MarkerTooltip } from '@/registry/map';
 
 function RouteDemo() {
   const route: [number, number][] = [
-    [-74.006, 40.7128],   // NYC City Hall
-    [-73.9857, 40.7484],  // Empire State Building
-    [-73.9772, 40.7527],  // Grand Central
-    [-73.9654, 40.7829],  // Central Park
+    [-74.006, 40.7128], // NYC City Hall
+    [-73.9857, 40.7484], // Empire State Building
+    [-73.9772, 40.7527], // Grand Central
+    [-73.9654, 40.7829], // Central Park
   ];
 
   const stops = [
-    { name: "City Hall", lng: -74.006, lat: 40.7128 },
-    { name: "Empire State Building", lng: -73.9857, lat: 40.7484 },
-    { name: "Grand Central Terminal", lng: -73.9772, lat: 40.7527 },
-    { name: "Central Park", lng: -73.9654, lat: 40.7829 },
+    { name: 'City Hall', lng: -74.006, lat: 40.7128 },
+    { name: 'Empire State Building', lng: -73.9857, lat: 40.7484 },
+    { name: 'Grand Central Terminal', lng: -73.9772, lat: 40.7527 },
+    { name: 'Central Park', lng: -73.9654, lat: 40.7829 },
   ];
 
   return (
@@ -322,9 +301,9 @@ function RouteDemo() {
           color="#3b82f6"
           width={4}
           opacity={0.8}
-          onClick={() => console.log("Route clicked")}
-          onMouseEnter={() => console.log("Route hover")}
-          onMouseLeave={() => console.log("Route leave")}
+          onClick={() => console.log('Route clicked')}
+          onMouseEnter={() => console.log('Route hover')}
+          onMouseLeave={() => console.log('Route leave')}
         />
 
         {/* Dashed alternate route */}
@@ -364,7 +343,7 @@ function RouteDemo() {
 `MapArc` renders curved lines (arcs) between points, ideal for visualizing flight paths, connections, or data flows. Supports hover effects and click events.
 
 ```tsx
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Map,
   MapArc,
@@ -373,8 +352,8 @@ import {
   MarkerLabel,
   MapPopup,
   type MapArcDatum,
-  type MapArcEvent
-} from "@/registry/map";
+  type MapArcEvent,
+} from '@/registry/map';
 
 interface FlightArc extends MapArcDatum {
   airline: string;
@@ -384,38 +363,38 @@ interface FlightArc extends MapArcDatum {
 function ArcDemo() {
   const [hoveredArc, setHoveredArc] = useState<MapArcEvent<FlightArc> | null>(null);
 
-  const hub = { name: "London", lng: -0.1276, lat: 51.5074 };
+  const hub = { name: 'London', lng: -0.1276, lat: 51.5074 };
 
   const destinations = [
-    { name: "New York", lng: -74.006, lat: 40.7128 },
-    { name: "Tokyo", lng: 139.6917, lat: 35.6895 },
-    { name: "Sydney", lng: 151.2093, lat: -33.8688 },
-    { name: "Dubai", lng: 55.2708, lat: 25.2048 },
+    { name: 'New York', lng: -74.006, lat: 40.7128 },
+    { name: 'Tokyo', lng: 139.6917, lat: 35.6895 },
+    { name: 'Sydney', lng: 151.2093, lat: -33.8688 },
+    { name: 'Dubai', lng: 55.2708, lat: 25.2048 },
   ];
 
   const arcs: FlightArc[] = destinations.map((dest) => ({
     id: dest.name,
     from: [hub.lng, hub.lat],
     to: [dest.lng, dest.lat],
-    airline: "British Airways",
-    duration: "8h 30m",
+    airline: 'British Airways',
+    duration: '8h 30m',
   }));
 
   return (
     <div className="h-[400px] w-full">
-      <Map center={[hub.lng, hub.lat]} zoom={1} projection={{ type: "globe" }}>
+      <Map center={[hub.lng, hub.lat]} zoom={1} projection={{ type: 'globe' }}>
         <MapArc<FlightArc>
           data={arcs}
           curvature={0.3}
           samples={64}
           paint={{
-            "line-color": "#3b82f6",
-            "line-width": 2,
-            "line-opacity": 0.85,
+            'line-color': '#3b82f6',
+            'line-width': 2,
+            'line-opacity': 0.85,
           }}
           hoverPaint={{
-            "line-color": "#ef4444",
-            "line-width": 4,
+            'line-color': '#ef4444',
+            'line-width': 4,
           }}
           onClick={(e) => console.log(`Clicked: ${e.arc.id}`, e.arc)}
           onHover={(e) => setHoveredArc(e)}
@@ -426,7 +405,10 @@ function ArcDemo() {
         <MapMarker longitude={hub.lng} latitude={hub.lat}>
           <MarkerContent>
             <div className="size-4 rounded-full border-2 border-white bg-blue-500 shadow-md" />
-            <MarkerLabel position="top" className="bg-background/80 px-2 py-0.5 rounded font-semibold">
+            <MarkerLabel
+              position="top"
+              className="bg-background/80 px-2 py-0.5 rounded font-semibold"
+            >
               {hub.name}
             </MarkerLabel>
           </MarkerContent>
@@ -467,8 +449,8 @@ function ArcDemo() {
 `MapClusterLayer` renders clustered point data that automatically groups nearby points and expands on click. Supports GeoJSON data or remote URLs.
 
 ```tsx
-import { useState } from "react";
-import { Map, MapClusterLayer, MapPopup, MapControls } from "@/registry/map";
+import { useState } from 'react';
+import { Map, MapClusterLayer, MapPopup, MapControls } from '@/registry/map';
 
 interface EarthquakeProperties {
   mag: number;
@@ -484,17 +466,17 @@ function ClusterDemo() {
 
   // Local GeoJSON data
   const localData: GeoJSON.FeatureCollection<GeoJSON.Point, { name: string; value: number }> = {
-    type: "FeatureCollection",
+    type: 'FeatureCollection',
     features: [
       {
-        type: "Feature",
-        properties: { name: "Point 1", value: 100 },
-        geometry: { type: "Point", coordinates: [-74.006, 40.7128] },
+        type: 'Feature',
+        properties: { name: 'Point 1', value: 100 },
+        geometry: { type: 'Point', coordinates: [-74.006, 40.7128] },
       },
       {
-        type: "Feature",
-        properties: { name: "Point 2", value: 200 },
-        geometry: { type: "Point", coordinates: [-73.98, 40.75] },
+        type: 'Feature',
+        properties: { name: 'Point 2', value: 200 },
+        geometry: { type: 'Point', coordinates: [-73.98, 40.75] },
       },
       // ... more features
     ],
@@ -508,7 +490,7 @@ function ClusterDemo() {
           data="https://maplibre.org/maplibre-gl-js/docs/assets/earthquakes.geojson"
           clusterRadius={50}
           clusterMaxZoom={14}
-          clusterColors={["#22c55e", "#eab308", "#ef4444"]}
+          clusterColors={['#22c55e', '#eab308', '#ef4444']}
           clusterThresholds={[100, 750]}
           pointColor="#3b82f6"
           onPointClick={(feature, coordinates) => {
@@ -532,9 +514,15 @@ function ClusterDemo() {
             closeOnClick={false}
           >
             <div className="text-sm space-y-1">
-              <p><strong>Magnitude:</strong> {selectedPoint.properties.mag}</p>
-              <p><strong>Location:</strong> {selectedPoint.properties.place}</p>
-              <p><strong>Tsunami:</strong> {selectedPoint.properties.tsunami === 1 ? "Yes" : "No"}</p>
+              <p>
+                <strong>Magnitude:</strong> {selectedPoint.properties.mag}
+              </p>
+              <p>
+                <strong>Location:</strong> {selectedPoint.properties.place}
+              </p>
+              <p>
+                <strong>Tsunami:</strong> {selectedPoint.properties.tsunami === 1 ? 'Yes' : 'No'}
+              </p>
             </div>
           </MapPopup>
         )}
@@ -551,18 +539,18 @@ function ClusterDemo() {
 `MapControls` adds interactive UI controls for zoom, compass, geolocation, and fullscreen toggle with customizable positioning.
 
 ```tsx
-import { Map, MapControls } from "@/registry/map";
+import { Map, MapControls } from '@/registry/map';
 
 function ControlsDemo() {
   return (
     <div className="h-[400px] w-full">
       <Map center={[2.3522, 48.8566]} zoom={10}>
         <MapControls
-          position="top-right"        // "top-left" | "top-right" | "bottom-left" | "bottom-right"
-          showZoom                    // Zoom in/out buttons (default: true)
-          showCompass                 // Compass to reset bearing (default: false)
-          showLocate                  // Geolocation button (default: false)
-          showFullscreen              // Fullscreen toggle (default: false)
+          position="top-right" // "top-left" | "top-right" | "bottom-left" | "bottom-right"
+          showZoom // Zoom in/out buttons (default: true)
+          showCompass // Compass to reset bearing (default: false)
+          showLocate // Geolocation button (default: false)
+          showFullscreen // Fullscreen toggle (default: false)
           className="custom-controls"
           onLocate={(coords) => {
             console.log(`User located at: ${coords.longitude}, ${coords.latitude}`);
@@ -592,8 +580,8 @@ function MultipleControlsDemo() {
 The `useMap` hook provides access to the MapLibre map instance and load state from within child components of `Map`.
 
 ```tsx
-import { useEffect } from "react";
-import { Map, useMap, MapMarker, MarkerContent } from "@/registry/map";
+import { useEffect } from 'react';
+import { Map, useMap, MapMarker, MarkerContent } from '@/registry/map';
 
 function CustomMapLayer() {
   const { map, isLoaded } = useMap();
@@ -602,23 +590,25 @@ function CustomMapLayer() {
     if (!isLoaded || !map) return;
 
     // Add custom GeoJSON source
-    map.addSource("custom-source", {
-      type: "geojson",
+    map.addSource('custom-source', {
+      type: 'geojson',
       data: {
-        type: "FeatureCollection",
+        type: 'FeatureCollection',
         features: [
           {
-            type: "Feature",
+            type: 'Feature',
             properties: {},
             geometry: {
-              type: "Polygon",
-              coordinates: [[
-                [-74.02, 40.70],
-                [-73.98, 40.70],
-                [-73.98, 40.74],
-                [-74.02, 40.74],
-                [-74.02, 40.70],
-              ]],
+              type: 'Polygon',
+              coordinates: [
+                [
+                  [-74.02, 40.7],
+                  [-73.98, 40.7],
+                  [-73.98, 40.74],
+                  [-74.02, 40.74],
+                  [-74.02, 40.7],
+                ],
+              ],
             },
           },
         ],
@@ -627,18 +617,18 @@ function CustomMapLayer() {
 
     // Add fill layer
     map.addLayer({
-      id: "custom-layer",
-      type: "fill",
-      source: "custom-source",
+      id: 'custom-layer',
+      type: 'fill',
+      source: 'custom-source',
       paint: {
-        "fill-color": "#3b82f6",
-        "fill-opacity": 0.3,
+        'fill-color': '#3b82f6',
+        'fill-opacity': 0.3,
       },
     });
 
     return () => {
-      if (map.getLayer("custom-layer")) map.removeLayer("custom-layer");
-      if (map.getSource("custom-source")) map.removeSource("custom-source");
+      if (map.getLayer('custom-layer')) map.removeLayer('custom-layer');
+      if (map.getSource('custom-source')) map.removeSource('custom-source');
     };
   }, [map, isLoaded]);
 
